@@ -94,7 +94,7 @@ export default function ConsignatiePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl font-bold mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
             style={{ fontFamily: "var(--font-playfair)", color: "#ffffff" }}
           >
             Uw auto verkopen<br />via consignatie
@@ -124,7 +124,7 @@ export default function ConsignatiePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {voordelen.map((v, i) => (
               <motion.div
                 key={v.title}
@@ -132,7 +132,7 @@ export default function ConsignatiePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="p-6 rounded-2xl"
+                className="p-4 sm:p-6 rounded-2xl"
                 style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}
               >
                 <div
@@ -200,7 +200,7 @@ export default function ConsignatiePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-4xl md:text-5xl font-bold text-white"
+                  className="text-3xl md:text-5xl font-bold text-white"
                   style={{ fontFamily: "var(--font-playfair)", whiteSpace: "pre-line", lineHeight: 1.15 }}
                 >
                   {item.title}

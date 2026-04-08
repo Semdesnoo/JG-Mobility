@@ -39,7 +39,7 @@ function FilterSelect({ value, onChange, children }: { value: string; onChange: 
           color: active ? "#ffffff" : "rgba(255,255,255,0.75)",
           fontFamily: "var(--font-inter)",
           outline: "none",
-          minWidth: "150px",
+          minWidth: "130px",
         }}
       >
         {children}

@@ -17,7 +17,7 @@ export default function OverOnsPage() {
             Het verhaal
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
+            className="text-3xl sm:text-5xl md:text-6xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
             Over JG Mobility
           </motion.h1>
         </div>
@@ -25,7 +25,7 @@ export default function OverOnsPage() {
 
       {/* Verhaal sectie */}
       <section className="py-24 px-6" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center">
           <AnimateOnScroll direction="left">
             <div className="relative">
               <div
@@ -110,7 +110,7 @@ export default function OverOnsPage() {
             ].map((waarde, i) => (
               <AnimateOnScroll key={waarde.title} delay={i * 0.15}>
                 <div
-                  className="p-8 rounded-2xl h-full"
+                  className="p-5 md:p-8 rounded-2xl h-full"
                   style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}
                 >
                   <div className="text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "rgba(0,19,55,0.15)" }}>

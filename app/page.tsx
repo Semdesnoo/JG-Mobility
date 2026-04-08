@@ -58,7 +58,7 @@ function DienstenSection() {
 
       {/* Harmonica panelen */}
       <AnimateOnScroll>
-        <div className="flex h-[480px] overflow-hidden">
+        <div className="flex h-[320px] md:h-[480px] overflow-hidden">
           {diensten.map((dienst, i) => (
             <motion.div
               key={dienst.title}
@@ -139,12 +139,6 @@ function DienstenSection() {
   );
 }
 
-const stats = [
-  { number: "100%", label: "Persoonlijk contact" },
-  { number: "€0", label: "Verborgen kosten" },
-  { number: "<24u", label: "Reactietijd" },
-  { number: "10+", label: "Merken beschikbaar" },
-];
 
 const reviews = [
   { naam: "Thomas V.", initialen: "TV", kleur: "#1a3a6b", sterren: 5, tekst: "Uitstekende service van Jimi. Mijn auto was binnen twee weken verkocht voor een eerlijke prijs. Geen gedoe, gewoon resultaat.", datum: "2 weken geleden" },
@@ -423,7 +417,7 @@ export default function HomePage() {
 
       {/* ─── OVER ONS TEASER ─── */}
       <section className="py-24 px-6" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
           <AnimateOnScroll direction="left">
             <div
               className="aspect-[4/3] rounded-2xl flex items-center justify-center relative overflow-hidden"

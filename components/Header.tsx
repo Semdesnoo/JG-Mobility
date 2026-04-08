@@ -222,16 +222,17 @@ export default function Header() {
           <img
             src="/JG Mobility Transparant.png"
             alt="JG Mobility"
-            className="h-10 w-auto object-contain"
+            className="h-12 w-auto object-contain"
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
         <button
-          className="flex items-center justify-center w-9 h-9 transition-all hover:bg-white/10"
+          className="flex items-center justify-center w-11 h-11 transition-all hover:bg-white/10"
           style={{ border: "1px solid rgba(255,255,255,0.2)" }}
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
         >
-          {menuOpen ? <X size={16} color="white" /> : <Menu size={16} color="white" />}
+          {menuOpen ? <X size={20} color="white" /> : <Menu size={20} color="white" />}
         </button>
       </div>
 
@@ -245,16 +246,19 @@ export default function Header() {
                   <>
                     <button
                       onClick={() => setMerkenOpen(!merkenOpen)}
-                      className="w-full flex items-center justify-between px-6 py-4 font-semibold tracking-[0.18em] text-left"
-                      style={{ fontFamily: "var(--font-inter)", fontSize: "14px", color: "rgba(255,255,255,0.7)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                      className="w-full flex items-center justify-between px-6 py-5 font-semibold tracking-[0.14em] text-left"
+                      style={{ fontFamily: "var(--font-inter)", fontSize: "15px", color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
                     >
                       {item.label}
-                      <ChevronDown size={12} className={`transition-transform ${merkenOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown size={14} className={`transition-transform ${merkenOpen ? "rotate-180" : ""}`} />
                     </button>
                     {merkenOpen && (
                       <div className="pl-6 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                        <Link href="/aanbod" className="block py-3 text-sm text-white/60" style={{ fontFamily: "var(--font-inter)" }} onClick={() => setMenuOpen(false)}>
+                          Alle merken
+                        </Link>
                         {merken.map((merk) => (
-                          <Link key={merk} href={`/aanbod?merk=${merk.toLowerCase()}`} className="block py-2 text-xs text-white/40" style={{ fontFamily: "var(--font-inter)" }}>
+                          <Link key={merk} href={`/aanbod?merk=${merk.toLowerCase()}`} className="block py-3 text-sm text-white/40" style={{ fontFamily: "var(--font-inter)" }} onClick={() => setMenuOpen(false)}>
                             {merk}
                           </Link>
                         ))}
@@ -264,14 +268,21 @@ export default function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="block px-6 py-4 font-semibold tracking-[0.18em]"
-                    style={{ fontFamily: "var(--font-inter)", fontSize: "14px", color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.7)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                    className="block px-6 py-5 font-semibold tracking-[0.14em]"
+                    style={{ fontFamily: "var(--font-inter)", fontSize: "15px", color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
                   >
                     {item.label}
                   </Link>
                 )}
               </div>
             ))}
+
+            {/* Contact info onderaan menu */}
+            <div className="px-6 py-5 flex gap-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              <a href="mailto:info@jgmobility.nl" className="flex items-center gap-2 text-xs text-white/40" style={{ fontFamily: "var(--font-inter)" }}>
+                <Mail size={13} /> info@jgmobility.nl
+              </a>
+            </div>
           </div>
         </div>
       )}

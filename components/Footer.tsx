@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer style={{ backgroundColor: "#001337", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 mb-10 md:mb-16 items-start">
 
           {/* Brand */}
           <div className="md:col-span-2">
@@ -16,7 +16,7 @@ export default function Footer() {
               <img
                 src="/JG Mobility Transparant.png"
                 alt="JG Mobility"
-                className="h-40 w-auto object-contain"
+                className="h-20 md:h-40 w-auto object-contain"
                 style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           {/* Navigatie */}
-          <div className="pt-10">
+          <div className="pt-0 md:pt-10">
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               Navigatie
             </h4>
@@ -85,7 +85,7 @@ export default function Footer() {
           </div>
 
           {/* Adres */}
-          <div className="pt-10">
+          <div className="pt-0 md:pt-10">
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               Adres
             </h4>
@@ -110,7 +110,7 @@ export default function Footer() {
           </div>
 
           {/* Openingstijden */}
-          <div className="pt-10">
+          <div className="pt-0 md:pt-10">
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               Openingstijden
             </h4>
