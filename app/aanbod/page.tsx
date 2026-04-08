@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import AanbodClient from "./AanbodClient";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Aanbod | JG Mobility",
@@ -6,5 +9,9 @@ export const metadata = {
 };
 
 export default function AanbodPage() {
-  return <AanbodClient />;
+  return (
+    <Suspense>
+      <AanbodClient />
+    </Suspense>
+  );
 }

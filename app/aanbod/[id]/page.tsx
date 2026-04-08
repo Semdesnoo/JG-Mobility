@@ -1,12 +1,14 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { autos } from "@/lib/autos";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+
 
 const tabs = ["Kenmerken", "Opties", "Omschrijving", "Contact"];
 
