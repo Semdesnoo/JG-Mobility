@@ -132,7 +132,7 @@ export default function InkoopTaxatiePage() {
                 Gratis taxatie aanvragen
                 <ArrowRight size={14} />
               </Link>
-              <a href="tel:" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:bg-gray-50" style={{ border: "1px solid rgba(0,19,55,0.15)", color: "#001337", fontFamily: "var(--font-inter)" }}>
+              <a href="tel:" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:opacity-85" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
                 <Phone size={14} />
                 Bel direct
               </a>

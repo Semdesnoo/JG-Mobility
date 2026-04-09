@@ -499,8 +499,8 @@ export default function HomePage() {
               </Link>
               <a
                 href="mailto:info@jgmobility.nl"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold tracking-wide transition-all hover:bg-white/10"
-                style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)" }}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold tracking-wide transition-all hover:opacity-85"
+                style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
               >
                 info@jgmobility.nl
               </a>
