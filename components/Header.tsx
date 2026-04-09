@@ -5,14 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Phone, Menu, X, ChevronDown } from "lucide-react";
 
-const merken = [
-  "Audi", "BMW", "Mercedes-Benz", "Porsche", "Volkswagen",
-  "Volvo", "Jaguar", "Land Rover", "Lexus", "Tesla",
+const diensten = [
+  { label: "Inkoop & Taxatie", href: "/diensten/inkoop-taxatie" },
+  { label: "Consignatie", href: "/diensten/consignatie" },
+  { label: "Financiering", href: "/diensten/financiering" },
+  { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
 ];
 
 const navItems = [
-  { label: "MERKEN", href: "/aanbod", hasDropdown: true },
-  { label: "CONSIGNATIE", href: "/consignatie" },
+  { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
   { label: "AANBOD", href: "/aanbod" },
   { label: "ONS VERHAAL", href: "/over-ons" },
   { label: "CONTACT", href: "/contact" },
@@ -161,30 +162,22 @@ export default function Header() {
                 </button>
                 {merkenOpen && (
                   <div
-                    className="absolute top-full left-0 w-52 py-1 z-50"
+                    className="absolute top-full left-0 w-56 py-1 z-50"
                     style={{
                       backgroundColor: "#001337",
                       border: "1px solid rgba(255,255,255,0.1)",
                       borderTop: "2px solid #ffffff",
                     }}
                   >
-                    <Link
-                      href="/aanbod"
-                      className="block px-5 py-2.5 text-xs tracking-widest uppercase text-white/80 hover:text-white hover:bg-white/5 transition-colors"
-                      style={{ fontFamily: "var(--font-inter)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                      onClick={() => setMerkenOpen(false)}
-                    >
-                      Alle merken
-                    </Link>
-                    {merken.map((merk) => (
+                    {diensten.map((d, idx) => (
                       <Link
-                        key={merk}
-                        href={`/aanbod?merk=${merk.toLowerCase()}`}
-                        className="block px-5 py-2 text-xs text-white/55 hover:text-white hover:bg-white/5 transition-colors"
-                        style={{ fontFamily: "var(--font-inter)" }}
+                        key={d.href}
+                        href={d.href}
+                        className="block px-5 py-2.5 text-xs text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                        style={{ fontFamily: "var(--font-inter)", borderBottom: idx < diensten.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}
                         onClick={() => setMerkenOpen(false)}
                       >
-                        {merk}
+                        {d.label}
                       </Link>
                     ))}
                   </div>
@@ -254,12 +247,9 @@ export default function Header() {
                     </button>
                     {merkenOpen && (
                       <div className="pl-6 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                        <Link href="/aanbod" className="block py-3 text-sm text-white/60" style={{ fontFamily: "var(--font-inter)" }} onClick={() => setMenuOpen(false)}>
-                          Alle merken
-                        </Link>
-                        {merken.map((merk) => (
-                          <Link key={merk} href={`/aanbod?merk=${merk.toLowerCase()}`} className="block py-3 text-sm text-white/40" style={{ fontFamily: "var(--font-inter)" }} onClick={() => setMenuOpen(false)}>
-                            {merk}
+                        {diensten.map((d) => (
+                          <Link key={d.href} href={d.href} className="block py-3 text-sm text-white/60" style={{ fontFamily: "var(--font-inter)" }} onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}>
+                            {d.label}
                           </Link>
                         ))}
                       </div>
