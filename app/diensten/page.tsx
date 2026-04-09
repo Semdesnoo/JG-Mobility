@@ -73,13 +73,13 @@ export default function DienstenPage() {
             <AnimateOnScroll key={d.title} delay={i * 0.08}>
               <Link href={d.href} className="group block">
                 <div
-                  className="grid grid-cols-1 md:grid-cols-[72px_1fr_auto] gap-6 md:gap-10 items-center p-6 md:p-8 rounded-2xl transition-all duration-300 group-hover:shadow-lg"
+                  className="grid grid-cols-1 md:grid-cols-[72px_1fr_auto] gap-6 md:gap-10 items-center p-6 md:p-8 rounded-none transition-all duration-300 group-hover:shadow-lg"
                   style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}
                 >
                   {/* Nummer + icon */}
                   <div className="flex md:flex-col items-center gap-4 md:gap-2">
                     <span className="text-xs font-bold tracking-widest" style={{ color: "rgba(0,19,55,0.2)", fontFamily: "var(--font-inter)" }}>{d.nummer}</span>
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#001337", color: "#ffffff" }}>
+                    <div className="w-12 h-12 rounded-none flex items-center justify-center" style={{ backgroundColor: "#001337", color: "#ffffff" }}>
                       {d.icon}
                     </div>
                   </div>
@@ -91,7 +91,7 @@ export default function DienstenPage() {
                     <p className="text-sm leading-relaxed mb-4" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{d.desc}</p>
                     <div className="flex flex-wrap gap-2">
                       {d.punten.map((p) => (
-                        <span key={p} className="text-xs px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(0,19,55,0.06)", color: "rgba(0,19,55,0.6)", fontFamily: "var(--font-inter)" }}>
+                        <span key={p} className="text-xs px-3 py-1 rounded-none" style={{ backgroundColor: "rgba(0,19,55,0.06)", color: "rgba(0,19,55,0.6)", fontFamily: "var(--font-inter)" }}>
                           {p}
                         </span>
                       ))}
@@ -99,7 +99,7 @@ export default function DienstenPage() {
                   </div>
 
                   {/* Pijl */}
-                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 group-hover:bg-[#001337] group-hover:text-white" style={{ border: "1px solid rgba(0,19,55,0.15)", color: "rgba(0,19,55,0.4)" }}>
+                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-none transition-all duration-300 group-hover:bg-[#001337] group-hover:text-white" style={{ border: "1px solid rgba(0,19,55,0.15)", color: "rgba(0,19,55,0.4)" }}>
                     <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
@@ -122,7 +122,7 @@ export default function DienstenPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105"
               style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
             >
               Neem contact op

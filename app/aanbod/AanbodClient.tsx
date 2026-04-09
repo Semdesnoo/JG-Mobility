@@ -32,7 +32,7 @@ function FilterSelect({ value, onChange, children }: { value: string; onChange: 
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none pr-8 pl-4 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all"
+        className="appearance-none pr-8 pl-4 py-2.5 rounded-none text-sm font-medium cursor-pointer transition-all"
         style={{
           backgroundColor: active ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
           border: active ? "1px solid rgba(255,255,255,0.5)" : "1px solid rgba(255,255,255,0.12)",
@@ -180,7 +180,7 @@ export default function AanbodClient() {
             {hasFilters && (
               <button
                 onClick={resetFilters}
-                className="flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs transition-all hover:bg-red-500/20 ml-1"
+                className="flex items-center gap-1 px-3 py-2.5 rounded-none text-xs transition-all hover:bg-red-500/20 ml-1"
                 style={{ color: "#ff8080", border: "1px solid rgba(255,128,128,0.25)", fontFamily: "var(--font-inter)" }}
               >
                 <X size={12} /> Reset
@@ -213,7 +213,7 @@ export default function AanbodClient() {
                 >
                   <Link
                     href={`/aanbod/${auto.id}`}
-                    className="group block rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                    className="group block rounded-none overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
                     style={{ backgroundColor: "#ffffff" }}
                   >
                     {/* Foto */}
@@ -241,7 +241,7 @@ export default function AanbodClient() {
                       />
                       <div className="absolute top-4 left-4">
                         <span
-                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-full"
+                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-none"
                           style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)", fontWeight: 600 }}
                         >
                           {auto.bodytype}
@@ -249,7 +249,7 @@ export default function AanbodClient() {
                       </div>
                       <div className="absolute top-4 right-4">
                         <span
-                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-full"
+                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-none"
                           style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}
                         >
                           {auto.kleur}
@@ -283,7 +283,7 @@ export default function AanbodClient() {
                           { icon: <Fuel size={12} />, label: "Brandstof", value: auto.brandstof },
                           { icon: <Zap size={12} />, label: "Vermogen", value: auto.vermogen },
                         ].map((spec) => (
-                          <div key={spec.label} className="flex items-center gap-2 py-2.5 px-3 rounded-xl" style={{ backgroundColor: "#f5f5f5" }}>
+                          <div key={spec.label} className="flex items-center gap-2 py-2.5 px-3 rounded-none" style={{ backgroundColor: "#f5f5f5" }}>
                             <span style={{ color: "#001337" }}>{spec.icon}</span>
                             <div>
                               <div className="text-[9px] text-gray-400 uppercase tracking-wide" style={{ fontFamily: "var(--font-inter)" }}>{spec.label}</div>
@@ -296,7 +296,7 @@ export default function AanbodClient() {
                       <div className="h-px mb-5" style={{ backgroundColor: "#f0f0f0" }} />
 
                       <div
-                        className="flex items-center justify-between w-full py-3.5 px-5 rounded-xl text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg group-hover:scale-[1.01]"
+                        className="flex items-center justify-between w-full py-3.5 px-5 rounded-none text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg group-hover:scale-[1.01]"
                         style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                       >
                         Bekijk dit voertuig
@@ -324,7 +324,7 @@ export default function AanbodClient() {
         </p>
         <Link
           href="/contact"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105"
           style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
         >
           Contact opnemen <ArrowRight size={14} />

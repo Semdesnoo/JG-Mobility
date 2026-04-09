@@ -29,7 +29,7 @@ export default function OverOnsPage() {
           <AnimateOnScroll direction="left">
             <div className="relative">
               <div
-                className="rounded-2xl overflow-hidden aspect-[3/4] flex items-center justify-center"
+                className="rounded-none overflow-hidden aspect-[3/4] flex items-center justify-center"
                 style={{ backgroundColor: "#001337" }}
               >
                 <div className="text-center relative z-10">
@@ -41,7 +41,7 @@ export default function OverOnsPage() {
               </div>
               {/* Decoratief element */}
               <div
-                className="absolute -bottom-4 -right-4 w-32 h-32 rounded-2xl -z-10"
+                className="absolute -bottom-4 -right-4 w-32 h-32 rounded-none -z-10"
                 style={{ backgroundColor: "#ffffff", opacity: 0.15 }}
               />
             </div>
@@ -110,7 +110,7 @@ export default function OverOnsPage() {
             ].map((waarde, i) => (
               <AnimateOnScroll key={waarde.title} delay={i * 0.15}>
                 <div
-                  className="p-5 md:p-8 rounded-2xl h-full"
+                  className="p-5 md:p-8 rounded-none h-full"
                   style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}
                 >
                   <div className="text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "rgba(0,19,55,0.15)" }}>
@@ -140,7 +140,7 @@ export default function OverOnsPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105"
             style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
           >
             Contact opnemen <ArrowRight size={14} />

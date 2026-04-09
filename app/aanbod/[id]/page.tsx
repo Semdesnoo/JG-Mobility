@@ -55,7 +55,7 @@ export default function AutoDetailPage() {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="relative rounded-2xl overflow-hidden aspect-[16/10] cursor-pointer"
+                className="relative rounded-none overflow-hidden aspect-[16/10] cursor-pointer"
                 style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
                 onClick={() => heeftFotos && setLightbox(true)}
               >
@@ -82,32 +82,32 @@ export default function AutoDetailPage() {
                   <>
                     <button
                       onClick={(e) => { e.stopPropagation(); vorigeFoto(); }}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/30"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none flex items-center justify-center transition-all hover:bg-white/30"
                       style={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}
                     >
                       <ChevronLeft size={16} color="white" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); volgendeFoto(); }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-white/30"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none flex items-center justify-center transition-all hover:bg-white/30"
                       style={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}
                     >
                       <ArrowRight size={16} color="white" />
                     </button>
                     {/* Teller */}
-                    <div className="absolute bottom-4 right-4 px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
+                    <div className="absolute bottom-4 right-4 px-3 py-1 rounded-none text-xs font-semibold" style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
                       {fotoIndex + 1} / {aantalFotos}
                     </div>
                   </>
                 )}
 
                 <div className="absolute top-4 left-4">
-                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-full font-semibold" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
+                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none font-semibold" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
                     {auto.bodytype}
                   </span>
                 </div>
                 <div className="absolute top-4 right-4">
-                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-full" style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
+                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none" style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
                     {auto.kleurExterieur}
                   </span>
                 </div>
@@ -120,7 +120,7 @@ export default function AutoDetailPage() {
                     <button
                       key={i}
                       onClick={() => setFotoIndex(i)}
-                      className="relative flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden transition-all"
+                      className="relative flex-shrink-0 w-20 h-14 rounded-none overflow-hidden transition-all"
                       style={{ border: fotoIndex === i ? "2px solid #ffffff" : "2px solid rgba(255,255,255,0.15)" }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -142,12 +142,12 @@ export default function AutoDetailPage() {
                   style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
                   onClick={() => setLightbox(false)}
                 >
-                  <button className="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                  <button className="absolute top-6 right-6 w-10 h-10 rounded-none flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                     <X size={18} color="white" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); vorigeFoto(); }}
-                    className="absolute left-6 w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-all"
+                    className="absolute left-6 w-12 h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
                     style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                   >
                     <ChevronLeft size={20} color="white" />
@@ -156,12 +156,12 @@ export default function AutoDetailPage() {
                   <img
                     src={auto.fotos![fotoIndex]}
                     alt=""
-                    className="max-w-[90vw] max-h-[85vh] object-contain rounded-xl"
+                    className="max-w-[90vw] max-h-[85vh] object-contain rounded-none"
                     onClick={(e) => e.stopPropagation()}
                   />
                   <button
                     onClick={(e) => { e.stopPropagation(); volgendeFoto(); }}
-                    className="absolute right-6 w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-all"
+                    className="absolute right-6 w-12 h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
                     style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                   >
                     <ArrowRight size={20} color="white" />
@@ -210,7 +210,7 @@ export default function AutoDetailPage() {
                     { label: "Vermogen", value: auto.vermogen },
                     { label: "APK tot", value: auto.apk },
                   ].map((spec) => (
-                    <div key={spec.label} className="py-3 px-4 rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div key={spec.label} className="py-3 px-4 rounded-none" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
                       <div className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>{spec.label}</div>
                       <div className="text-sm font-semibold text-white" style={{ fontFamily: "var(--font-inter)" }}>{spec.value}</div>
                     </div>
@@ -221,7 +221,7 @@ export default function AutoDetailPage() {
                 <div className="flex flex-col gap-3">
                   <a
                     href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model}&body=Hallo, ik heb interesse in de ${auto.merk} ${auto.model} (${auto.bouwjaar}) voor €${auto.prijs.toLocaleString("nl-NL")}. Kunt u mij meer informatie geven?`}
-                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg"
+                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg"
                     style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
                   >
                     <Mail size={14} />
@@ -229,7 +229,7 @@ export default function AutoDetailPage() {
                   </a>
                   <Link
                     href="/contact"
-                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl text-sm font-semibold transition-all hover:bg-white/10"
+                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:bg-white/10"
                     style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)" }}
                   >
                     <Phone size={14} />
@@ -290,7 +290,7 @@ export default function AutoDetailPage() {
                 ].map((kenmerk) => (
                   <div
                     key={kenmerk.label}
-                    className="flex items-center justify-between py-3 px-4 rounded-xl"
+                    className="flex items-center justify-between py-3 px-4 rounded-none"
                     style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.06)" }}
                   >
                     <span className="text-sm" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{kenmerk.label}</span>
@@ -314,7 +314,7 @@ export default function AutoDetailPage() {
                     <ul className="flex flex-col gap-2">
                       {cat.items.map((item) => (
                         <li key={item} className="flex items-start gap-3 text-sm" style={{ color: "#374151", fontFamily: "var(--font-inter)" }}>
-                          <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "#001337" }} />
+                          <div className="w-1.5 h-1.5 rounded-none mt-1.5 flex-shrink-0" style={{ backgroundColor: "#001337" }} />
                           {item}
                         </li>
                       ))}
@@ -370,7 +370,7 @@ export default function AutoDetailPage() {
 
                 {/* Snelle interesse knop */}
                 {!interesse ? (
-                  <div className="p-6 rounded-2xl" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
+                  <div className="p-6 rounded-none" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
                     <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
                       Interesse aangeven
                     </h3>
@@ -380,7 +380,7 @@ export default function AutoDetailPage() {
                     <a
                       href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model} (€${auto.prijs.toLocaleString("nl-NL")})&body=Hallo Jimi,%0D%0A%0D%0AIk heb interesse in de ${auto.merk} ${auto.model} uit ${auto.bouwjaar} (${auto.km.toLocaleString("nl-NL")} km) voor €${auto.prijs.toLocaleString("nl-NL")}. Kunt u contact met mij opnemen?%0D%0A%0D%0AMet vriendelijke groet,`}
                       onClick={() => setTimeout(() => setInteresse(true), 500)}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
                       style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                     >
                       <Mail size={14} />
@@ -389,7 +389,7 @@ export default function AutoDetailPage() {
                     </a>
                   </div>
                 ) : (
-                  <div className="p-6 rounded-2xl flex flex-col items-center justify-center gap-3 text-center" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
+                  <div className="p-6 rounded-none flex flex-col items-center justify-center gap-3 text-center" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
                     <CheckCircle size={28} color="#001337" />
                     <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>E-mailclient geopend!</p>
                     <p className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>We nemen zo snel mogelijk contact op.</p>

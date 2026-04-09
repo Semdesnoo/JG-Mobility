@@ -132,11 +132,11 @@ export default function ConsignatiePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="p-4 sm:p-6 rounded-2xl"
+                className="p-4 sm:p-6 rounded-none"
                 style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}
               >
                 <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                  className="w-11 h-11 rounded-none flex items-center justify-center mb-4"
                   style={{ backgroundColor: "#001337", color: "#ffffff" }}
                 >
                   {v.icon}
@@ -252,7 +252,7 @@ export default function ConsignatiePage() {
             ].map((item) => (
               <div key={item.step} className="flex items-start gap-4">
                 <div
-                  className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
+                  className="flex-shrink-0 w-11 h-11 rounded-none flex items-center justify-center"
                   style={{ backgroundColor: "#001337", color: "#ffffff" }}
                 >
                   {item.icon}
@@ -292,7 +292,7 @@ export default function ConsignatiePage() {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0 rounded-full"
+                  className="absolute inset-0 rounded-none"
                   style={{ backgroundColor: "#001337" }}
                 />
                 {/* Pulse ring */}
@@ -300,7 +300,7 @@ export default function ConsignatiePage() {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1.25, opacity: 0 }}
                   transition={{ duration: 1.2, delay: 0.5, repeat: 2, ease: "easeOut" }}
-                  className="absolute inset-0 rounded-full"
+                  className="absolute inset-0 rounded-none"
                   style={{ border: "2px solid #001337" }}
                 />
                 {/* Auto rijdt in van links */}
@@ -339,7 +339,7 @@ export default function ConsignatiePage() {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.4, delay: 1.1, type: "spring", stiffness: 320 }}
-                  className="absolute top-1 right-1 w-9 h-9 rounded-full flex items-center justify-center"
+                  className="absolute top-1 right-1 w-9 h-9 rounded-none flex items-center justify-center"
                   style={{ backgroundColor: "#ffffff", zIndex: 20 }}
                 >
                   <CheckCircle size={22} color="#001337" />
@@ -448,7 +448,7 @@ export default function ConsignatiePage() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  className="flex items-center gap-3 px-6 py-4 rounded-lg w-full justify-center transition-all mb-4"
+                  className="flex items-center gap-3 px-6 py-4 rounded-none w-full justify-center transition-all mb-4"
                   style={{ border: "1.5px dashed rgba(0,19,55,0.2)", color: "rgba(0,19,55,0.5)", backgroundColor: "#f9f9fb", fontFamily: "var(--font-inter)", fontSize: "14px" }}
                 >
                   <Upload size={16} />
@@ -459,7 +459,7 @@ export default function ConsignatiePage() {
                 {fotos.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {fotos.map((foto, i) => (
-                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-none text-xs"
                         style={{ backgroundColor: "#f5f5f5", color: "#001337", fontFamily: "var(--font-inter)" }}>
                         <span className="max-w-[120px] truncate">{foto.name}</span>
                         <button type="button" onClick={() => removeFoto(i)}>
@@ -474,7 +474,7 @@ export default function ConsignatiePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-sm font-semibold tracking-wide transition-all hover:opacity-90 disabled:opacity-50"
+                className="flex items-center justify-center gap-2 w-full py-4 rounded-none text-sm font-semibold tracking-wide transition-all hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
               >
                 {loading ? "Versturen..." : (

@@ -69,8 +69,8 @@ export default function FinancieringPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {voordelen.map((v, i) => (
               <AnimateOnScroll key={v.title} delay={i * 0.08}>
-                <div className="p-5 rounded-2xl h-full" style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "#001337", color: "#ffffff" }}>{v.icon}</div>
+                <div className="p-5 rounded-none h-full" style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}>
+                  <div className="w-11 h-11 rounded-none flex items-center justify-center mb-4" style={{ backgroundColor: "#001337", color: "#ffffff" }}>{v.icon}</div>
                   <h3 className="font-bold text-sm mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>{v.title}</h3>
                   <p className="text-xs leading-relaxed" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{v.desc}</p>
                 </div>
@@ -92,7 +92,7 @@ export default function FinancieringPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {opties.map((o, i) => (
               <AnimateOnScroll key={o.title} delay={i * 0.1}>
-                <div className="p-6 md:p-8 rounded-2xl h-full flex flex-col" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
+                <div className="p-6 md:p-8 rounded-none h-full flex flex-col" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
                   <h3 className="text-xl font-bold mb-3" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>{o.title}</h3>
                   <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{o.desc}</p>
                   <ul className="flex flex-col gap-2">
@@ -127,7 +127,7 @@ export default function FinancieringPage() {
               { step: "04", title: "Rijden maar", desc: "Na ondertekening regelen wij de rest. U rijdt weg in uw nieuwe auto." },
             ].map((s, i) => (
               <AnimateOnScroll key={s.step} delay={i * 0.08}>
-                <div className="flex items-start gap-6 p-6 rounded-2xl" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-start gap-6 p-6 rounded-none" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
                   <span className="text-3xl font-bold flex-shrink-0" style={{ fontFamily: "var(--font-playfair)", color: "rgba(255,255,255,0.1)" }}>{s.step}</span>
                   <div>
                     <h3 className="font-bold mb-1 text-white" style={{ fontFamily: "var(--font-playfair)" }}>{s.title}</h3>
@@ -146,7 +146,7 @@ export default function FinancieringPage() {
           <AnimateOnScroll>
             <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Financiering aanvragen?</h2>
             <p className="text-sm text-gray-500 mb-8" style={{ fontFamily: "var(--font-inter)" }}>Neem contact op en wij helpen u aan de beste financieringsoplossing.</p>
-            <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+            <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               Neem contact op
               <ArrowRight size={14} />
             </Link>

@@ -173,7 +173,7 @@ function ReviewsSection() {
 
             {/* Google score blok */}
             <div
-              className="flex items-center gap-5 px-6 py-4 rounded-2xl"
+              className="flex items-center gap-5 px-6 py-4 rounded-none"
               style={{ backgroundColor: "#001337", minWidth: "260px" }}
             >
               <div>
@@ -208,7 +208,7 @@ function ReviewsSection() {
           {reviews.map((review, i) => (
             <AnimateOnScroll key={review.naam} delay={i * 0.1}>
               <div
-                className="flex flex-col gap-4 p-6 rounded-2xl h-full"
+                className="flex flex-col gap-4 p-6 rounded-none h-full"
                 style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.06)" }}
               >
                 {/* Sterren */}
@@ -224,7 +224,7 @@ function ReviewsSection() {
                 {/* Klant */}
                 <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid rgba(0,19,55,0.06)" }}>
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                    className="w-9 h-9 rounded-none flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
                     style={{ backgroundColor: review.kleur, fontFamily: "var(--font-inter)" }}
                   >
                     {review.initialen}
@@ -327,7 +327,7 @@ export default function HomePage() {
             {autos.map((auto, i) => (
               <AnimateOnScroll key={auto.id} delay={i * 0.15} direction="up">
                 <div
-                  className="group rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                  className="group rounded-none overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
                   style={{ backgroundColor: "#ffffff" }}
                 >
                   {/* Foto */}
@@ -390,7 +390,7 @@ export default function HomePage() {
                         { label: "KM", value: `${(auto.km / 1000).toFixed(0)}k` },
                         { label: "Pk", value: auto.vermogen.replace(" pk", "") },
                       ].map((spec) => (
-                        <div key={spec.label} className="text-center py-2 rounded-lg" style={{ backgroundColor: "#f5f5f5" }}>
+                        <div key={spec.label} className="text-center py-2 rounded-none" style={{ backgroundColor: "#f5f5f5" }}>
                           <div className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>{spec.label}</div>
                           <div className="text-sm font-bold mt-0.5" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{spec.value}</div>
                         </div>
@@ -399,7 +399,7 @@ export default function HomePage() {
 
                     <Link
                       href={`/aanbod/${auto.id}`}
-                      className="block w-full text-center py-3 rounded-xl text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg"
+                      className="block w-full text-center py-3 rounded-none text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg"
                       style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                     >
                       Bekijk dit voertuig
@@ -420,7 +420,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
           <AnimateOnScroll direction="left">
             <div
-              className="aspect-[4/3] rounded-2xl flex items-center justify-center relative overflow-hidden"
+              className="aspect-[4/3] rounded-none flex items-center justify-center relative overflow-hidden"
               style={{ backgroundColor: "#001337" }}
             >
               <div className="text-center relative z-10">
@@ -450,7 +450,7 @@ export default function HomePage() {
               <ul className="flex flex-col gap-3 mb-8">
                 {["Altijd direct contact met Jimi", "Geen verborgen kosten", "Volledig ontzorgd van A tot Z"].map((item) => (
                   <li key={item} className="flex items-center gap-3 text-sm" style={{ fontFamily: "var(--font-inter)", color: "#374151" }}>
-                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#001337" }} />
+                    <div className="w-1.5 h-1.5 rounded-none flex-shrink-0" style={{ backgroundColor: "#001337" }} />
                     {item}
                   </li>
                 ))}
@@ -491,7 +491,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/contact"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold tracking-wide transition-all hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold tracking-wide transition-all hover:scale-105"
                 style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
               >
                 Auto aanbieden
@@ -499,7 +499,7 @@ export default function HomePage() {
               </Link>
               <a
                 href="mailto:info@jgmobility.nl"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold tracking-wide transition-all hover:opacity-85"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold tracking-wide transition-all hover:opacity-85"
                 style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
               >
                 info@jgmobility.nl

@@ -58,8 +58,8 @@ export default function InkoopTaxatiePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {voordelen.map((v, i) => (
               <AnimateOnScroll key={v.title} delay={i * 0.08}>
-                <div className="p-5 rounded-2xl h-full" style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: "#001337", color: "#ffffff" }}>{v.icon}</div>
+                <div className="p-5 rounded-none h-full" style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}>
+                  <div className="w-11 h-11 rounded-none flex items-center justify-center mb-4" style={{ backgroundColor: "#001337", color: "#ffffff" }}>{v.icon}</div>
                   <h3 className="font-bold text-sm mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>{v.title}</h3>
                   <p className="text-xs leading-relaxed" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{v.desc}</p>
                 </div>
@@ -81,7 +81,7 @@ export default function InkoopTaxatiePage() {
           <div className="flex flex-col gap-4">
             {stappen.map((s, i) => (
               <AnimateOnScroll key={s.step} delay={i * 0.1}>
-                <div className="flex items-start gap-6 p-6 rounded-2xl" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
+                <div className="flex items-start gap-6 p-6 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
                   <span className="text-3xl font-bold flex-shrink-0" style={{ fontFamily: "var(--font-playfair)", color: "rgba(0,19,55,0.12)" }}>{s.step}</span>
                   <div>
                     <h3 className="font-bold mb-1" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>{s.title}</h3>
@@ -128,11 +128,11 @@ export default function InkoopTaxatiePage() {
             <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Klaar om uw auto te verkopen?</h2>
             <p className="text-sm text-gray-500 mb-8" style={{ fontFamily: "var(--font-inter)" }}>Neem contact op en ontvang binnen 24 uur een gratis taxatie.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
                 Gratis taxatie aanvragen
                 <ArrowRight size={14} />
               </Link>
-              <a href="tel:" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:opacity-85" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+              <a href="tel:" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:opacity-85" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
                 <Phone size={14} />
                 Bel direct
               </a>

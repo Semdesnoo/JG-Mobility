@@ -93,16 +93,16 @@ export default function AfleverpakkettenPage() {
             {pakketten.map((p, i) => (
               <AnimateOnScroll key={p.naam} delay={i * 0.1}>
                 <div
-                  className="relative p-7 rounded-2xl flex flex-col h-full"
+                  className="relative p-7 rounded-none flex flex-col h-full"
                   style={{ backgroundColor: p.kleur, border: p.aanbevolen ? "2px solid #001337" : "1px solid rgba(0,19,55,0.08)" }}
                 >
                   {p.aanbevolen && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)", border: "1px solid rgba(0,19,55,0.15)" }}>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-none text-[10px] font-bold tracking-widest uppercase" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)", border: "1px solid rgba(0,19,55,0.15)" }}>
                       Meest gekozen
                     </div>
                   )}
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: p.aanbevolen ? "rgba(255,255,255,0.12)" : "rgba(0,19,55,0.06)", color: p.tekstKleur }}>
+                    <div className="w-10 h-10 rounded-none flex items-center justify-center" style={{ backgroundColor: p.aanbevolen ? "rgba(255,255,255,0.12)" : "rgba(0,19,55,0.06)", color: p.tekstKleur }}>
                       {p.icon}
                     </div>
                   </div>
@@ -154,7 +154,7 @@ export default function AfleverpakkettenPage() {
                 "Ruiten behandeld voor optimaal zicht",
                 "Banden en velgen in topstaat",
               ].map((punt) => (
-                <div key={punt} className="flex items-center gap-3 p-4 rounded-xl" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
+                <div key={punt} className="flex items-center gap-3 p-4 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.07)" }}>
                   <CheckCircle size={15} style={{ color: "#001337", flexShrink: 0 }} />
                   <span className="text-sm" style={{ color: "rgba(0,19,55,0.7)", fontFamily: "var(--font-inter)" }}>{punt}</span>
                 </div>
@@ -173,7 +173,7 @@ export default function AfleverpakkettenPage() {
             <p className="text-sm text-white/45 mb-8" style={{ fontFamily: "var(--font-inter)" }}>
               Neem contact op en wij adviseren u welk pakket het beste bij uw auto en wensen past.
             </p>
-            <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
+            <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
               Neem contact op
               <ArrowRight size={14} />
             </Link>

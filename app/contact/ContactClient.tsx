@@ -109,7 +109,7 @@ export default function ContactClient() {
             </ul>
 
             {/* Consignatie CTA */}
-            <div className="p-5 rounded-xl" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.03)" }}>
+            <div className="p-5 rounded-none" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.03)" }}>
               <p className="text-sm font-semibold mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>
                 Auto verkopen?
               </p>
@@ -140,7 +140,7 @@ export default function ContactClient() {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute inset-0 rounded-full"
+                    className="absolute inset-0 rounded-none"
                     style={{ backgroundColor: "#001337" }}
                   />
                   {/* Auto rijdt in van links */}
@@ -179,7 +179,7 @@ export default function ContactClient() {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.4, delay: 1.0, type: "spring", stiffness: 300 }}
-                    className="absolute top-1 right-1 w-7 h-7 rounded-full flex items-center justify-center"
+                    className="absolute top-1 right-1 w-7 h-7 rounded-none flex items-center justify-center"
                     style={{ backgroundColor: "#ffffff", zIndex: 20 }}
                   >
                     <CheckCircle size={18} color="#001337" />
@@ -231,7 +231,7 @@ export default function ContactClient() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 px-8 py-3.5 rounded-lg text-sm font-semibold tracking-wide transition-all hover:opacity-90"
+                    className="flex items-center gap-2 px-8 py-3.5 rounded-none text-sm font-semibold tracking-wide transition-all hover:opacity-90"
                     style={{
                       backgroundColor: "#001337",
                       color: "#ffffff",
