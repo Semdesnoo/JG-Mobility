@@ -162,7 +162,7 @@ export default function Header() {
                 </button>
                 {merkenOpen && (
                   <div
-                    className="absolute top-full left-0 w-56 py-1 z-50"
+                    className="absolute top-full left-0 w-64 py-1 z-50"
                     style={{
                       backgroundColor: "#001337",
                       border: "1px solid rgba(255,255,255,0.1)",
@@ -173,7 +173,7 @@ export default function Header() {
                       <Link
                         key={d.href}
                         href={d.href}
-                        className="block px-5 py-2.5 text-xs text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                        className="block px-5 py-3.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                         style={{ fontFamily: "var(--font-inter)", borderBottom: idx < diensten.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}
                         onClick={() => setMerkenOpen(false)}
                       >
