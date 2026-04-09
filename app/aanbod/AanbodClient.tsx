@@ -111,7 +111,7 @@ export default function AanbodClient() {
   return (
     <>
       {/* Hero */}
-      <div className="relative pt-44 pb-16 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
+      <div className="relative pt-52 pb-16 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
         <div
           className="absolute inset-0"
           style={{ background: "radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,255,255,0.06) 0%, transparent 70%)" }}

@@ -35,7 +35,7 @@ export default function AutoDetailPage() {
   return (
     <>
       {/* Broodkruimel */}
-      <div className="pt-44 pb-4 px-6" style={{ backgroundColor: "#001337" }}>
+      <div className="pt-52 pb-4 px-6" style={{ backgroundColor: "#001337" }}>
         <div className="max-w-7xl mx-auto flex items-center gap-2 text-xs" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
           <Link href="/aanbod" className="hover:text-white transition-colors flex items-center gap-1">
             <ArrowLeft size={12} /> Terug naar aanbod

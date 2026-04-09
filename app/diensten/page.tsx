@@ -48,7 +48,7 @@ export default function DienstenPage() {
   return (
     <>
       {/* Hero */}
-      <div className="relative pt-40 pb-20 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
+      <div className="relative pt-52 pb-20 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255,255,255,0.04) 0%, transparent 70%)" }} />
         <div className="relative max-w-7xl mx-auto">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
