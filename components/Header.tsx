@@ -7,13 +7,13 @@ import { Mail, Phone, Menu, X, ChevronDown } from "lucide-react";
 
 const diensten = [
   { label: "Inkoop & Taxatie", href: "/diensten/inkoop-taxatie" },
-  { label: "Consignatie", href: "/diensten/consignatie" },
   { label: "Financiering", href: "/diensten/financiering" },
   { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
 ];
 
 const navItems = [
   { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
+  { label: "CONSIGNATIE", href: "/consignatie" },
   { label: "AANBOD", href: "/aanbod" },
   { label: "ONS VERHAAL", href: "/over-ons" },
   { label: "CONTACT", href: "/contact" },
