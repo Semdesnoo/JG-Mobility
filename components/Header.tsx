@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Phone, Menu, X, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const diensten = [
   { label: "Inkoop & Taxatie", href: "/diensten/inkoop-taxatie" },
@@ -238,74 +239,125 @@ export default function Header() {
       </div>
 
       {/* ── MOBILE MENU ── */}
-      {menuOpen && (
-        <div className="lg:hidden" style={{ backgroundColor: "#001337", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-          <div className="flex flex-col">
-            {navItems.map((item) => (
-              <div key={item.label}>
-                {item.hasDropdown ? (
-                  <>
-                    <button
-                      onClick={() => setMerkenOpen(!merkenOpen)}
-                      className="w-full flex items-center justify-between px-6 py-5 font-semibold tracking-[0.12em] text-left active:bg-white/5"
-                      style={{
-                        fontFamily: "var(--font-inter)",
-                        fontSize: "16px",
-                        color: "#ffffff",
-                        borderBottom: "1px solid rgba(255,255,255,0.06)",
-                        minHeight: "60px",
-                      }}
-                    >
-                      {item.label}
-                      <ChevronDown size={16} className={`transition-transform duration-200 flex-shrink-0 ${merkenOpen ? "rotate-180" : ""}`} />
-                    </button>
-                    {merkenOpen && (
-                      <div style={{ backgroundColor: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                        {diensten.map((d) => (
-                          <a
-                            key={d.href}
-                            href={d.href}
-                            className="flex items-center px-8 py-4 text-sm"
-                            style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "56px", WebkitTapHighlightColor: "rgba(255,255,255,0.1)" }}
-                            onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}
-                          >
-                            {d.label}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <a
-                    href={item.href}
-                    className="flex items-center px-6 font-semibold tracking-[0.12em]"
-                    style={{
-                      fontFamily: "var(--font-inter)",
-                      fontSize: "16px",
-                      color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.85)",
-                      borderBottom: "1px solid rgba(255,255,255,0.06)",
-                      minHeight: "60px",
-                      WebkitTapHighlightColor: "rgba(255,255,255,0.1)",
-                    }}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                )}
-              </div>
-            ))}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              className="lg:hidden fixed inset-0 z-40"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setMenuOpen(false)}
+            />
 
-            {/* Socials onderaan */}
-            <div className="px-6 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              {socialIcons.map((s) => (
-                <a key={s.label} href="#" title={s.label} className="flex items-center justify-center w-10 h-10 hover:bg-white/10 transition-all" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
-                  {s.icon}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+            {/* Slide-in panel */}
+            <motion.div
+              className="lg:hidden fixed top-0 right-0 bottom-0 z-50 w-[80vw] max-w-sm flex flex-col"
+              style={{ backgroundColor: "#001337", borderLeft: "1px solid rgba(255,255,255,0.08)" }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Header van panel */}
+              <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <span className="text-xs tracking-widest uppercase font-semibold" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+                  Menu
+                </span>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="w-9 h-9 flex items-center justify-center"
+                  style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                >
+                  <X size={16} color="white" />
+                </button>
+              </div>
+
+              {/* Nav items */}
+              <div className="flex flex-col flex-1 overflow-y-auto">
+                {navItems.map((item, idx) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 + idx * 0.05 }}
+                  >
+                    {item.hasDropdown ? (
+                      <>
+                        <button
+                          onClick={() => setMerkenOpen(!merkenOpen)}
+                          className="w-full flex items-center justify-between px-6 font-semibold tracking-[0.12em] text-left"
+                          style={{
+                            fontFamily: "var(--font-inter)",
+                            fontSize: "16px",
+                            color: "#ffffff",
+                            borderBottom: "1px solid rgba(255,255,255,0.06)",
+                            minHeight: "60px",
+                          }}
+                        >
+                          {item.label}
+                          <ChevronDown size={16} className={`transition-transform duration-200 flex-shrink-0 ${merkenOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        <AnimatePresence>
+                          {merkenOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                              style={{ overflow: "hidden", backgroundColor: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                            >
+                              {diensten.map((d) => (
+                                <a
+                                  key={d.href}
+                                  href={d.href}
+                                  className="flex items-center px-8 py-4 text-sm"
+                                  style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "52px", WebkitTapHighlightColor: "rgba(255,255,255,0.1)" }}
+                                  onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}
+                                >
+                                  {d.label}
+                                </a>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <a
+                        href={item.href}
+                        className="flex items-center px-6 font-semibold tracking-[0.12em]"
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "16px",
+                          color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.85)",
+                          borderBottom: "1px solid rgba(255,255,255,0.06)",
+                          minHeight: "60px",
+                          WebkitTapHighlightColor: "rgba(255,255,255,0.1)",
+                        }}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {item.label}
+                      </a>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Socials onderaan */}
+              <div className="px-6 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                {socialIcons.map((s) => (
+                  <a key={s.label} href="#" title={s.label} className="flex items-center justify-center w-10 h-10 hover:bg-white/10 transition-all" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
