@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
@@ -17,6 +17,17 @@ export default function AutoDetailPage() {
   const id = parseInt(params.id as string);
   const auto = autos.find((a) => a.id === id);
   const [activeTab, setActiveTab] = useState("Kenmerken");
+  const tabSectionRef = useRef<HTMLElement>(null);
+
+  const switchTab = (tab: string) => {
+    setActiveTab(tab);
+    setTimeout(() => {
+      if (tabSectionRef.current) {
+        const y = tabSectionRef.current.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }, 0);
+  };
   const [interesse, setInteresse] = useState(false);
   const [fotoIndex, setFotoIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -248,7 +259,7 @@ export default function AutoDetailPage() {
           {tabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => switchTab(tab)}
               className="flex items-center gap-1.5 px-6 py-4 text-sm font-semibold tracking-wide transition-all relative"
               style={{
                 fontFamily: "var(--font-inter)",
@@ -266,7 +277,7 @@ export default function AutoDetailPage() {
       </div>
 
       {/* Tab inhoud */}
-      <section className="py-12 px-6" style={{ backgroundColor: "#ffffff" }}>
+      <section ref={tabSectionRef} className="py-12 px-6" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-7xl mx-auto">
 
           {/* ── KENMERKEN ── */}
