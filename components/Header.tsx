@@ -262,34 +262,35 @@ export default function Header() {
                     {merkenOpen && (
                       <div style={{ backgroundColor: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                         {diensten.map((d) => (
-                          <Link
+                          <a
                             key={d.href}
                             href={d.href}
-                            className="flex items-center px-8 py-4 text-sm active:bg-white/10"
-                            style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "52px" }}
+                            className="flex items-center px-8 py-4 text-sm"
+                            style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "56px", WebkitTapHighlightColor: "rgba(255,255,255,0.1)" }}
                             onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}
                           >
                             {d.label}
-                          </Link>
+                          </a>
                         ))}
                       </div>
                     )}
                   </>
                 ) : (
-                  <Link
+                  <a
                     href={item.href}
-                    className="flex items-center px-6 font-semibold tracking-[0.12em] active:bg-white/5 transition-colors"
+                    className="flex items-center px-6 font-semibold tracking-[0.12em]"
                     style={{
                       fontFamily: "var(--font-inter)",
                       fontSize: "16px",
                       color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.85)",
                       borderBottom: "1px solid rgba(255,255,255,0.06)",
                       minHeight: "60px",
+                      WebkitTapHighlightColor: "rgba(255,255,255,0.1)",
                     }}
                     onClick={() => setMenuOpen(false)}
                   >
                     {item.label}
-                  </Link>
+                  </a>
                 )}
               </div>
             ))}
