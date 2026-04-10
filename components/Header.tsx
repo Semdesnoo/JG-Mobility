@@ -65,6 +65,7 @@ function IconBtn({ href, title, children }: { href: string; title: string; child
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [merkenOpen, setMerkenOpen] = useState(false);
+  const [mobileDienstenOpen, setMobileDienstenOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -88,6 +89,7 @@ export default function Header() {
   useEffect(() => {
     setMenuOpen(false);
     setMerkenOpen(false);
+    setMobileDienstenOpen(false);
   }, [pathname]);
 
   return (
@@ -288,7 +290,7 @@ export default function Header() {
                     {item.hasDropdown ? (
                       <>
                         <button
-                          onClick={() => setMerkenOpen(!merkenOpen)}
+                          onClick={() => setMobileDienstenOpen(!mobileDienstenOpen)}
                           className="w-full flex items-center justify-between px-6 font-semibold tracking-[0.12em] text-left"
                           style={{
                             fontFamily: "var(--font-inter)",
@@ -299,10 +301,10 @@ export default function Header() {
                           }}
                         >
                           {item.label}
-                          <ChevronDown size={16} className={`transition-transform duration-200 flex-shrink-0 ${merkenOpen ? "rotate-180" : ""}`} />
+                          <ChevronDown size={16} className={`transition-transform duration-200 flex-shrink-0 ${mobileDienstenOpen ? "rotate-180" : ""}`} />
                         </button>
                         <AnimatePresence>
-                          {merkenOpen && (
+                          {mobileDienstenOpen && (
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: "auto", opacity: 1 }}
@@ -316,7 +318,7 @@ export default function Header() {
                                   href={d.href}
                                   className="flex items-center px-8 py-4 text-sm"
                                   style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "52px", WebkitTapHighlightColor: "rgba(255,255,255,0.1)" }}
-                                  onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}
+                                  onClick={() => { setMenuOpen(false); setMobileDienstenOpen(false); }}
                                 >
                                   {d.label}
                                 </a>
