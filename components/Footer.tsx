@@ -133,6 +133,56 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Kaart */}
+        <a
+          href="https://www.google.com/maps/place/JD+Automotive/@51.8598507,4.5113226,17z/data=!3m1!4b1!4m6!3m5!1s0x47c433eb642769f3:0xfa7987adb9abfa6e!8m2!3d51.8598474!4d4.5138975!16s%2Fg%2F11ywjsm022?entry=ttu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block mb-10 md:mb-16 relative overflow-hidden group"
+          style={{ borderRadius: 0, height: "220px", border: "1px solid rgba(255,255,255,0.08)" }}
+        >
+          {/* Wereldkaart SVG achtergrond in website-blauw */}
+          <div className="absolute inset-0" style={{
+            backgroundColor: "#001a45",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cpath fill='%23002060' d='M140 120 Q160 90 200 100 Q240 80 260 110 Q300 90 320 120 Q340 100 370 110 Q390 90 410 100 L420 140 Q400 160 380 150 Q360 170 340 155 Q310 175 290 160 Q260 180 230 165 Q200 185 170 170 Q150 160 140 140 Z M450 80 Q480 60 510 70 Q540 55 570 65 Q600 50 630 65 Q660 50 690 60 L700 95 Q670 115 640 100 Q610 120 580 105 Q550 125 520 110 Q490 130 460 115 Z M720 90 Q750 70 780 80 Q810 65 840 75 Q860 60 880 70 L890 100 Q870 120 845 108 Q820 125 795 112 Q768 130 742 117 Z M100 200 Q130 180 160 190 Q190 170 220 185 Q250 165 280 180 L290 215 Q260 235 230 220 Q200 240 170 225 Q140 245 110 230 Z M320 195 Q360 175 400 185 Q440 165 470 180 Q500 160 530 175 L535 210 Q505 230 475 215 Q445 235 415 220 Q382 240 352 225 Z M560 185 Q600 165 640 175 Q680 155 710 170 Q740 150 770 165 L775 200 Q745 220 715 205 Q685 225 655 210 Q622 230 592 215 Z M800 175 Q840 155 870 165 Q900 145 930 160 L935 195 Q905 215 875 200 Q845 220 815 205 Z M50 280 Q90 260 130 270 Q170 250 210 265 Q250 245 280 260 L285 295 Q255 315 225 300 Q195 320 165 305 Q135 325 105 310 Q75 330 52 315 Z M310 270 Q350 250 390 260 Q430 240 460 255 Q490 235 520 250 L525 285 Q495 305 465 290 Q435 310 405 295 Q372 315 342 300 Z M550 260 Q590 240 620 250 Q650 230 680 245 Q710 225 740 240 L745 275 Q715 295 685 280 Q655 300 625 285 Q595 305 565 290 Z M775 250 Q815 230 845 240 Q875 220 905 235 L910 268 Q880 288 850 273 Q820 293 792 278 Z'/%3E%3C/svg%3E")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }} />
+          {/* Subtiele blauwe gradient overlay */}
+          <div className="absolute inset-0" style={{
+            background: "radial-gradient(ellipse at center, rgba(0,32,96,0.4) 0%, rgba(0,19,55,0.7) 100%)",
+          }} />
+          {/* Hover overlay */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{
+            background: "radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, transparent 70%)",
+          }} />
+
+          {/* Pin + tekst */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="flex flex-col items-center gap-3 px-10 py-6 text-center"
+              style={{
+                backgroundColor: "rgba(0,10,30,0.75)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <div>
+                <p className="text-sm font-bold text-white mb-1" style={{ fontFamily: "var(--font-playfair)" }}>
+                  Barendrecht, Zuid-Holland
+                </p>
+                <p className="text-xs group-hover:text-white/70 transition-colors" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+                  Klik om te openen in Google Maps →
+                </p>
+              </div>
+            </div>
+          </div>
+        </a>
+
         {/* Bottom */}
         <div
           className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs"
