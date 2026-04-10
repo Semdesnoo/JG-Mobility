@@ -24,7 +24,7 @@ function getTimeSlots(date: Date): string[] {
   const day = date.getDay();
   if (day === 0) return [];
   const slots: string[] = [];
-  const endHour = day === 6 ? 12 : 16;
+  const endHour = day === 6 ? 17 : 20;
   for (let h = 9; h <= endHour; h++) {
     slots.push(`${String(h).padStart(2, "0")}:00`);
     if (!(h === endHour && day === 6)) {
