@@ -285,7 +285,7 @@ export default function HomePage() {
         </video>
 
         {/* Tekst overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-10">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-10 md:pt-32">
           <div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -294,7 +294,7 @@ export default function HomePage() {
               style={{
                 fontFamily: "var(--font-playfair)",
                 color: "#ffffff",
-                fontSize: "clamp(22px, 4vw, 52px)",
+                fontSize: "clamp(32px, 4vw, 52px)",
                 fontWeight: 700,
                 lineHeight: 1.1,
                 letterSpacing: "-0.02em",
@@ -310,7 +310,7 @@ export default function HomePage() {
               style={{
                 fontFamily: "var(--font-playfair)",
                 color: "#ffffff",
-                fontSize: "clamp(22px, 4vw, 52px)",
+                fontSize: "clamp(32px, 4vw, 52px)",
                 fontWeight: 700,
                 lineHeight: 1.1,
                 letterSpacing: "-0.02em",
