@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, Phone, MapPin, Send, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import AppointmentScheduler from "@/components/AppointmentScheduler";
 
 const inputStyle = {
   width: "100%",
@@ -64,6 +65,65 @@ export default function ContactClient() {
             className="text-3xl sm:text-5xl md:text-6xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
             Contact
           </motion.h1>
+        </div>
+      </div>
+
+      {/* Appointment Scheduler */}
+      <section className="py-20 px-6" style={{ backgroundColor: "#f5f5f5" }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-10">
+            <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+              Kom langs
+            </p>
+            <h2 className="text-4xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+              Plan een afspraak
+            </h2>
+            <p className="text-sm text-gray-500 mt-3 max-w-lg leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
+              Kies een datum en tijdstip dat u uitkomt. Vul uw e-mailadres in en wij bevestigen de afspraak zo snel mogelijk.
+            </p>
+          </div>
+          <AppointmentScheduler />
+        </div>
+      </section>
+
+      {/* Ticker */}
+      <div className="overflow-hidden py-4" style={{ backgroundColor: "#001337" }}>
+        <style>{`
+          @keyframes ticker {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .ticker-track {
+            display: flex;
+            width: max-content;
+            animation: ticker 28s linear infinite;
+          }
+        `}</style>
+        <div className="ticker-track">
+          {[0, 1].map((copy) => (
+            <div key={copy} className="flex items-center gap-0">
+              {[
+                "Kom gerust langs",
+                "Persoonlijk advies van Jimi",
+                "Geen verborgen kosten",
+                "Volledig ontzorgd van A tot Z",
+                "Eerlijke taxatie — altijd",
+                "Premium voertuigen, zorgvuldig geselecteerd",
+                "Barendrecht, Zuid-Holland",
+                "Direct contact, geen tussenpersoon",
+              ].map((tekst) => (
+                <span key={tekst} className="flex items-center gap-6 px-6">
+                  <span
+                    className="text-xs font-semibold tracking-widest uppercase whitespace-nowrap"
+                    style={{ color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-inter)" }}
+                  >
+                    {tekst}
+                  </span>
+                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "6px" }}>◆</span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 

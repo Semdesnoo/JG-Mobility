@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Handshake, Star, CheckCircle } from "lucide-react";
+import { ArrowRight, Handshake, Search, CreditCard, Package } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { autos as alleAutos } from "@/lib/autos";
 
@@ -13,30 +13,34 @@ const diensten = [
   {
     title: "Consignatie",
     desc: "Wij verkopen jouw auto voor jou. Professionele presentatie, volledige ontzorging — zonder dat jij er iets voor hoeft te doen.",
-    href: "/consignatie",
+    href: "/diensten/consignatie",
     bg: "radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.12) 0%, transparent 60%), linear-gradient(135deg, #001337 0%, #002060 100%)",
-    icon: <Handshake size={22} />,
+    icon: <Handshake size={24} />,
+    sub: "Auto verkopen via consignatie",
   },
   {
-    title: "Inkoop",
+    title: "Inkoop & Taxatie",
     desc: "Directe, eerlijke taxatie. Jouw auto snel en zonder gedoe van de hand voor een eerlijke prijs.",
-    href: "/contact",
+    href: "/diensten/inkoop-taxatie",
     bg: "radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.10) 0%, transparent 60%), linear-gradient(135deg, #001a45 0%, #001337 100%)",
-    icon: <ArrowRight size={22} />,
+    icon: <Search size={24} />,
+    sub: "Eerlijke waardebepaling",
   },
   {
-    title: "Verkoop",
-    desc: "Zorgvuldig geselecteerde premium voertuigen, volledig gecontroleerd en rijklaar afgeleverd.",
-    href: "/aanbod",
+    title: "Financiering",
+    desc: "Flexibele financieringsoplossingen voor uw droomauto. Wij regelen het van A tot Z.",
+    href: "/diensten/financiering",
     bg: "radial-gradient(ellipse at 50% 80%, rgba(255,255,255,0.08) 0%, transparent 60%), linear-gradient(135deg, #002060 0%, #001337 100%)",
-    icon: <Star size={22} />,
+    icon: <CreditCard size={24} />,
+    sub: "Maandelijkse betaling mogelijk",
   },
   {
-    title: "Advies",
-    desc: "Persoonlijk advies van Jimi. Geen scripts, geen druk — gewoon eerlijk en deskundig.",
-    href: "/contact",
+    title: "Afleverpakketten",
+    desc: "Complete aflevering met garantie, inspectie en service — zodat u zorgeloos de weg op gaat.",
+    href: "/diensten/afleverpakketten",
     bg: "radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.09) 0%, transparent 60%), linear-gradient(135deg, #001337 0%, #001a45 100%)",
-    icon: <CheckCircle size={22} />,
+    icon: <Package size={24} />,
+    sub: "Garantie & rijklaar",
   },
 ];
 
@@ -78,22 +82,27 @@ function DienstenSection() {
                 }}
               />
 
-              {/* Staande tekst als niet actief */}
+              {/* Collapsed state */}
               <motion.div
-                className="absolute inset-0 flex items-end justify-start p-8"
+                className="absolute inset-0 flex flex-col justify-between p-6"
                 animate={{ opacity: actief === i ? 0 : 1 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.2 }}
               >
-                <div>
-                  <div className="mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>{dienst.icon}</div>
+                {/* Icon bovenin */}
+                <div className="w-10 h-10 flex items-center justify-center rounded-none" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)" }}>
+                  {dienst.icon}
+                </div>
+                {/* Verticale titel onderaan */}
+                <div className="flex items-end gap-3">
                   <p
-                    className="text-base font-bold text-white"
+                    className="text-sm font-bold text-white"
                     style={{
                       fontFamily: "var(--font-playfair)",
                       writingMode: "vertical-rl",
                       textOrientation: "mixed",
                       transform: "rotate(180deg)",
                       whiteSpace: "nowrap",
+                      letterSpacing: "0.08em",
                     }}
                   >
                     {dienst.title}
@@ -101,36 +110,37 @@ function DienstenSection() {
                 </div>
               </motion.div>
 
-              {/* Uitgevouwen inhoud */}
+              {/* Expanded state */}
               <motion.div
-                className="absolute inset-0 flex flex-col justify-end p-10"
-                animate={{ opacity: actief === i ? 1 : 0, y: actief === i ? 0 : 20 }}
-                transition={{ duration: 0.35, delay: actief === i ? 0.15 : 0 }}
+                className="absolute inset-0 flex flex-col justify-end p-8"
+                animate={{ opacity: actief === i ? 1 : 0, y: actief === i ? 0 : 16 }}
+                transition={{ duration: 0.35, delay: actief === i ? 0.1 : 0 }}
               >
-                <div className="mb-3" style={{ color: "rgba(255,255,255,0.6)" }}>{dienst.icon}</div>
-                <h3 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair)" }}>
+                {/* Icon */}
+                <div className="w-12 h-12 flex items-center justify-center rounded-none mb-5" style={{ border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
+                  {dienst.icon}
+                </div>
+                {/* Sub label */}
+                <p className="text-[10px] tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+                  {dienst.sub}
+                </p>
+                <h3 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair)", lineHeight: 1.15 }}>
                   {dienst.title}
                 </h3>
-                <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-inter)", maxWidth: "280px" }}>
+                <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)", maxWidth: "260px" }}>
                   {dienst.desc}
                 </p>
+                {/* Knop */}
                 <Link
                   href={dienst.href}
-                  className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase group/link"
-                  style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                  className="inline-flex items-center gap-2 self-start px-5 py-2.5 text-xs font-semibold tracking-widest uppercase transition-all hover:gap-3"
+                  style={{ backgroundColor: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                 >
-                  Lees meer
-                  <ArrowRight size={12} className="group-hover/link:translate-x-1 transition-transform" />
+                  Meer info
+                  <ArrowRight size={11} />
                 </Link>
               </motion.div>
 
-              {/* Nummer */}
-              <div
-                className="absolute top-6 right-6 text-xs font-bold"
-                style={{ color: "rgba(255,255,255,0.15)", fontFamily: "var(--font-inter)" }}
-              >
-                0{i + 1}
-              </div>
             </motion.div>
           ))}
         </div>
@@ -251,15 +261,26 @@ export default function HomePage() {
     <>
       {/* ─── HERO ─── */}
       <section className="relative w-full overflow-hidden" style={{ height: "100vh" }}>
-        {/* Video achtergrond */}
+        {/* Video achtergrond — desktop */}
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover hidden md:block"
         >
-          <source src="/Hero.mp4" type="video/mp4" />
+          <source src="/Hero%20Laptop.mp4" type="video/mp4" />
+        </video>
+
+        {/* Video achtergrond — mobiel */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover block md:hidden"
+        >
+          <source src="/Hero%20Mobiel.mp4" type="video/mp4" />
         </video>
 
         {/* Tekst overlay */}
@@ -269,12 +290,13 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             style={{
-              fontFamily: "var(--font-inter)",
-              color: "rgba(255,255,255,0.75)",
-              fontSize: "clamp(14px, 2vw, 20px)",
-              fontWeight: 300,
-              letterSpacing: "0.08em",
-              marginBottom: "12px",
+              fontFamily: "var(--font-playfair)",
+              color: "#ffffff",
+              fontSize: "clamp(32px, 6vw, 72px)",
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: "-0.02em",
+              marginBottom: "4px",
             }}
           >
             Ontdek uw avontuur bij
@@ -286,7 +308,7 @@ export default function HomePage() {
             style={{
               fontFamily: "var(--font-playfair)",
               color: "#ffffff",
-              fontSize: "clamp(52px, 10vw, 120px)",
+              fontSize: "clamp(32px, 6vw, 72px)",
               fontWeight: 700,
               lineHeight: 1,
               letterSpacing: "-0.02em",
@@ -488,22 +510,15 @@ export default function HomePage() {
             <p className="text-white/50 text-sm leading-relaxed mb-10 max-w-xl mx-auto" style={{ fontFamily: "var(--font-inter)" }}>
               Stuur ons foto&apos;s en gegevens van jouw auto. Wij beoordelen hem en nemen contact op bij interesse. Geen verplichtingen.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Link
-                href="/contact"
+                href="/consignatie"
                 className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold tracking-wide transition-all hover:scale-105"
                 style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
               >
                 Auto aanbieden
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a
-                href="mailto:info@jgmobility.nl"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold tracking-wide transition-all hover:opacity-85"
-                style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
-              >
-                info@jgmobility.nl
-              </a>
             </div>
           </div>
         </AnimateOnScroll>

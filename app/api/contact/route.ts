@@ -8,8 +8,37 @@ export async function POST(req: NextRequest) {
   const contentType = req.headers.get("content-type") || "";
 
   if (contentType.includes("application/json")) {
-    // Contactformulier
     const body = await req.json();
+
+    // Afspraakformulier
+    if (body.type === "appointment") {
+      const { email, telefoon, datum, tijd } = body;
+      await resend.emails.send({
+        from: "JG Mobility Website <noreply@jgmobility.nl>",
+        to: TO_EMAIL,
+        replyTo: email,
+        subject: `Nieuwe afspraak: ${datum} om ${tijd}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #001337; padding: 24px; text-align: center;">
+              <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
+              <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe afspraakverzoek</p>
+            </div>
+            <div style="padding: 32px; background: #f8f8f8;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 8px 0; font-size: 13px; color: #666; width: 120px;">Datum:</td><td style="padding: 8px 0; font-size: 13px; color: #001337; font-weight: bold;">${datum}</td></tr>
+                <tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Tijd:</td><td style="padding: 8px 0; font-size: 13px; color: #001337; font-weight: bold;">${tijd}</td></tr>
+                <tr><td style="padding: 8px 0; font-size: 13px; color: #666;">E-mail:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;"><a href="mailto:${email}">${email}</a></td></tr>
+                ${telefoon ? `<tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Telefoon:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;">${telefoon}</td></tr>` : ""}
+              </table>
+            </div>
+          </div>
+        `,
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    // Contactformulier
     const { naam, email, telefoon, bericht } = body;
 
     await resend.emails.send({

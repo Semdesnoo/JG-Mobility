@@ -219,14 +219,14 @@ export default function AutoDetailPage() {
 
                 {/* CTA knoppen */}
                 <div className="flex flex-col gap-3">
-                  <a
-                    href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model}&body=Hallo, ik heb interesse in de ${auto.merk} ${auto.model} (${auto.bouwjaar}) voor €${auto.prijs.toLocaleString("nl-NL")}. Kunt u mij meer informatie geven?`}
+                  <Link
+                    href="/contact"
                     className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg"
                     style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
                   >
                     <Mail size={14} />
                     Interesse? Stuur een bericht
-                  </a>
+                  </Link>
                   <Link
                     href="/contact"
                     className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:bg-white/10"

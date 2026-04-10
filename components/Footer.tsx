@@ -64,6 +64,7 @@ export default function Footer() {
             </h4>
             <ul className="flex flex-col gap-3">
               {[
+                { label: "Diensten", href: "/diensten" },
                 { label: "Consignatie", href: "/consignatie" },
                 { label: "Aanbod", href: "/aanbod" },
                 { label: "Ons Verhaal", href: "/over-ons" },

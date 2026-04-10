@@ -99,8 +99,8 @@ export default function DienstenPage() {
                   </div>
 
                   {/* Pijl */}
-                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-none transition-all duration-300 group-hover:bg-[#001337] group-hover:text-white" style={{ border: "1px solid rgba(0,19,55,0.15)", color: "rgba(0,19,55,0.4)" }}>
-                    <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                  <div className="hidden md:flex items-center justify-center w-10 h-10 rounded-none transition-all duration-300 group-hover:bg-[#001337] group-hover:border-[#001337]" style={{ border: "1px solid rgba(0,19,55,0.15)", color: "rgba(0,19,55,0.4)" }}>
+                    <ArrowRight size={16} className="transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-white" />
                   </div>
                 </div>
               </Link>

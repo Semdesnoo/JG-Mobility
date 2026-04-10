@@ -93,8 +93,7 @@ export default function Header() {
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? "rgba(0,13,36,0.98)" : "#001337",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
+        backgroundColor: "#001337",
         boxShadow: scrolled ? "0 2px 30px rgba(0,0,0,0.5)" : "none",
       }}
     >
@@ -156,11 +155,11 @@ export default function Header() {
               >
                 <button
                   onClick={() => setMerkenOpen(!merkenOpen)}
-                  className="flex items-center gap-2 px-6 py-5 font-semibold tracking-[0.18em] transition-all hover:bg-white/5"
+                  className="flex items-center gap-2 px-6 py-5 font-semibold tracking-[0.18em] transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px"
                   style={{
                     fontFamily: "var(--font-inter)",
                     fontSize: "13px",
-                    color: "rgba(255,255,255,0.85)",
+                    color: merkenOpen ? "#ffffff" : "rgba(255,255,255,0.85)",
                     backgroundColor: merkenOpen ? "rgba(255,255,255,0.05)" : "transparent",
                   }}
                 >
@@ -200,7 +199,7 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="relative flex items-center px-6 py-5 font-semibold tracking-[0.18em] transition-all hover:bg-white/5"
+              className="relative flex items-center px-6 py-5 font-semibold tracking-[0.18em] transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px hover:text-white"
               style={{
                 fontFamily: "var(--font-inter)",
                 fontSize: "13px",
