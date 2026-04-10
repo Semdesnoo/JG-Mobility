@@ -28,11 +28,11 @@ const sorteerOpties = [
 function FilterSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof"].includes(value);
   return (
-    <div className="relative">
+    <div className="relative w-full md:w-auto">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none pr-8 pl-4 py-2.5 rounded-none text-sm font-medium cursor-pointer transition-all"
+        className="appearance-none w-full pr-8 pl-4 py-2.5 rounded-none text-sm font-medium cursor-pointer transition-all"
         style={{
           backgroundColor: active ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
           border: active ? "1px solid rgba(255,255,255,0.5)" : "1px solid rgba(255,255,255,0.12)",
@@ -111,7 +111,7 @@ export default function AanbodClient() {
   return (
     <>
       {/* Hero */}
-      <div className="relative pt-52 pb-16 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
+      <div className="relative pt-28 md:pt-52 pb-16 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
         <div
           className="absolute inset-0"
           style={{ background: "radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,255,255,0.06) 0%, transparent 70%)" }}
@@ -147,9 +147,9 @@ export default function AanbodClient() {
         </div>
       </div>
 
-      {/* Filter balk */}
+      {/* Filter balk — sticky alleen desktop */}
       <div
-        className="sticky top-[73px] z-40 px-6 py-4"
+        className="md:sticky top-[73px] z-40 px-4 md:px-6 py-4"
         style={{
           backgroundColor: "rgba(0,19,55,0.97)",
           backdropFilter: "blur(12px)",
@@ -157,8 +157,7 @@ export default function AanbodClient() {
         }}
       >
         <div className="max-w-7xl mx-auto">
-          {/* Rij 1: hoofdfilters */}
-          <div className="flex flex-wrap items-center gap-2 mb-2">
+          <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:gap-2">
             <FilterSelect value={filterMerk} onChange={(v) => { setFilterMerk(v); setFilterModel("Alle modellen"); }}>
               {merken.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
             </FilterSelect>
@@ -180,15 +179,15 @@ export default function AanbodClient() {
             {hasFilters && (
               <button
                 onClick={resetFilters}
-                className="flex items-center gap-1 px-3 py-2.5 rounded-none text-xs transition-all hover:bg-red-500/20 ml-1"
+                className="col-span-2 md:col-span-1 flex items-center justify-center gap-1 px-3 py-2.5 text-xs transition-all hover:bg-red-500/20 md:ml-1"
                 style={{ color: "#ff8080", border: "1px solid rgba(255,128,128,0.25)", fontFamily: "var(--font-inter)" }}
               >
-                <X size={12} /> Reset
+                <X size={12} /> Reset filters
               </button>
             )}
-            <div className="ml-auto text-xs" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-inter)" }}>
-              {gefilterd.length} van {autos.length} voertuigen
-            </div>
+          </div>
+          <div className="mt-2 text-xs text-center md:text-left" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-inter)" }}>
+            {gefilterd.length} van {autos.length} voertuigen
           </div>
         </div>
       </div>

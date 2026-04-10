@@ -79,7 +79,7 @@ export default function ConsignatiePage() {
     <div style={{ backgroundColor: "#ffffff" }}>
 
       {/* ── HERO ── */}
-      <div className="pt-52 pb-20 px-6" style={{ backgroundColor: "#001337" }}>
+      <div className="pt-28 md:pt-52 pb-20 px-6" style={{ backgroundColor: "#001337" }}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}

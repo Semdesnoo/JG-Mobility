@@ -23,7 +23,7 @@ export default function InkoopTaxatiePage() {
   return (
     <>
       {/* Hero */}
-      <div className="relative pt-52 pb-20 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
+      <div className="relative pt-28 md:pt-52 pb-20 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 80% at 20% 60%, rgba(255,255,255,0.04) 0%, transparent 70%)" }} />
         <div className="relative max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

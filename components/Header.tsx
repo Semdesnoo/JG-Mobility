@@ -218,7 +218,7 @@ export default function Header() {
 
       {/* ── MOBILE HEADER ── */}
       <div className="lg:hidden flex items-center justify-between px-5 py-3">
-        <Link href="/" className="flex items-center">
+        <Link href="/" scroll={true} className="flex items-center" onClick={() => { setMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/JG Mobility Transparant.png"
@@ -247,25 +247,26 @@ export default function Header() {
                   <>
                     <button
                       onClick={() => setMerkenOpen(!merkenOpen)}
-                      className="w-full flex items-center justify-between px-6 py-5 font-semibold tracking-[0.14em] text-left"
+                      className="w-full flex items-center justify-between px-6 py-5 font-semibold tracking-[0.12em] text-left active:bg-white/5"
                       style={{
                         fontFamily: "var(--font-inter)",
-                        fontSize: "15px",
-                        color: "rgba(255,255,255,0.85)",
+                        fontSize: "16px",
+                        color: "#ffffff",
                         borderBottom: "1px solid rgba(255,255,255,0.06)",
+                        minHeight: "60px",
                       }}
                     >
                       {item.label}
-                      <ChevronDown size={14} className={`transition-transform ${merkenOpen ? "rotate-180" : ""}`} />
+                      <ChevronDown size={16} className={`transition-transform duration-200 flex-shrink-0 ${merkenOpen ? "rotate-180" : ""}`} />
                     </button>
                     {merkenOpen && (
-                      <div className="pl-6 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ backgroundColor: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                         {diensten.map((d) => (
                           <Link
                             key={d.href}
                             href={d.href}
-                            className="block py-3 text-sm text-white/60"
-                            style={{ fontFamily: "var(--font-inter)" }}
+                            className="flex items-center px-8 py-4 text-sm active:bg-white/10"
+                            style={{ fontFamily: "var(--font-inter)", color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,255,255,0.04)", minHeight: "52px" }}
                             onClick={() => { setMenuOpen(false); setMerkenOpen(false); }}
                           >
                             {d.label}
@@ -277,13 +278,15 @@ export default function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="block px-6 py-5 font-semibold tracking-[0.14em]"
+                    className="flex items-center px-6 font-semibold tracking-[0.12em] active:bg-white/5 transition-colors"
                     style={{
                       fontFamily: "var(--font-inter)",
-                      fontSize: "15px",
+                      fontSize: "16px",
                       color: pathname === item.href ? "#ffffff" : "rgba(255,255,255,0.85)",
                       borderBottom: "1px solid rgba(255,255,255,0.06)",
+                      minHeight: "60px",
                     }}
+                    onClick={() => setMenuOpen(false)}
                   >
                     {item.label}
                   </Link>
@@ -291,18 +294,13 @@ export default function Header() {
               </div>
             ))}
 
-            {/* Contact info + socials onderaan */}
-            <div className="px-6 py-5 flex items-center justify-between" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <a href="mailto:info@jgmobility.nl" className="flex items-center gap-2 text-xs text-white/40" style={{ fontFamily: "var(--font-inter)" }}>
-                <Mail size={13} /> info@jgmobility.nl
-              </a>
-              <div className="flex items-center gap-2">
-                {socialIcons.map((s) => (
-                  <a key={s.label} href="#" title={s.label} className="flex items-center justify-center w-9 h-9 hover:bg-white/10 transition-all" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
-                    {s.icon}
-                  </a>
-                ))}
-              </div>
+            {/* Socials onderaan */}
+            <div className="px-6 py-5 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+              {socialIcons.map((s) => (
+                <a key={s.label} href="#" title={s.label} className="flex items-center justify-center w-10 h-10 hover:bg-white/10 transition-all" style={{ border: "1px solid rgba(255,255,255,0.2)" }}>
+                  {s.icon}
+                </a>
+              ))}
             </div>
           </div>
         </div>

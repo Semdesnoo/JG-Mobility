@@ -62,7 +62,7 @@ function DienstenSection() {
 
       {/* Harmonica panelen */}
       <AnimateOnScroll>
-        <div className="flex h-[320px] md:h-[480px] overflow-hidden">
+        <div className="flex h-[280px] md:h-[480px] overflow-hidden">
           {diensten.map((dienst, i) => (
             <motion.div
               key={dienst.title}
@@ -71,6 +71,7 @@ function DienstenSection() {
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               onMouseEnter={() => setActief(i)}
               onMouseLeave={() => setActief(null)}
+              onTouchStart={() => setActief(actief === i ? null : i)}
               style={{ background: dienst.bg }}
             >
               {/* Subtiel grid overlay */}
@@ -84,18 +85,18 @@ function DienstenSection() {
 
               {/* Collapsed state */}
               <motion.div
-                className="absolute inset-0 flex flex-col justify-between p-6"
+                className="absolute inset-0 flex flex-col justify-between p-4 md:p-6"
                 animate={{ opacity: actief === i ? 0 : 1 }}
                 transition={{ duration: 0.2 }}
               >
                 {/* Icon bovenin */}
-                <div className="w-10 h-10 flex items-center justify-center rounded-none" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)" }}>
+                <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center" style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.6)" }}>
                   {dienst.icon}
                 </div>
                 {/* Verticale titel onderaan */}
-                <div className="flex items-end gap-3">
+                <div className="flex items-end">
                   <p
-                    className="text-sm font-bold text-white"
+                    className="text-xs md:text-sm font-bold text-white"
                     style={{
                       fontFamily: "var(--font-playfair)",
                       writingMode: "vertical-rl",
@@ -112,29 +113,29 @@ function DienstenSection() {
 
               {/* Expanded state */}
               <motion.div
-                className="absolute inset-0 flex flex-col justify-end p-8"
+                className="absolute inset-0 flex flex-col justify-end p-5 md:p-8"
                 animate={{ opacity: actief === i ? 1 : 0, y: actief === i ? 0 : 16 }}
                 transition={{ duration: 0.35, delay: actief === i ? 0.1 : 0 }}
               >
-                {/* Icon */}
-                <div className="w-12 h-12 flex items-center justify-center rounded-none mb-5" style={{ border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
+                {/* Icon — alleen desktop */}
+                <div className="hidden md:flex w-12 h-12 items-center justify-center mb-5" style={{ border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
                   {dienst.icon}
                 </div>
-                {/* Sub label */}
-                <p className="text-[10px] tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+                {/* Tekst — alleen desktop */}
+                <p className="hidden md:block text-[10px] tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
                   {dienst.sub}
                 </p>
-                <h3 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair)", lineHeight: 1.15 }}>
+                <h3 className="hidden md:block text-2xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair)", lineHeight: 1.15 }}>
                   {dienst.title}
                 </h3>
-                <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)", maxWidth: "260px" }}>
+                <p className="hidden md:block text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)", maxWidth: "260px" }}>
                   {dienst.desc}
                 </p>
-                {/* Knop */}
+                {/* Knop — altijd zichtbaar */}
                 <Link
                   href={dienst.href}
-                  className="inline-flex items-center gap-2 self-start px-5 py-2.5 text-xs font-semibold tracking-widest uppercase transition-all hover:gap-3"
-                  style={{ backgroundColor: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                  className="inline-flex items-center gap-2 self-start px-4 py-2 md:px-5 md:py-2.5 text-xs font-semibold tracking-widest uppercase transition-all hover:gap-3"
+                  style={{ backgroundColor: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                 >
                   Meer info
                   <ArrowRight size={11} />
@@ -284,7 +285,7 @@ export default function HomePage() {
         </video>
 
         {/* Tekst overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 pb-24">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
