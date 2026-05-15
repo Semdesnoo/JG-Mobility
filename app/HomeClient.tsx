@@ -421,8 +421,9 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {autos.map((auto, i) => (
               <AnimateOnScroll key={auto.id} delay={i * 0.15} direction="up">
-                <div
-                  className="group rounded-none overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                <Link
+                  href={`/aanbod/${auto.slug || auto.id}`}
+                  className="group rounded-none overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer block"
                   style={{ backgroundColor: "#ffffff" }}
                 >
                   {/* Foto */}
@@ -506,15 +507,14 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                       ))}
                     </div>
 
-                    <Link
-                      href={`/aanbod/${auto.slug || auto.id}`}
+                    <div
                       className="block w-full text-center py-3 rounded-none text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg"
                       style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
                     >
                       Bekijk dit voertuig
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </AnimateOnScroll>
             ))}
           </div>
