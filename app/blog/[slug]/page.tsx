@@ -8,6 +8,8 @@ import { fetchPexelsPhoto } from "@/lib/pexels";
 
 const siteUrl = "https://www.jgmobility.nl";
 
+export const revalidate = 86400;
+
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
 }
