@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight, Handshake, Search, CreditCard, Package } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
@@ -45,6 +46,7 @@ const diensten = [
 
 function DienstenSection() {
   const [actief, setActief] = useState<number | null>(null);
+  const router = useRouter();
 
   return (
     <section style={{ backgroundColor: "#ffffff" }}>
@@ -109,6 +111,7 @@ function DienstenSection() {
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               onMouseEnter={() => setActief(i)}
               onMouseLeave={() => setActief(null)}
+              onClick={() => router.push(dienst.href)}
               style={{ background: dienst.bg }}
             >
               {/* Collapsed state — icon + horizontale titel */}
