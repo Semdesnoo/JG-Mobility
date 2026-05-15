@@ -18,11 +18,12 @@ export async function generateMetadata(props: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await props.params;
-  let auto = await getAutoBySlug(id);
-  if (!auto) {
-    const numId = parseInt(id, 10);
-    if (!isNaN(numId)) auto = await getAutoById(numId);
-  }
+  const numId = parseInt(id, 10);
+  const [bySlug, byId] = await Promise.all([
+    getAutoBySlug(id),
+    !isNaN(numId) ? getAutoById(numId) : Promise.resolve(undefined),
+  ]);
+  const auto = bySlug ?? byId;
   if (!auto) return { title: "Voertuig niet gevonden" };
 
   const title = `${auto.merk} ${auto.model} — €${auto.prijs.toLocaleString("nl-NL")}`;
@@ -57,15 +58,17 @@ export async function generateMetadata(props: {
 export default async function AutoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // Probeer op slug, daarna op numeriek ID als fallback
-  let auto = await getAutoBySlug(id);
-  if (!auto) {
-    const numId = parseInt(id, 10);
-    if (!isNaN(numId)) auto = await getAutoById(numId);
-  }
+  // Fetch auto + full list in parallel (both are cached after first hit)
+  const numId = parseInt(id, 10);
+  const [autoBySlug, autoById, autos] = await Promise.all([
+    getAutoBySlug(id),
+    !isNaN(numId) ? getAutoById(numId) : Promise.resolve(undefined),
+    getAutos(),
+  ]);
+
+  const auto = autoBySlug ?? autoById;
   if (!auto) notFound();
 
-  const autos = await getAutos();
   const idx = autos.findIndex((a) => a.slug === id || String(a.id) === id);
   const vorigeAuto = autos[idx + 1];
   const volgendeAuto = autos[idx - 1];
