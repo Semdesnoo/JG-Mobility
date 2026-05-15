@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const DASHBOARD_URL = process.env.DASHBOARD_URL ?? "https://jg-mobility-dashboard.vercel.app";
+const DASHBOARD_URL = "https://jg-mobility-dashboard.vercel.app";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
