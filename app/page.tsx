@@ -126,7 +126,7 @@ function DienstenSection() {
                   {dienst.icon}
                 </div>
                 <p
-                  className="text-sm font-bold text-white leading-tight"
+                  className="text-xl font-bold text-white leading-tight"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
                   {dienst.title}
