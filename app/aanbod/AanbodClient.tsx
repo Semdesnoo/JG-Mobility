@@ -253,6 +253,8 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                         <img
                           src={auto.fotos[0]}
                           alt={`${auto.merk} ${auto.model}`}
+                          loading="lazy"
+                          decoding="async"
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (

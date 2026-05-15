@@ -71,6 +71,8 @@ export default function AutoDetailClient({
                   <img
                     src={auto.fotos![fotoIndex]}
                     alt={`${auto.merk} ${auto.model}`}
+                    fetchPriority="high"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
@@ -129,7 +131,7 @@ export default function AutoDetailClient({
                       style={{ border: fotoIndex === i ? "2px solid #ffffff" : "2px solid rgba(255,255,255,0.15)" }}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={foto} alt="" className="w-full h-full object-cover" />
+                      <img src={foto} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -161,6 +163,7 @@ export default function AutoDetailClient({
                   <img
                     src={auto.fotos![fotoIndex]}
                     alt=""
+                    decoding="async"
                     className="max-w-[90vw] max-h-[85vh] object-contain rounded-none"
                     onClick={(e) => e.stopPropagation()}
                   />

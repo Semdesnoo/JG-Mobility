@@ -42,6 +42,8 @@ export default async function BlogPage() {
                 <img
                   src={featuredPhoto.src.large}
                   alt={featuredPhoto.alt}
+                  fetchPriority="high"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
               ) : (
@@ -162,6 +164,8 @@ export default async function BlogPage() {
                         <img
                           src={photo.src.large}
                           alt={photo.alt}
+                          loading="lazy"
+                          decoding="async"
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         />
                       ) : (

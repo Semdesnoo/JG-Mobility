@@ -112,6 +112,8 @@ export default async function BlogPostPage(props: {
               <img
                 src={photo.src.large}
                 alt={photo.alt}
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,19,55,0.2) 0%, transparent 40%)" }} />

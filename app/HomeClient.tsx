@@ -289,12 +289,12 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
   const videoMobielRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    [videoDesktopRef, videoMobielRef].forEach((ref) => {
-      if (ref.current) {
-        ref.current.muted = true;
-        ref.current.play().catch(() => {});
-      }
-    });
+    // Only play the video that is actually visible — avoids loading both on mobile
+    const ref = window.innerWidth < 768 ? videoMobielRef : videoDesktopRef;
+    if (ref.current) {
+      ref.current.muted = true;
+      ref.current.play().catch(() => {});
+    }
   }, []);
 
   return (
@@ -436,6 +436,8 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                       <img
                         src={auto.fotos[0]}
                         alt={`${auto.merk} ${auto.model}`}
+                        loading="lazy"
+                        decoding="async"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
