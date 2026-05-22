@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const DASHBOARD_URL = "https://jg-mobility-dashboard.vercel.app";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Blokkeer alle admin-routes — stuur door naar het aparte dashboard
