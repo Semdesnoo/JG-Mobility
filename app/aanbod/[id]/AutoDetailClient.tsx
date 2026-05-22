@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, 
 import { type Auto } from "@/lib/autos";
 import { motion, AnimatePresence } from "framer-motion";
 
-const tabs = ["Kenmerken", "Opties", "Omschrijving", "Contact"];
+const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
 
 export default function AutoDetailClient({
   auto,
@@ -338,6 +338,62 @@ export default function AutoDetailClient({
                     {alinea}
                   </p>
                 ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "Financieren" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Financieren</h2>
+              <p className="text-sm text-gray-400 mb-8" style={{ fontFamily: "var(--font-inter)" }}>
+                In samenwerking met In Lease Auto&apos;s bieden wij vrijblijvende financierings- en leasevoorstellen aan.
+              </p>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl">
+                {/* Linker blok: auto + prijs info */}
+                <div className="p-6" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
+                  <p className="text-xs tracking-widest uppercase mb-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Aanschafprijs voertuig</p>
+                  <p className="text-3xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                    €{auto.prijs.toLocaleString("nl-NL")},-
+                  </p>
+
+                  <div className="flex flex-col gap-3">
+                    {[
+                      { label: "Uitslag binnen 24 uur" },
+                      { label: "Geen jaarlijfers nodig" },
+                      { label: "Geen kilometerbeperking" },
+                      { label: "Je wordt eigenaar van de auto" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: "#22c55e" }} />
+                        <span className="text-sm" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rechter blok: calculator placeholder */}
+                <div className="p-6 flex flex-col items-center justify-center text-center gap-4" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
+                  <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: "#001337" }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="21" x2="8" y2="3"/><line x1="16" y1="21" x2="16" y2="3"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold mb-1" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Lease calculator</p>
+                    <p className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>
+                      De interactieve calculator van In Lease Auto&apos;s wordt hier binnenkort geplaatst.
+                    </p>
+                  </div>
+                  <a
+                    href="tel:+31621331374"
+                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-all hover:opacity-80"
+                    style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                  >
+                    <Phone size={13} />
+                    Bel voor een voorstel
+                  </a>
+                </div>
               </div>
             </motion.div>
           )}
