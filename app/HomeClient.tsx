@@ -333,36 +333,22 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
         {/* Tekst overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-10 md:pt-32">
           <div>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              style={{
-                fontFamily: "var(--font-playfair)",
-                color: "#ffffff",
-                fontSize: "clamp(32px, 4vw, 52px)",
-                fontWeight: 700,
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-                marginBottom: "4px",
-              }}
-            >
-              Ontdek uw avontuur bij
-            </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               style={{
                 fontFamily: "var(--font-playfair)",
                 color: "#ffffff",
-                fontSize: "clamp(32px, 4vw, 52px)",
+                fontSize: "clamp(28px, 3.5vw, 48px)",
                 fontWeight: 700,
-                lineHeight: 1.1,
+                lineHeight: 1.15,
                 letterSpacing: "-0.02em",
+                textAlign: "center",
               }}
             >
-              JG Mobility
+              Autobedrijf Barendrecht<br />
+              <span style={{ fontSize: "clamp(32px, 4vw, 56px)" }}>JG Mobility</span>
             </motion.h1>
           </div>
 
@@ -435,13 +421,13 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                     style={{ backgroundColor: "#001337" }}
                   >
                     {auto.fotos && auto.fotos.length > 0 ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
+                      <Image
                         src={auto.fotos[0]}
                         alt={`${auto.merk} ${auto.model}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -538,6 +524,7 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                 src="/Showroom Jimi Gaillard.png"
                 alt="Showroom Jimi Gaillard"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>

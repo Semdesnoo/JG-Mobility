@@ -46,15 +46,40 @@ export default async function BlogPostPage(props: {
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: post.date,
-    image: photo?.src.large,
-    author: { "@type": "Organization", name: "JG Mobility" },
-    publisher: { "@type": "Organization", name: "JG Mobility", url: siteUrl },
-    url: `${siteUrl}/blog/${post.slug}`,
-    keywords: post.keywords.join(", "),
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${siteUrl}/blog/${post.slug}#article`,
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        dateModified: post.date,
+        image: photo?.src.large,
+        author: {
+          "@type": "Person",
+          "@id": `${siteUrl}/#jimi-gaillard`,
+          name: "Jimi Gaillard",
+          jobTitle: "Oprichter & Eigenaar",
+          url: `${siteUrl}/over-ons`,
+        },
+        publisher: {
+          "@id": `${siteUrl}/#organization`,
+        },
+        mainEntityOfPage: { "@id": `${siteUrl}/blog/${post.slug}` },
+        url: `${siteUrl}/blog/${post.slug}`,
+        keywords: post.keywords.join(", "),
+        inLanguage: "nl-NL",
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${siteUrl}/blog/${post.slug}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${siteUrl}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: `${siteUrl}/blog/${post.slug}` },
+        ],
+      },
+    ],
   };
 
   return (

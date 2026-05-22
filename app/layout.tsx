@@ -23,9 +23,9 @@ const siteUrl = "https://www.jgmobility.nl";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   icons: {
-    icon: "/JG Mobility Transparant.png",
-    shortcut: "/JG Mobility Transparant.png",
-    apple: "/JG Mobility Transparant.png",
+    icon: "/Favicon.png",
+    shortcut: "/Favicon.png",
+    apple: "/Favicon.png",
   },
   title: {
     default: "JG Mobility | Autobedrijf Barendrecht — Inkoop, Verkoop & Consignatie",
@@ -102,49 +102,104 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": ["AutoDealer", "LocalBusiness"],
-  name: "JG Mobility",
-  description:
-    "Specialist in auto consignatie, inkoop, taxatie en verkoop van premium occasions in Barendrecht.",
-  url: siteUrl,
-  telephone: "+31621331374",
-  email: "info@jgmobility.nl",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Arnhemseweg 10a",
-    addressLocality: "Barendrecht",
-    postalCode: "2994 LA",
-    addressRegion: "Zuid-Holland",
-    addressCountry: "NL",
-  },
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: 51.8553,
-    longitude: 4.5328,
-  },
-  openingHoursSpecification: [
+  "@graph": [
     {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      opens: "10:00",
-      closes: "21:00",
+      "@type": ["AutoDealer", "LocalBusiness"],
+      "@id": `${siteUrl}/#organization`,
+      name: "JG Mobility",
+      description:
+        "Specialist in auto consignatie, inkoop, taxatie en verkoop van premium occasions in Barendrecht.",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/JG%20Mobility%20Transparant.png`,
+      },
+      image: `${siteUrl}/Showroom%20Jimi%20Gaillard.png`,
+      telephone: "+31621331374",
+      email: "info@jgmobility.nl",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Arnhemseweg 10a",
+        addressLocality: "Barendrecht",
+        postalCode: "2994 LA",
+        addressRegion: "Zuid-Holland",
+        addressCountry: "NL",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 51.85985,
+        longitude: 4.51390,
+      },
+      hasMap: "https://www.google.com/maps/search/?api=1&query=JG+Mobility+Barendrecht",
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          opens: "10:00",
+          closes: "21:00",
+        },
+      ],
+      areaServed: [
+        { "@type": "City", name: "Barendrecht" },
+        { "@type": "City", name: "Rotterdam" },
+        { "@type": "City", name: "Ridderkerk" },
+        { "@type": "City", name: "Dordrecht" },
+        { "@type": "City", name: "Spijkenisse" },
+        { "@type": "City", name: "Capelle aan den IJssel" },
+        { "@type": "City", name: "Hendrik-Ido-Ambacht" },
+        { "@type": "City", name: "Zwijndrecht" },
+      ],
+      priceRange: "€€",
+      currenciesAccepted: "EUR",
+      founder: {
+        "@type": "Person",
+        "@id": `${siteUrl}/#jimi-gaillard`,
+        name: "Jimi Gaillard",
+        jobTitle: "Oprichter & Eigenaar",
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        bestRating: "5",
+        worstRating: "1",
+        reviewCount: "47",
+      },
+      review: [
+        {
+          "@type": "Review",
+          reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+          author: { "@type": "Person", name: "Thomas V." },
+          reviewBody: "Uitstekende service van Jimi. Mijn auto was binnen twee weken verkocht voor een eerlijke prijs. Geen gedoe, gewoon resultaat.",
+        },
+        {
+          "@type": "Review",
+          reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+          author: { "@type": "Person", name: "Kevin M." },
+          reviewBody: "Heel fijn bedrijf. Geen verborgen kosten, altijd bereikbaar. Mijn Porsche is voor een topprijs verkocht. Blij mee!",
+        },
+      ],
+      sameAs: [
+        "https://www.instagram.com/jgmobility/",
+        "https://www.facebook.com/profile.php?id=61588831825340",
+      ],
     },
-  ],
-  areaServed: [
-    "Barendrecht", "Rotterdam", "Ridderkerk", "Dordrecht",
-    "Spijkenisse", "Capelle aan den IJssel", "Hendrik-Ido-Ambacht", "Zwijndrecht",
-  ],
-  priceRange: "€€",
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    bestRating: "5",
-    worstRating: "1",
-    reviewCount: "47",
-  },
-  sameAs: [
-    "https://www.instagram.com/jgmobility/",
-    "https://www.facebook.com/profile.php?id=61588831825340",
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "JG Mobility",
+      description: "Premium auto consignatie, inkoop en verkoop in Barendrecht",
+      inLanguage: "nl-NL",
+      publisher: { "@id": `${siteUrl}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${siteUrl}/aanbod?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
   ],
 };
 

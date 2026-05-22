@@ -142,8 +142,8 @@ export default function ContactClient() {
                   <MapPin size={14} color="#001337" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>Barendrecht</p>
-                  <p className="text-xs mt-0.5 text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>Zuid-Holland</p>
+                  <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>Arnhemseweg 10a</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>2994 LA Barendrecht, Zuid-Holland</p>
                 </div>
               </li>
               <li className="flex items-start gap-4">

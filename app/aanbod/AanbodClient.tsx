@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Gauge, Calendar, Fuel, Zap, ArrowRight, ChevronDown, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
@@ -249,13 +250,13 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                     {/* Foto */}
                     <div className="relative h-56 overflow-hidden" style={{ backgroundColor: "#001337" }}>
                       {auto.fotos && auto.fotos.length > 0 ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
+                        <Image
                           src={auto.fotos[0]}
                           alt={`${auto.merk} ${auto.model}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                           loading="lazy"
-                          decoding="async"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">

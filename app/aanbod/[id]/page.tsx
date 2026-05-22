@@ -73,37 +73,49 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
   const vorigeAuto = autos[idx + 1];
   const volgendeAuto = autos[idx - 1];
 
+  const autoUrl = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
   const carSchema = {
     "@context": "https://schema.org",
-    "@type": "Car",
-    name: `${auto.merk} ${auto.model}`,
-    description: auto.omschrijving,
-    brand: { "@type": "Brand", name: auto.merk },
-    model: auto.model,
-    vehicleModelDate: String(auto.bouwjaar),
-    mileageFromOdometer: {
-      "@type": "QuantitativeValue",
-      value: auto.km,
-      unitCode: "KMT",
-    },
-    fuelType: auto.brandstof,
-    vehicleTransmission: auto.transmissie,
-    color: auto.kleurExterieur || auto.kleur,
-    offers: {
-      "@type": "Offer",
-      price: auto.prijs,
-      priceCurrency: "EUR",
-      availability: auto.verkocht
-        ? "https://schema.org/SoldOut"
-        : "https://schema.org/InStock",
-      seller: {
-        "@type": "AutoDealer",
-        name: "JG Mobility",
-        url: siteUrl,
+    "@graph": [
+      {
+        "@type": "Car",
+        "@id": `${autoUrl}#vehicle`,
+        name: `${auto.merk} ${auto.model}`,
+        description: auto.omschrijving,
+        brand: { "@type": "Brand", name: auto.merk },
+        model: auto.model,
+        vehicleModelDate: String(auto.bouwjaar),
+        itemCondition: "https://schema.org/UsedCondition",
+        mileageFromOdometer: {
+          "@type": "QuantitativeValue",
+          value: auto.km,
+          unitCode: "KMT",
+        },
+        fuelType: auto.brandstof,
+        vehicleTransmission: auto.transmissie,
+        color: auto.kleurExterieur || auto.kleur,
+        offers: {
+          "@type": "Offer",
+          price: auto.prijs,
+          priceCurrency: "EUR",
+          availability: auto.verkocht
+            ? "https://schema.org/SoldOut"
+            : "https://schema.org/InStock",
+          seller: { "@id": `${siteUrl}/#organization` },
+          url: autoUrl,
+        },
+        image: auto.fotos?.map((f) => `${siteUrl}${f}`) ?? [],
       },
-      url: `${siteUrl}/aanbod/${auto.slug || auto.id}`,
-    },
-    image: auto.fotos?.map((f) => `${siteUrl}${f}`) ?? [],
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${autoUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "Aanbod", item: `${siteUrl}/aanbod` },
+          { "@type": "ListItem", position: 3, name: `${auto.merk} ${auto.model}`, item: autoUrl },
+        ],
+      },
+    ],
   };
 
   return (

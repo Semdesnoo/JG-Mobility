@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { motion, AnimatePresence } from "framer-motion";
@@ -67,13 +68,13 @@ export default function AutoDetailClient({
                 onClick={() => heeftFotos && setLightbox(true)}
               >
                 {heeftFotos ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
+                  <Image
                     src={auto.fotos![fotoIndex]}
                     alt={`${auto.merk} ${auto.model}`}
-                    fetchPriority="high"
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    className="object-cover"
+                    priority={fotoIndex === 0}
                   />
                 ) : (
                   <>
@@ -129,9 +130,9 @@ export default function AutoDetailClient({
                       onClick={() => setFotoIndex(i)}
                       className="relative flex-shrink-0 w-20 h-14 rounded-none overflow-hidden transition-all"
                       style={{ border: fotoIndex === i ? "2px solid #ffffff" : "2px solid rgba(255,255,255,0.15)" }}
+                      aria-label={`Foto ${i + 1}`}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={foto} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                      <Image src={foto} alt="" fill sizes="80px" className="object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>

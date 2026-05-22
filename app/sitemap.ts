@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
 import { getAutos } from "@/lib/autos-db";
+import { steden } from "@/lib/steden";
 
 const siteUrl = "https://www.jgmobility.nl";
 
@@ -8,6 +9,13 @@ export const revalidate = 300;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [autos] = await Promise.all([getAutos()]);
+
+  const stedenUrls: MetadataRoute.Sitemap = steden.map((s) => ({
+    url: `${siteUrl}/auto-inkoop/${s.slug}`,
+    lastModified: new Date("2026-05-22"),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
 
   const blogUrls: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
@@ -51,6 +59,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${siteUrl}/diensten/consignatie`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: `${siteUrl}/diensten/inkoop-taxatie`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -92,6 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    ...stedenUrls,
     ...autoUrls,
     ...blogUrls,
   ];
