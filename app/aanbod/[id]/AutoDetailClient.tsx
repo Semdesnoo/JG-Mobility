@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { preconnect } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
@@ -11,6 +12,7 @@ const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
 
 // In Lease Auto's — dealer ID van JG Mobility (publiek, staat in de iframe-URL)
 const INLEASE_DEALER_ID = "13504";
+const INLEASE_ORIGIN = "https://calculator.inleaseautos.nl";
 
 export default function AutoDetailClient({
   auto,
@@ -24,9 +26,13 @@ export default function AutoDetailClient({
   autoUrl: string;
 }) {
   const [activeTab, setActiveTab] = useState("Kenmerken");
+  const [calcArmed, setCalcArmed] = useState(false);
+  const [calcLoaded, setCalcLoaded] = useState(false);
+  const armCalculator = () => setCalcArmed(true);
   const tabSectionRef = useRef<HTMLElement>(null);
 
   const switchTab = (tab: string) => {
+    if (tab === "Financieren") setCalcArmed(true);
     setActiveTab(tab);
     setTimeout(() => {
       if (tabSectionRef.current) {
@@ -45,8 +51,12 @@ export default function AutoDetailClient({
   // In Lease Auto's calculator: marge=1 voor margevoertuigen, marge=0 voor BTW-voertuigen
   const margeParam = /marge/i.test(auto.btw) ? 1 : 0;
   const calculatorSrc =
-    `https://calculator.inleaseautos.nl/?dealer_id=${INLEASE_DEALER_ID}` +
+    `${INLEASE_ORIGIN}/?dealer_id=${INLEASE_DEALER_ID}` +
     `&price=${auto.prijs}&marge=${margeParam}&ref=${encodeURIComponent(autoUrl)}`;
+
+  // Warm de verbinding met de calculator-server al bij het laden van de pagina,
+  // zodat DNS/TLS niet op het kritieke pad zit wanneer de iframe laadt.
+  preconnect(INLEASE_ORIGIN);
 
   const volgendeFoto = () => setFotoIndex((i) => (i + 1) % aantalFotos);
   const vorigeFoto = () => setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
@@ -266,6 +276,9 @@ export default function AutoDetailClient({
             <button
               key={tab}
               onClick={() => switchTab(tab)}
+              onMouseEnter={tab === "Financieren" ? armCalculator : undefined}
+              onFocus={tab === "Financieren" ? armCalculator : undefined}
+              onTouchStart={tab === "Financieren" ? armCalculator : undefined}
               className="flex items-center gap-1.5 px-6 py-4 text-sm font-semibold tracking-wide transition-all relative"
               style={{
                 fontFamily: "var(--font-inter)",
@@ -389,25 +402,39 @@ export default function AutoDetailClient({
                 </div>
               </div>
 
-              {/* In Lease Auto's calculator */}
-              <div className="max-w-4xl">
-                <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
-                  Bereken direct je maandbedrag
-                </p>
+            </motion.div>
+          )}
+
+          {/* Lease calculator — los van de tab-conditie gerenderd zodra 'armed' (hover/klik op
+              Financieren), zodat de iframe vast in de achtergrond laadt en direct klaar is. */}
+          {calcArmed && (
+            <div className="max-w-4xl" style={{ display: activeTab === "Financieren" ? "block" : "none" }}>
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
+                Bereken direct je maandbedrag
+              </p>
+              <div className="relative" style={{ minHeight: 975 }}>
+                {!calcLoaded && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ backgroundColor: "rgba(0,19,55,0.02)", border: "1px solid rgba(0,19,55,0.1)" }}>
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-6 h-6 rounded-full animate-spin" style={{ border: "2px solid rgba(0,19,55,0.15)", borderTopColor: "#001337" }} />
+                      <span className="text-xs" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Calculator laden…</span>
+                    </div>
+                  </div>
+                )}
                 <iframe
                   src={calculatorSrc}
                   title="Lease calculator — In Lease Auto's"
                   width="100%"
                   height="975"
+                  onLoad={() => setCalcLoaded(true)}
                   style={{ border: 0, borderRadius: 0, overflow: "hidden", display: "block", width: "100%" }}
-                  loading="lazy"
                   allowFullScreen
                 />
-                <p className="text-[11px] mt-3" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
-                  Vrijblijvende berekening in samenwerking met In Lease Auto&apos;s. Aan deze indicatie kunnen geen rechten worden ontleend.
-                </p>
               </div>
-            </motion.div>
+              <p className="text-[11px] mt-3" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
+                Vrijblijvende berekening in samenwerking met In Lease Auto&apos;s. Aan deze indicatie kunnen geen rechten worden ontleend.
+              </p>
+            </div>
           )}
 
           {activeTab === "Contact" && (
