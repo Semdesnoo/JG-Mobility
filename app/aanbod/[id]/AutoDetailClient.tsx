@@ -9,14 +9,19 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
 
+// In Lease Auto's — dealer ID van JG Mobility (publiek, staat in de iframe-URL)
+const INLEASE_DEALER_ID = "13504";
+
 export default function AutoDetailClient({
   auto,
   vorigeAuto,
   volgendeAuto,
+  autoUrl,
 }: {
   auto: Auto;
   vorigeAuto: Auto | undefined;
   volgendeAuto: Auto | undefined;
+  autoUrl: string;
 }) {
   const [activeTab, setActiveTab] = useState("Kenmerken");
   const tabSectionRef = useRef<HTMLElement>(null);
@@ -36,6 +41,12 @@ export default function AutoDetailClient({
 
   const heeftFotos = auto.fotos && auto.fotos.length > 0;
   const aantalFotos = auto.fotos?.length ?? 0;
+
+  // In Lease Auto's calculator: marge=1 voor margevoertuigen, marge=0 voor BTW-voertuigen
+  const margeParam = /marge/i.test(auto.btw) ? 1 : 0;
+  const calculatorSrc =
+    `https://calculator.inleaseautos.nl/?dealer_id=${INLEASE_DEALER_ID}` +
+    `&price=${auto.prijs}&marge=${margeParam}&ref=${encodeURIComponent(autoUrl)}`;
 
   const volgendeFoto = () => setFotoIndex((i) => (i + 1) % aantalFotos);
   const vorigeFoto = () => setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
@@ -349,18 +360,23 @@ export default function AutoDetailClient({
                 In samenwerking met In Lease Auto&apos;s bieden wij vrijblijvende financierings- en leasevoorstellen aan.
               </p>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl">
-                {/* Linker blok: auto + prijs info */}
+              {/* Info: aanschafprijs + voordelen */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mb-8">
+                {/* Aanschafprijs */}
                 <div className="p-6" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
                   <p className="text-xs tracking-widest uppercase mb-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Aanschafprijs voertuig</p>
-                  <p className="text-3xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                  <p className="text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
                     €{auto.prijs.toLocaleString("nl-NL")},-
                   </p>
+                  <p className="text-xs mt-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>{auto.btw}</p>
+                </div>
 
+                {/* Voordelen */}
+                <div className="p-6" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
                   <div className="flex flex-col gap-3">
                     {[
                       { label: "Uitslag binnen 24 uur" },
-                      { label: "Geen jaarlijfers nodig" },
+                      { label: "Geen jaarcijfers nodig" },
                       { label: "Geen kilometerbeperking" },
                       { label: "Je wordt eigenaar van de auto" },
                     ].map((item) => (
@@ -371,29 +387,25 @@ export default function AutoDetailClient({
                     ))}
                   </div>
                 </div>
+              </div>
 
-                {/* Rechter blok: calculator placeholder */}
-                <div className="p-6 flex flex-col items-center justify-center text-center gap-4" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
-                  <div className="w-12 h-12 flex items-center justify-center" style={{ backgroundColor: "#001337" }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="21" x2="8" y2="3"/><line x1="16" y1="21" x2="16" y2="3"/><line x1="2" y1="12" x2="22" y2="12"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold mb-1" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Lease calculator</p>
-                    <p className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>
-                      De interactieve calculator van In Lease Auto&apos;s wordt hier binnenkort geplaatst.
-                    </p>
-                  </div>
-                  <a
-                    href="tel:+31621331374"
-                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-all hover:opacity-80"
-                    style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
-                  >
-                    <Phone size={13} />
-                    Bel voor een voorstel
-                  </a>
-                </div>
+              {/* In Lease Auto's calculator */}
+              <div className="max-w-4xl">
+                <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
+                  Bereken direct je maandbedrag
+                </p>
+                <iframe
+                  src={calculatorSrc}
+                  title="Lease calculator — In Lease Auto's"
+                  width="100%"
+                  height="975"
+                  style={{ border: 0, borderRadius: 0, overflow: "hidden", display: "block", width: "100%" }}
+                  loading="lazy"
+                  allowFullScreen
+                />
+                <p className="text-[11px] mt-3" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
+                  Vrijblijvende berekening in samenwerking met In Lease Auto&apos;s. Aan deze indicatie kunnen geen rechten worden ontleend.
+                </p>
               </div>
             </motion.div>
           )}

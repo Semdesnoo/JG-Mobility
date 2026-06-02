@@ -128,6 +128,7 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
         auto={auto}
         vorigeAuto={vorigeAuto}
         volgendeAuto={volgendeAuto}
+        autoUrl={autoUrl}
       />
     </>
   );
