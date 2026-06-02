@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,6 +30,19 @@ export default function AutoDetailClient({
   const [calcLoaded, setCalcLoaded] = useState(false);
   const armCalculator = () => setCalcArmed(true);
   const tabSectionRef = useRef<HTMLElement>(null);
+
+  // Mobiel: detecteer of de tab-balk nog naar rechts kan scrollen (hint tonen)
+  const tabBarRef = useRef<HTMLDivElement>(null);
+  const [tabsMeer, setTabsMeer] = useState(false);
+  const updateTabsMeer = () => {
+    const el = tabBarRef.current;
+    if (el) setTabsMeer(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+  useEffect(() => {
+    updateTabsMeer();
+    window.addEventListener("resize", updateTabsMeer);
+    return () => window.removeEventListener("resize", updateTabsMeer);
+  }, []);
 
   const switchTab = (tab: string) => {
     if (tab === "Financieren") setCalcArmed(true);
@@ -271,27 +284,44 @@ export default function AutoDetailClient({
 
       {/* Tabs balk */}
       <div className="sticky top-[85px] z-40" style={{ backgroundColor: "rgba(0,19,55,0.97)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="max-w-7xl mx-auto px-6 flex items-stretch">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => switchTab(tab)}
-              onMouseEnter={tab === "Financieren" ? armCalculator : undefined}
-              onFocus={tab === "Financieren" ? armCalculator : undefined}
-              onTouchStart={tab === "Financieren" ? armCalculator : undefined}
-              className="flex items-center gap-1.5 px-6 py-4 text-sm font-semibold tracking-wide transition-all relative"
-              style={{
-                fontFamily: "var(--font-inter)",
-                color: activeTab === tab ? "#ffffff" : "rgba(255,255,255,0.45)",
-                backgroundColor: "transparent",
-              }}
+        <div className="relative max-w-7xl mx-auto">
+          <div
+            ref={tabBarRef}
+            onScroll={updateTabsMeer}
+            className="px-6 flex items-stretch overflow-x-auto"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={(e) => { switchTab(tab); e.currentTarget.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }}
+                onMouseEnter={tab === "Financieren" ? armCalculator : undefined}
+                onFocus={tab === "Financieren" ? armCalculator : undefined}
+                onTouchStart={tab === "Financieren" ? armCalculator : undefined}
+                className="flex items-center gap-1.5 px-4 sm:px-6 py-4 text-sm font-semibold tracking-wide transition-all relative shrink-0 whitespace-nowrap"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  color: activeTab === tab ? "#ffffff" : "rgba(255,255,255,0.45)",
+                  backgroundColor: "transparent",
+                }}
+              >
+                {tab}
+                {activeTab === tab && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: "#ffffff" }} />
+                )}
+              </button>
+            ))}
+          </div>
+          {/* Mobiele hint: er zijn meer tabs (verdwijnt als je aan het einde bent) */}
+          {tabsMeer && (
+            <div
+              aria-hidden="true"
+              className="sm:hidden pointer-events-none absolute top-0 right-0 bottom-0 w-12 flex items-center justify-end pr-1"
+              style={{ background: "linear-gradient(to right, rgba(0,19,55,0) 0%, rgba(0,19,55,0.97) 80%)" }}
             >
-              {tab}
-              {activeTab === tab && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: "#ffffff" }} />
-              )}
-            </button>
-          ))}
+              <ChevronRight size={16} color="rgba(255,255,255,0.7)" />
+            </div>
+          )}
         </div>
       </div>
 
