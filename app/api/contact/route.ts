@@ -7,7 +7,10 @@ const TO_EMAIL = "info@jgmobility.nl";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  // .trim() verwijdert onzichtbare tekens (zoals een BOM, U+FEFF) die per ongeluk
+  // mee gekopieerd kunnen zijn bij het plakken van de key in Vercel — anders crasht
+  // Resend op het opbouwen van de Authorization-header.
+  const resend = new Resend((process.env.RESEND_API_KEY ?? "").trim());
   const contentType = req.headers.get("content-type") || "";
 
   if (contentType.includes("application/json")) {
@@ -16,7 +19,7 @@ export async function POST(req: NextRequest) {
     // Afspraakformulier
     if (body.type === "appointment") {
       const { email, telefoon, datum, tijd } = body;
-      await resend.emails.send({
+      const { error: afspraakError } = await resend.emails.send({
         from: "JG Mobility Website <noreply@jgmobility.nl>",
         to: TO_EMAIL,
         replyTo: email,
@@ -38,13 +41,17 @@ export async function POST(req: NextRequest) {
           </div>
         `,
       });
+      if (afspraakError) {
+        console.error("Resend fout (afspraak):", afspraakError);
+        return NextResponse.json({ ok: false, error: afspraakError.message }, { status: 500 });
+      }
       return NextResponse.json({ ok: true });
     }
 
     // Contactformulier
     const { naam, email, telefoon, bericht } = body;
 
-    await resend.emails.send({
+    const { error: contactError } = await resend.emails.send({
       from: "JG Mobility Website <noreply@jgmobility.nl>",
       to: TO_EMAIL,
       replyTo: email,
@@ -68,6 +75,11 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     });
+
+    if (contactError) {
+      console.error("Resend fout (contact):", contactError);
+      return NextResponse.json({ ok: false, error: contactError.message }, { status: 500 });
+    }
 
     return NextResponse.json({ ok: true });
   }
