@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { preconnect } from "react-dom";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, CreditCard, Shield, Clock, Percent, Search, Car, Euro, Calendar, Send, AlertCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, CreditCard, Shield, Clock, Percent } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
-const RENTE_PER_JAAR = 7.9;
-const LOOPTIJDEN = [12, 24, 36, 48, 60];
+// In Lease Auto's lease-calculator (zelfde dealer als op de auto-pagina's)
+const INLEASE_DEALER_ID = "13504";
+const INLEASE_ORIGIN = "https://calculator.inleaseautos.nl";
+const FINANCIERING_URL = "https://www.jgmobility.nl/diensten/financiering";
+const calculatorSrc = `${INLEASE_ORIGIN}/?dealer_id=${INLEASE_DEALER_ID}&ref=${encodeURIComponent(FINANCIERING_URL)}`;
 
 const voordelen = [
   { icon: <Percent size={20} />, title: "Scherpe rente", desc: "Via onze partners bieden wij toegang tot concurrerende leningen met lage maandlasten." },
@@ -34,85 +38,11 @@ const opties = [
   },
 ];
 
-function berekenMaandbedrag(lening: number, looptijd: number): number {
-  const r = RENTE_PER_JAAR / 100 / 12;
-  return (lening * r * Math.pow(1 + r, looptijd)) / (Math.pow(1 + r, looptijd) - 1);
-}
-
-function formatKenteken(raw: string): string {
-  return raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
-
 export default function FinancieringPage() {
-  const [kenteken, setKenteken] = useState("");
-  const [rdwData, setRdwData] = useState<{ merk: string; model: string } | null>(null);
-  const [rdwLoading, setRdwLoading] = useState(false);
-  const [rdwError, setRdwError] = useState("");
+  const [calcLoaded, setCalcLoaded] = useState(false);
 
-  const [aankoopbedrag, setAankoopbedrag] = useState("");
-  const [aanbetaling, setAanbetaling] = useState("");
-  const [looptijd, setLooptijd] = useState(48);
-
-  const [naam, setNaam] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefoon, setTelefoon] = useState("");
-  const [verzonden, setVerzonden] = useState(false);
-
-  const lening = Math.max(0, (parseFloat(aankoopbedrag) || 0) - (parseFloat(aanbetaling) || 0));
-  const maandbedrag = lening > 0 ? berekenMaandbedrag(lening, looptijd) : 0;
-  const totaalbedrag = maandbedrag * looptijd;
-  const totaleRente = totaalbedrag - lening;
-  const toonResultaat = lening > 0 && maandbedrag > 0;
-
-  async function zoekKenteken() {
-    const k = formatKenteken(kenteken);
-    if (k.length < 4) { setRdwError("Voer een geldig kenteken in."); return; }
-    setRdwLoading(true);
-    setRdwError("");
-    setRdwData(null);
-    try {
-      const res = await fetch(`https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=${k}`);
-      const data = await res.json();
-      if (!data.length) { setRdwError("Kenteken niet gevonden. Controleer de invoer."); return; }
-      const auto = data[0];
-      setRdwData({
-        merk: auto.merk ?? "Onbekend",
-        model: auto.handelsbenaming ?? auto.typegoedkeuringsnummer ?? "Onbekend",
-      });
-    } catch {
-      setRdwError("Kon de RDW niet bereiken. Probeer het opnieuw.");
-    } finally {
-      setRdwLoading(false);
-    }
-  }
-
-  function verstuurAanvraag() {
-    const auto = rdwData ? `${rdwData.merk} ${rdwData.model} (${kenteken.toUpperCase()})` : kenteken.toUpperCase();
-    const onderwerp = `Financieringsaanvraag — ${auto}`;
-    const body = [
-      `Naam: ${naam}`,
-      `E-mail: ${email}`,
-      `Telefoon: ${telefoon}`,
-      ``,
-      `--- Voertuig ---`,
-      `Kenteken: ${kenteken.toUpperCase()}`,
-      rdwData ? `Auto: ${rdwData.merk} ${rdwData.model}` : "",
-      ``,
-      `--- Financiering ---`,
-      `Aankoopbedrag: €${parseFloat(aankoopbedrag).toLocaleString("nl-NL")}`,
-      `Aanbetaling: €${parseFloat(aanbetaling || "0").toLocaleString("nl-NL")}`,
-      `Leenbedrag: €${lening.toLocaleString("nl-NL")}`,
-      `Looptijd: ${looptijd} maanden`,
-      `Rente: ${RENTE_PER_JAAR}% per jaar`,
-      `Berekend maandbedrag: €${maandbedrag.toFixed(2).replace(".", ",")}`,
-      `Totaal te betalen: €${totaalbedrag.toFixed(2).replace(".", ",")}`,
-    ].filter(Boolean).join("\n");
-
-    window.location.href = `mailto:info@jgmobility.nl?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(body)}`;
-    setVerzonden(true);
-  }
-
-  const aanvraagGeldig = naam.trim() && email.includes("@") && telefoon.trim() && toonResultaat;
+  // Warm de verbinding met de calculator-server alvast (DNS/TLS vooraf).
+  preconnect(INLEASE_ORIGIN);
 
   return (
     <>
@@ -121,7 +51,7 @@ export default function FinancieringPage() {
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 80% at 20% 60%, rgba(255,255,255,0.04) 0%, transparent 70%)" }} />
         <div className="relative max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Link href="/diensten" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase mb-6 hover:opacity-70 transition-opacity" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
+            <Link href="/diensten" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase mb-6 hover:opacity-70 transition-opacity" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               ← Diensten
             </Link>
           </motion.div>
@@ -144,236 +74,34 @@ export default function FinancieringPage() {
               <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Vrijblijvend berekenen</p>
               <h2 className="text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Wat wordt mijn maandbedrag?</h2>
               <p className="text-sm mt-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-                Voer het kenteken in en bereken direct uw financiering. Indicatief op basis van {RENTE_PER_JAAR}% rente per jaar.
+                Voer het kenteken in en bereken direct een vrijblijvend leasevoorstel, in samenwerking met In Lease Auto&apos;s.
               </p>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <div className="rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
-
-              {/* Stap 1: Kenteken */}
-              <div className="p-6 md:p-8" style={{ borderBottom: "1px solid rgba(0,19,55,0.07)" }}>
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-8 h-8 flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: "#001337", fontFamily: "var(--font-inter)" }}>1</div>
-                  <h3 className="font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Voer het kenteken in</h3>
-                </div>
-                <div className="flex gap-3 flex-col sm:flex-row">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder="bijv. AB-123-C"
-                      value={kenteken}
-                      onChange={(e) => { setKenteken(e.target.value); setRdwError(""); setRdwData(null); }}
-                      onKeyDown={(e) => e.key === "Enter" && zoekKenteken()}
-                      maxLength={9}
-                      className="w-full px-4 py-3 text-sm outline-none uppercase tracking-widest"
-                      style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                    />
+            <div className="relative" style={{ minHeight: 975 }}>
+              {!calcLoaded && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-6 h-6 rounded-full animate-spin" style={{ border: "2px solid rgba(0,19,55,0.15)", borderTopColor: "#001337" }} />
+                    <span className="text-xs" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Calculator laden…</span>
                   </div>
-                  <button
-                    onClick={zoekKenteken}
-                    disabled={rdwLoading}
-                    className="flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold transition-all hover:opacity-80"
-                    style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)", minWidth: "140px" }}
-                  >
-                    {rdwLoading ? (
-                      <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                    ) : (
-                      <><Search size={14} /> Auto opzoeken</>
-                    )}
-                  </button>
-                </div>
-
-                {rdwError && (
-                  <div className="flex items-center gap-2 mt-3 text-sm" style={{ color: "#c0392b", fontFamily: "var(--font-inter)" }}>
-                    <AlertCircle size={14} /> {rdwError}
-                  </div>
-                )}
-
-                {rdwData && (
-                  <div className="flex items-center gap-3 mt-4 px-4 py-3" style={{ backgroundColor: "rgba(0,19,55,0.04)", border: "1px solid rgba(0,19,55,0.08)" }}>
-                    <Car size={16} style={{ color: "#001337", flexShrink: 0 }} />
-                    <div>
-                      <p className="text-xs" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>Gevonden voertuig</p>
-                      <p className="text-sm font-bold" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>{rdwData.merk} {rdwData.model}</p>
-                    </div>
-                    <CheckCircle size={16} className="ml-auto" style={{ color: "#27ae60" }} />
-                  </div>
-                )}
-              </div>
-
-              {/* Stap 2: Bedragen */}
-              <div className="p-6 md:p-8" style={{ borderBottom: "1px solid rgba(0,19,55,0.07)" }}>
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-8 h-8 flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: "#001337", fontFamily: "var(--font-inter)" }}>2</div>
-                  <h3 className="font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Vul de bedragen in</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <label className="text-xs tracking-widest uppercase mb-2 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Aankoopbedrag (€)</label>
-                    <div className="relative">
-                      <Euro size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "rgba(0,19,55,0.3)" }} />
-                      <input
-                        type="number"
-                        placeholder="15000"
-                        value={aankoopbedrag}
-                        onChange={(e) => setAankoopbedrag(e.target.value)}
-                        className="w-full pl-8 pr-4 py-3 text-sm outline-none"
-                        style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs tracking-widest uppercase mb-2 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Aanbetaling (€)</label>
-                    <div className="relative">
-                      <Euro size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "rgba(0,19,55,0.3)" }} />
-                      <input
-                        type="number"
-                        placeholder="0"
-                        value={aanbetaling}
-                        onChange={(e) => setAanbetaling(e.target.value)}
-                        className="w-full pl-8 pr-4 py-3 text-sm outline-none"
-                        style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs tracking-widest uppercase mb-3 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
-                    <Calendar size={12} className="inline mr-1" />Looptijd
-                  </label>
-                  <div className="flex gap-2 flex-wrap">
-                    {LOOPTIJDEN.map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => setLooptijd(m)}
-                        className="px-4 py-2 text-sm font-semibold transition-all"
-                        style={{
-                          fontFamily: "var(--font-inter)",
-                          backgroundColor: looptijd === m ? "#001337" : "transparent",
-                          color: looptijd === m ? "#ffffff" : "rgba(0,19,55,0.5)",
-                          border: `1px solid ${looptijd === m ? "#001337" : "rgba(0,19,55,0.15)"}`,
-                        }}
-                      >
-                        {m} mnd
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Resultaat */}
-              {toonResultaat && (
-                <div className="p-6 md:p-8" style={{ backgroundColor: "#001337", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                  <p className="text-xs tracking-widest uppercase mb-5" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>Berekening</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>Maandbedrag</p>
-                      <p className="text-3xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-                        €{maandbedrag.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".")},-
-                      </p>
-                      <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-inter)" }}>per maand</p>
-                    </div>
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>Leenbedrag</p>
-                      <p className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-                        €{lening.toLocaleString("nl-NL")}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>Totale kosten</p>
-                      <p className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-                        €{totaalbedrag.toLocaleString("nl-NL", { maximumFractionDigits: 0 })}
-                      </p>
-                      <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-inter)" }}>
-                        waarvan €{totaleRente.toLocaleString("nl-NL", { maximumFractionDigits: 0 })} rente
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-xs mt-6" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-inter)" }}>
-                    Indicatieve berekening op basis van {RENTE_PER_JAAR}% nominale rente per jaar, {looptijd} maanden. Definitief tarief wordt bepaald na aanvraag.
-                  </p>
                 </div>
               )}
-
-              {/* Stap 3: Aanvraag */}
-              <div className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-8 h-8 flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: toonResultaat ? "#001337" : "rgba(0,19,55,0.2)", fontFamily: "var(--font-inter)" }}>3</div>
-                  <h3 className="font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Aanvraag indienen</h3>
-                </div>
-
-                {!toonResultaat && (
-                  <p className="text-sm" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
-                    Vul eerst stap 1 en 2 in om een aanvraag te kunnen indienen.
-                  </p>
-                )}
-
-                {toonResultaat && !verzonden && (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-                      <div>
-                        <label className="text-xs tracking-widest uppercase mb-2 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Naam</label>
-                        <input
-                          type="text"
-                          placeholder="Uw naam"
-                          value={naam}
-                          onChange={(e) => setNaam(e.target.value)}
-                          className="w-full px-4 py-3 text-sm outline-none"
-                          style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs tracking-widest uppercase mb-2 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>E-mailadres</label>
-                        <input
-                          type="email"
-                          placeholder="u@voorbeeld.nl"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-4 py-3 text-sm outline-none"
-                          style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs tracking-widest uppercase mb-2 block" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Telefoonnummer</label>
-                        <input
-                          type="tel"
-                          placeholder="+31 6 12345678"
-                          value={telefoon}
-                          onChange={(e) => setTelefoon(e.target.value)}
-                          className="w-full px-4 py-3 text-sm outline-none"
-                          style={{ border: "1px solid rgba(0,19,55,0.15)", fontFamily: "var(--font-inter)", color: "#001337", backgroundColor: "#fafafa" }}
-                        />
-                      </div>
-                    </div>
-                    <button
-                      onClick={verstuurAanvraag}
-                      disabled={!aanvraagGeldig}
-                      className="flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
-                    >
-                      <Send size={14} />
-                      Aanvraag versturen
-                    </button>
-                    <p className="text-xs mt-3" style={{ color: "rgba(0,19,55,0.3)", fontFamily: "var(--font-inter)" }}>
-                      Uw gegevens worden per e-mail naar JG Mobility gestuurd. Wij reageren binnen één werkdag.
-                    </p>
-                  </>
-                )}
-
-                {toonResultaat && verzonden && (
-                  <div className="flex items-center gap-4 p-5" style={{ backgroundColor: "rgba(39,174,96,0.06)", border: "1px solid rgba(39,174,96,0.2)" }}>
-                    <CheckCircle size={24} style={{ color: "#27ae60", flexShrink: 0 }} />
-                    <div>
-                      <p className="font-bold text-sm" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>Aanvraag verstuurd!</p>
-                      <p className="text-xs mt-1" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>Uw e-mailclient is geopend met alle gegevens ingevuld. Wij nemen zo snel mogelijk contact met u op.</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <iframe
+                src={calculatorSrc}
+                title="Lease calculator — In Lease Auto's"
+                width="100%"
+                height="975"
+                onLoad={() => setCalcLoaded(true)}
+                style={{ border: 0, borderRadius: 0, overflow: "hidden", display: "block", width: "100%" }}
+                allowFullScreen
+              />
             </div>
+            <p className="text-[11px] mt-3 text-center" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
+              Vrijblijvende berekening in samenwerking met In Lease Auto&apos;s. Aan deze indicatie kunnen geen rechten worden ontleend.
+            </p>
           </AnimateOnScroll>
         </div>
       </section>
