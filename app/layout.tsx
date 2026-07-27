@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import ScrollToTop from "@/components/ScrollToTop";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -222,6 +223,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <ChatWidget />
+        <SpeedInsights />
       </body>
     </html>
   );
