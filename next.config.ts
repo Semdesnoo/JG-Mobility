@@ -2,14 +2,29 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 2592000,
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [32, 64, 128, 256, 384],
+    // WAAROM DIT ZO KRAP STAAT
+    // Voor elke maat en elk formaat dat hier staat haalt de beeldoptimalisatie het
+    // ORIGINEEL opnieuw op uit de opslag. Zes breedtes maal twee formaten is twaalf keer
+    // het hele bestand voor één foto -- en met een paar honderd autofoto's is de gratis
+    // datalimiet van Vercel dan in weken op.
+    //
+    // Drie breedtes dekken in de praktijk alles: telefoon, tablet en een groot scherm.
+    // Alleen WebP, want dat wordt door elke browser ondersteund die er nog toe doet en
+    // scheelt de helft van de varianten. Van twaalf naar drie: vier keer minder verkeer
+    // en vier keer minder transformaties.
+    formats: ["image/webp"],
+    minimumCacheTTL: 31536000,
+    deviceSizes: [640, 1080, 1920],
+    imageSizes: [128, 384],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "prod.pictures.autoscout24.net",
+      },
+      {
+        // Vercel Blob — gedeelde foto-opslag waar de admin auto-foto's naartoe uploadt
+        protocol: "https",
+        hostname: "**.public.blob.vercel-storage.com",
       },
     ],
   },
