@@ -25,3 +25,27 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+
+/*
+ * Binnenkomst van de kop en de knoppen in de hero.
+ *
+ * Bewust in CSS en niet in JavaScript. Deze animatie stond in framer-motion, en die
+ * begint pas als het hele JavaScript geladen en uitgevoerd is. De kop stond dus tot dat
+ * moment op onzichtbaar en verscheen pas na 1,7 seconde — niet omdat er iets traag laadde,
+ * maar omdat de animatie op JavaScript wachtte. Google meet precies dat moment als de
+ * laadtijd van de pagina.
+ *
+ * In CSS begint hij zodra de browser de pagina tekent, dus honderden milliseconden eerder,
+ * en het scheelt ook nog werk voor de browser.
+ */
+@keyframes jg-opkomen {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+.jg-opkomen { animation: jg-opkomen 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.jg-opkomen-na { animation: jg-opkomen 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both; }
+
+/* Wie in zijn systeem heeft aangegeven bewegende beelden liever te vermijden, krijgt ze niet. */
+@media (prefers-reduced-motion: reduce) {
+  .jg-opkomen, .jg-opkomen-na { animation: none; }
+}

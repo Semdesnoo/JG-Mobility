@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Gauge, Calendar, Fuel, Zap, ArrowRight, ChevronDown, X } from "lucide-react";
@@ -51,44 +50,113 @@ function FilterSelect({ value, onChange, children }: { value: string; onChange: 
   );
 }
 
-export default function AanbodClient({ autos }: { autos: Auto[] }) {
-  const searchParams = useSearchParams();
-  const merkParam = searchParams.get("merk");
-  const merkInitieel = merkParam
-    ? autos.find((a) => a.merk.toLowerCase() === merkParam.toLowerCase())?.merk ?? "Alle merken"
-    : "Alle merken";
+/**
+ * Twee dingen die op elkaar lijken maar dat niet zijn: "Bmw" en "BMW".
+ *
+ * Het RDW levert merknamen met alleen de eerste letter groot, en wie een auto met de hand
+ * invoert typt vaak de merknaam zoals hij op de auto staat. Daardoor stonden dezelfde
+ * merken twee keer in de keuzelijst, en filterde de ene helft de andere weg.
+ */
+const gelijk = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
-  const [filterMerk, setFilterMerk] = useState(merkInitieel);
+/**
+ * Bouwt een keuzelijst uit de waarden van de auto's die te koop staan.
+ *
+ * Hoofdletterverschillen worden samengevoegd; de schrijfwijze die het vaakst voorkomt
+ * wint. Namen van drie letters of korter zijn afkortingen (BMW, VW, MG) en horen in
+ * hoofdletters — "Bmw" leest als een typefout en niet als een merk.
+ *
+ * Er wordt niets verzonnen: alleen gekozen tussen schrijfwijzen die er al zijn.
+ */
+function keuzelijst(waarden: string[]): string[] {
+  const perSleutel = new Map<string, Map<string, number>>();
+  for (const ruw of waarden) {
+    const waarde = (ruw ?? "").trim();
+    if (!waarde) continue;
+    const sleutel = waarde.toLowerCase();
+    const tellingen = perSleutel.get(sleutel) ?? new Map<string, number>();
+    tellingen.set(waarde, (tellingen.get(waarde) ?? 0) + 1);
+    perSleutel.set(sleutel, tellingen);
+  }
+  return [...perSleutel.values()]
+    .map((tellingen) => {
+      const vaakst = [...tellingen.entries()].sort((a, b) => b[1] - a[1])[0][0];
+      return vaakst.length <= 3 ? vaakst.toUpperCase() : vaakst;
+    })
+    .sort((a, b) => a.localeCompare(b, "nl"));
+}
+
+export default function AanbodClient({ autos }: { autos: Auto[] }) {
+
+  /**
+   * De filters gaan alleen over auto's die nog te koop zijn.
+   *
+   * Verkochte auto's blijven wél op de pagina staan — dat een auto weg is zegt iets goeds
+   * over de zaak. Maar een merk aanbieden waar niets van te koop is, is een lege belofte:
+   * je klikt op Renault en krijgt alleen auto's die je niet meer kunt kopen.
+   */
+  const beschikbaar = useMemo(() => autos.filter((a) => !a.verkocht), [autos]);
+
+  const merken = useMemo(
+    () => ["Alle merken", ...keuzelijst(beschikbaar.map((a) => a.merk))],
+    [beschikbaar]
+  );
+
+  const [filterMerk, setFilterMerk] = useState("Alle merken");
   const [filterModel, setFilterModel] = useState("Alle modellen");
 
+  /**
+   * Een merk uit de link (?merk=bmw) overnemen.
+   *
+   * WAAROM DIT NIET MEER MET useSearchParams GAAT
+   * Die haak dwingt Next.js om deze hele lijst pas in de browser te tekenen. De server
+   * stuurde daardoor een pagina met alleen een kop en een footer; de vijftien auto's
+   * verschenen pas nadat het JavaScript geladen was. Twee gevolgen: de footer stond eerst
+   * boven in beeld en klapte daarna omlaag — de grote sprong die je zag — en Google kreeg
+   * een aanbodpagina zonder aanbod te zien.
+   *
+   * Nu staan de auto's gewoon in de HTML van de server en wordt de link ná het laden
+   * gelezen. Niets binnen deze site linkt met ?merk=, dus in de praktijk gebeurt hier
+   * meestal niets; komt iemand van buiten met zo'n link, dan schuift het filter alsnog
+   * op zijn plek.
+   */
   useEffect(() => {
-    const param = searchParams.get("merk");
-    const gevonden = param
-      ? autos.find((a) => a.merk.toLowerCase() === param.toLowerCase())?.merk ?? "Alle merken"
-      : "Alle merken";
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFilterMerk(gevonden);
-    setFilterModel("Alle modellen");
-  }, [searchParams, autos]);
+    const lees = () => {
+      const param = new URLSearchParams(window.location.search).get("merk");
+      const gevonden = param ? merken.find((m) => gelijk(m, param)) ?? "Alle merken" : "Alle merken";
+      setFilterMerk((huidig) => (huidig === gevonden ? huidig : gevonden));
+      if (gevonden !== "Alle merken") setFilterModel("Alle modellen");
+    };
+    lees();
+    window.addEventListener("popstate", lees);
+    return () => window.removeEventListener("popstate", lees);
+  }, [merken]);
   const [filterTransmissie, setFilterTransmissie] = useState("Alle transmissies");
   const [filterBrandstof, setFilterBrandstof] = useState("Alle brandstof");
   const [filterPrijs, setFilterPrijs] = useState("");
   const [sorteer, setSorteer] = useState("");
 
-  const merken = ["Alle merken", ...Array.from(new Set(autos.map((a) => a.merk)))];
   const modellen = useMemo(() => {
-    const basis = autos.filter((a) => filterMerk === "Alle merken" || a.merk === filterMerk);
-    return ["Alle modellen", ...Array.from(new Set(basis.map((a) => a.model)))];
-  }, [filterMerk, autos]);
-  const transmissies = ["Alle transmissies", ...Array.from(new Set(autos.map((a) => a.transmissie)))];
-  const brandstofTypes = ["Alle brandstof", ...Array.from(new Set(autos.map((a) => a.brandstof)))];
+    const basis = beschikbaar.filter((a) => filterMerk === "Alle merken" || gelijk(a.merk, filterMerk));
+    return ["Alle modellen", ...keuzelijst(basis.map((a) => a.model))];
+  }, [filterMerk, beschikbaar]);
+  const transmissies = useMemo(
+    () => ["Alle transmissies", ...keuzelijst(beschikbaar.map((a) => a.transmissie))],
+    [beschikbaar]
+  );
+  const brandstofTypes = useMemo(
+    () => ["Alle brandstof", ...keuzelijst(beschikbaar.map((a) => a.brandstof))],
+    [beschikbaar]
+  );
 
   const gefilterd = useMemo(() => {
     let lijst = autos.filter((a) => {
-      if (filterMerk !== "Alle merken" && a.merk !== filterMerk) return false;
-      if (filterModel !== "Alle modellen" && a.model !== filterModel) return false;
-      if (filterTransmissie !== "Alle transmissies" && a.transmissie !== filterTransmissie) return false;
-      if (filterBrandstof !== "Alle brandstof" && a.brandstof !== filterBrandstof) return false;
+      // Hoofdletter-ongevoelig: de keuzelijst toont één schrijfwijze, de auto's in de
+      // database hebben er soms twee. Zonder dit filtert "BMW" de Bmw 330E weg.
+      if (filterMerk !== "Alle merken" && !gelijk(a.merk, filterMerk)) return false;
+      if (filterModel !== "Alle modellen" && !gelijk(a.model, filterModel)) return false;
+      if (filterTransmissie !== "Alle transmissies" && !gelijk(a.transmissie, filterTransmissie)) return false;
+      if (filterBrandstof !== "Alle brandstof" && !gelijk(a.brandstof, filterBrandstof)) return false;
       if (filterPrijs && a.prijs > parseInt(filterPrijs)) return false;
       return true;
     });
@@ -109,28 +177,95 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
   const gridRef = useRef<HTMLElement>(null);
   const isFirstRender = useRef(true);
 
+  /**
+   * Na het wijzigen van een filter netjes naar de resultaten schuiven.
+   *
+   * WAT HIER EERDER MISGING
+   * Er stond een zelfgebouwde scroll-animatie: een rekensom over 400 tot 900 ms die met
+   * requestAnimationFrame het venster verzette. Drie dingen gingen daar mis.
+   *
+   * 1. Hij was niet te onderbreken. Wijzigde je een tweede filter terwijl de eerste nog
+   *    liep, dan draaiden er twee animaties door elkaar die allebei het venster wilden
+   *    verzetten. Dat is het schokkerige gevoel.
+   * 2. De eindpositie werd één keer aan het begin uitgerekend en daarna niet meer
+   *    bijgesteld. De bovenbalk van de site klapt tijdens het scrollen dicht (een animatie
+   *    van een halve seconde), en de vaste 80 pixels waarmee gerekend werd klopten dus al
+   *    niet meer voordat de scroll klaar was. Vandaar dat je soms te hoog of te laag
+   *    uitkwam.
+   * 3. Op de telefoon is de filterbalk niet plakkerig, maar zijn hoogte werd er wel
+   *    afgetrokken — daar kwam je dus stelselmatig een balkhoogte te hoog uit.
+   *
+   * HOE HET NU WERKT
+   * De browser doet het scrollen zelf. Dat is soepeler dan wij het met JavaScript kunnen
+   * nadoen, het is te onderbreken zodra je zelf scrolt, en het houdt zich aan de
+   * systeeminstelling voor wie bewegende beelden liever niet heeft.
+   *
+   * De hoogte wordt gemeten in plaats van aangenomen: hoeveel de bovenbalk werkelijk
+   * inneemt en of de filterbalk op dít scherm plakt. En omdat die bovenbalk tijdens het
+   * scrollen nog van hoogte verandert, wordt er ná afloop één keer nagemeten en zo nodig
+   * bijgesteld. Eén correctie, en alleen als jij intussen niet zelf hebt gescrold — anders
+   * zou het scherm tegen je in werken.
+   */
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
-    if (gridRef.current) {
-      const filterHeight = filterRef.current?.offsetHeight ?? 60;
-      const top = gridRef.current.getBoundingClientRect().top + window.scrollY - 80 - filterHeight;
-      const start = window.scrollY;
-      const distance = top - start;
-      if (Math.abs(distance) < 2) return;
-      const duration = Math.min(Math.max(Math.abs(distance) * 0.4, 400), 900);
-      const startTime = performance.now();
-      const step = (now: number) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // cubic bezier approximation: ease-in-out
-        const ease = progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        window.scrollTo(0, start + distance * ease);
-        if (progress < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    let gestopt = false;
+    let gebruikerNamOver = false;
+    const timers: number[] = [];
+    const overnemen = () => { gebruikerNamOver = true; };
+    window.addEventListener("wheel", overnemen, { passive: true });
+    window.addEventListener("touchstart", overnemen, { passive: true });
+    window.addEventListener("keydown", overnemen);
+
+    /** Waar de resultaten beginnen, met alles eraf wat er vast overheen ligt. */
+    const doelhoogte = () => {
+      const kop = document.querySelector("header");
+      const kopVast = kop && ["fixed", "sticky"].includes(getComputedStyle(kop).position);
+      const kopHoogte = kopVast ? kop.getBoundingClientRect().height : 0;
+      const balk = filterRef.current;
+      const balkPlakt = balk ? getComputedStyle(balk).position === "sticky" : false;
+      const balkHoogte = balkPlakt && balk ? balk.getBoundingClientRect().height : 0;
+      const maximaal = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const rauw = grid.getBoundingClientRect().top + window.scrollY - kopHoogte - balkHoogte - 12;
+      return Math.max(0, Math.min(maximaal, rauw));
+    };
+
+    const rustig =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const corrigeer = () => {
+      if (gestopt || gebruikerNamOver) return;
+      const opnieuw = doelhoogte();
+      if (Math.abs(opnieuw - window.scrollY) > 4) window.scrollTo({ top: opnieuw, behavior: "auto" });
+    };
+
+    // Twee beeldjes wachten: pas dan staat de nieuwe lijst er en klopt de meting.
+    const beeldje = requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (gestopt) return;
+        const doel = doelhoogte();
+        // Sta je er al, dan hoort er niets te gebeuren. Een sprongetje van vier pixels
+        // voelt als een storing.
+        if (Math.abs(doel - window.scrollY) < 8) return;
+        window.scrollTo({ top: doel, behavior: rustig ? "auto" : "smooth" });
+        window.addEventListener("scrollend", corrigeer, { once: true });
+        // Vangnet voor browsers zonder scrollend, en voor het geval er niets te scrollen viel.
+        timers.push(window.setTimeout(corrigeer, 900));
+      })
+    );
+
+    return () => {
+      gestopt = true;
+      cancelAnimationFrame(beeldje);
+      timers.forEach(clearTimeout);
+      window.removeEventListener("scrollend", corrigeer);
+      window.removeEventListener("wheel", overnemen);
+      window.removeEventListener("touchstart", overnemen);
+      window.removeEventListener("keydown", overnemen);
+    };
   }, [filterMerk, filterModel, filterTransmissie, filterBrandstof, filterPrijs, sorteer]);
 
   const resetFilters = () => {
@@ -176,7 +311,7 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
             className="text-white/40 text-sm"
             style={{ fontFamily: "var(--font-inter)" }}
           >
-            {autos.length} voertuigen beschikbaar
+            {beschikbaar.length} {beschikbaar.length === 1 ? "voertuig" : "voertuigen"} beschikbaar
           </motion.p>
         </div>
       </div>
@@ -186,8 +321,10 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
         ref={filterRef}
         className="md:sticky top-[80px] z-40 px-4 md:px-6 py-5"
         style={{
-          backgroundColor: "rgba(0,19,55,0.97)",
-          backdropFilter: "blur(12px)",
+          // Was rgba(...,0.97) mét een blur eronder. Bij 97% dekking zie je van die blur
+          // niets, terwijl de browser hem bij elk beeldje opnieuw moet uitrekenen — juist
+          // tijdens het scrollen, precies wanneer je de soepelheid nodig hebt.
+          backgroundColor: "#02163a",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >

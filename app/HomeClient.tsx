@@ -334,10 +334,8 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
         {/* Tekst overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-10 md:pt-32">
           <div>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            <h1
+              className="jg-opkomen"
               style={{
                 fontFamily: "var(--font-playfair)",
                 color: "#ffffff",
@@ -350,16 +348,11 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
             >
               Autobedrijf Barendrecht<br />
               <span style={{ fontSize: "clamp(32px, 4vw, 56px)" }}>JG Mobility</span>
-            </motion.h1>
+            </h1>
           </div>
 
           {/* Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row gap-3"
-          >
+          <div className="jg-opkomen-na flex flex-col sm:flex-row gap-3">
             <Link
               href="/aanbod"
               className="inline-flex items-center justify-center gap-3 px-8 py-4 text-xs font-semibold tracking-widest uppercase transition-all hover:opacity-90"
@@ -378,7 +371,7 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
             </Link>
-          </motion.div>
+          </div>
         </div>
 
       </section>
