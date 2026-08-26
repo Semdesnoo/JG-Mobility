@@ -3,10 +3,10 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Gauge, Calendar, Fuel, Zap, ArrowRight, ChevronDown, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
+import AutoFoto from "@/components/AutoFoto";
 
 const prijsOpties = [
   { label: "Aanschafprijs", value: "" },
@@ -97,6 +97,9 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     if (sorteer === "jaar-desc") lijst = [...lijst].sort((a, b) => b.bouwjaar - a.bouwjaar);
     if (sorteer === "jaar-asc") lijst = [...lijst].sort((a, b) => a.bouwjaar - b.bouwjaar);
     if (sorteer === "km-asc") lijst = [...lijst].sort((a, b) => a.km - b.km);
+    // Verkochte auto's altijd onderaan, beschikbare bovenaan (stabiele sort behoudt
+    // de volgorde hierboven binnen elke groep)
+    lijst = [...lijst].sort((a, b) => Number(a.verkocht ?? false) - Number(b.verkocht ?? false));
     return lijst;
   }, [filterMerk, filterModel, filterTransmissie, filterBrandstof, filterPrijs, sorteer, autos]);
 
@@ -250,13 +253,14 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                     {/* Foto */}
                     <div className="relative h-56 overflow-hidden" style={{ backgroundColor: "#001337" }}>
                       {auto.fotos && auto.fotos.length > 0 ? (
-                        <Image
+                        <AutoFoto
                           src={auto.fotos[0]}
                           alt={`${auto.merk} ${auto.model}`}
-                          fill
+                          merk={auto.merk}
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          loading="lazy"
+                          tekstGrootte={110}
+                          lui
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">

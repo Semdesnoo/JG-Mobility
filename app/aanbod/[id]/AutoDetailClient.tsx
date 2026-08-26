@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { motion, AnimatePresence } from "framer-motion";
+import AutoFoto from "@/components/AutoFoto";
 
 const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
 
@@ -102,12 +102,11 @@ export default function AutoDetailClient({
                 onClick={() => heeftFotos && setLightbox(true)}
               >
                 {heeftFotos ? (
-                  <Image
+                  <AutoFoto
                     src={auto.fotos![fotoIndex]}
                     alt={`${auto.merk} ${auto.model}`}
-                    fill
+                    merk={auto.merk}
                     sizes="(max-width: 1024px) 100vw, 60vw"
-                    className="object-cover"
                     priority={fotoIndex === 0}
                   />
                 ) : (
@@ -166,7 +165,7 @@ export default function AutoDetailClient({
                       style={{ border: fotoIndex === i ? "2px solid #ffffff" : "2px solid rgba(255,255,255,0.15)" }}
                       aria-label={`Foto ${i + 1}`}
                     >
-                      <Image src={foto} alt="" fill sizes="80px" className="object-cover" loading="lazy" />
+                      <AutoFoto src={foto} alt="" merk={auto.merk} sizes="80px" tekstGrootte={22} lui />
                     </button>
                   ))}
                 </div>

@@ -8,6 +8,7 @@ import Image from "next/image";
 import { ArrowRight, Handshake, Search, CreditCard, Package } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import type { Auto } from "@/lib/autos";
+import AutoFoto from "@/components/AutoFoto";
 
 const diensten = [
   {
@@ -421,13 +422,14 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                     style={{ backgroundColor: "#001337" }}
                   >
                     {auto.fotos && auto.fotos.length > 0 ? (
-                      <Image
+                      <AutoFoto
                         src={auto.fotos[0]}
                         alt={`${auto.merk} ${auto.model}`}
-                        fill
+                        merk={auto.merk}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                        tekstGrootte={110}
+                        lui
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
