@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import ScrollToTop from "@/components/ScrollToTop";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -181,6 +183,7 @@ const jsonLd = {
       sameAs: [
         "https://www.instagram.com/jgmobility/",
         "https://www.facebook.com/profile.php?id=61588831825340",
+        "https://www.tiktok.com/@jg.mobility",
       ],
     },
     {
@@ -222,6 +225,8 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <ChatWidget />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
