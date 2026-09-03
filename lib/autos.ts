@@ -12,6 +12,9 @@ export type Auto = {
   transmissie: string;
   vermogen: string;
   kleur: string;
+  // Vraagprijs zonder btw tonen (bedrijfswagens). `prijs` blijft ook dan het bedrag
+  // INCLUSIEF btw — dit vlaggetje bepaalt alleen de presentatie, zie lib/prijs.ts.
+  prijsExclBtw?: boolean;
   // Extra kenmerken
   apk: string;
   btw: string;
@@ -22,6 +25,22 @@ export type Auto = {
   // Status
   verkocht?: boolean;
   gereserveerd?: boolean;
+  // Verborgen gezet in het dashboard. Zo'n auto komt deze site niet in: lib/autos-db.ts
+  // laat hem weg bij het uitlezen, dus hij staat niet in het aanbod, niet op de homepage,
+  // niet in de sitemap, en zijn eigen pagina bestaat niet.
+  verborgen?: boolean;
+  verkocht_op?: string;
+  toegevoegd_op?: string;
+  // Optionele RDW-extra's (worden door de admin meegestuurd; nog niet overal getoond)
+  kenteken?: string;
+  // Chassisnummer — puur intern voor het dashboard. Het staat wel in de gedeelde
+  // database, maar lib/autos-db.ts strijkt het eruit voordat een auto deze site in
+  // gaat: pagina's geven het hele auto-object door aan client-componenten, dus alles
+  // wat hier blijft zitten is voor iedereen leesbaar in de paginabron.
+  vin?: string;
+  cilinderinhoud?: string;
+  aantalDeuren?: string;
+  aantalCilinders?: string;
   // Omschrijving
   omschrijving: string;
   // Opties per categorie

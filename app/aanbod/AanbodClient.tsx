@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Gauge, Calendar, Fuel, Zap, ArrowRight, ChevronDown, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
+import { prijsWeergave } from "@/lib/prijs";
+import { isBedrijfswagen, bodytypeLabel } from "@/lib/voertuig";
 import AutoFoto from "@/components/AutoFoto";
 
 const prijsOpties = [
@@ -27,7 +29,7 @@ const sorteerOpties = [
 ];
 
 function FilterSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
-  const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof"].includes(value);
+  const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof", "Alle voertuigen"].includes(value);
   return (
     <div className="relative w-full md:w-auto">
       <select
@@ -131,6 +133,7 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     window.addEventListener("popstate", lees);
     return () => window.removeEventListener("popstate", lees);
   }, [merken]);
+  const [filterSoort, setFilterSoort] = useState("Alle voertuigen");
   const [filterTransmissie, setFilterTransmissie] = useState("Alle transmissies");
   const [filterBrandstof, setFilterBrandstof] = useState("Alle brandstof");
   const [filterPrijs, setFilterPrijs] = useState("");
@@ -140,6 +143,10 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     const basis = beschikbaar.filter((a) => filterMerk === "Alle merken" || gelijk(a.merk, filterMerk));
     return ["Alle modellen", ...keuzelijst(basis.map((a) => a.model))];
   }, [filterMerk, beschikbaar]);
+  // Het soort-filter verschijnt pas zodra er een bedrijfswagen in de voorraad staat.
+  // Sta je vol personenauto's, dan valt er niets te kiezen en hoort het er niet.
+  const toonSoortFilter = useMemo(() => beschikbaar.some(isBedrijfswagen), [beschikbaar]);
+
   const transmissies = useMemo(
     () => ["Alle transmissies", ...keuzelijst(beschikbaar.map((a) => a.transmissie))],
     [beschikbaar]
@@ -155,13 +162,18 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
       // database hebben er soms twee. Zonder dit filtert "BMW" de Bmw 330E weg.
       if (filterMerk !== "Alle merken" && !gelijk(a.merk, filterMerk)) return false;
       if (filterModel !== "Alle modellen" && !gelijk(a.model, filterModel)) return false;
+      if (filterSoort === "Bedrijfswagens" && !isBedrijfswagen(a)) return false;
+      if (filterSoort === "Personenauto's" && isBedrijfswagen(a)) return false;
       if (filterTransmissie !== "Alle transmissies" && !gelijk(a.transmissie, filterTransmissie)) return false;
       if (filterBrandstof !== "Alle brandstof" && !gelijk(a.brandstof, filterBrandstof)) return false;
-      if (filterPrijs && a.prijs > parseInt(filterPrijs)) return false;
+      // Op het getoonde bedrag, niet op het bedrag in de database. Bij een bestelbus
+      // staat de prijs zonder btw op de kaart; filtert hij dan op het btw-bedrag, dan
+      // valt een bus van "€ 12.500" buiten "tot € 15.000" en snapt niemand waarom.
+      if (filterPrijs && prijsWeergave(a).bedrag > parseInt(filterPrijs)) return false;
       return true;
     });
-    if (sorteer === "prijs-asc") lijst = [...lijst].sort((a, b) => a.prijs - b.prijs);
-    if (sorteer === "prijs-desc") lijst = [...lijst].sort((a, b) => b.prijs - a.prijs);
+    if (sorteer === "prijs-asc") lijst = [...lijst].sort((a, b) => prijsWeergave(a).bedrag - prijsWeergave(b).bedrag);
+    if (sorteer === "prijs-desc") lijst = [...lijst].sort((a, b) => prijsWeergave(b).bedrag - prijsWeergave(a).bedrag);
     if (sorteer === "jaar-desc") lijst = [...lijst].sort((a, b) => b.bouwjaar - a.bouwjaar);
     if (sorteer === "jaar-asc") lijst = [...lijst].sort((a, b) => a.bouwjaar - b.bouwjaar);
     if (sorteer === "km-asc") lijst = [...lijst].sort((a, b) => a.km - b.km);
@@ -169,9 +181,9 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     // de volgorde hierboven binnen elke groep)
     lijst = [...lijst].sort((a, b) => Number(a.verkocht ?? false) - Number(b.verkocht ?? false));
     return lijst;
-  }, [filterMerk, filterModel, filterTransmissie, filterBrandstof, filterPrijs, sorteer, autos]);
+  }, [filterMerk, filterModel, filterSoort, filterTransmissie, filterBrandstof, filterPrijs, sorteer, autos]);
 
-  const hasFilters = filterMerk !== "Alle merken" || filterModel !== "Alle modellen" || filterTransmissie !== "Alle transmissies" || filterBrandstof !== "Alle brandstof" || filterPrijs || sorteer;
+  const hasFilters = filterMerk !== "Alle merken" || filterModel !== "Alle modellen" || filterSoort !== "Alle voertuigen" || filterTransmissie !== "Alle transmissies" || filterBrandstof !== "Alle brandstof" || filterPrijs || sorteer;
 
   const filterRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLElement>(null);
@@ -266,11 +278,12 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
       window.removeEventListener("touchstart", overnemen);
       window.removeEventListener("keydown", overnemen);
     };
-  }, [filterMerk, filterModel, filterTransmissie, filterBrandstof, filterPrijs, sorteer]);
+  }, [filterMerk, filterModel, filterSoort, filterTransmissie, filterBrandstof, filterPrijs, sorteer]);
 
   const resetFilters = () => {
     setFilterMerk("Alle merken");
     setFilterModel("Alle modellen");
+    setFilterSoort("Alle voertuigen");
     setFilterTransmissie("Alle transmissies");
     setFilterBrandstof("Alle brandstof");
     setFilterPrijs("");
@@ -330,6 +343,13 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:gap-3">
+            {toonSoortFilter && (
+              <FilterSelect value={filterSoort} onChange={setFilterSoort}>
+                {["Alle voertuigen", "Personenauto's", "Bedrijfswagens"].map((s) => (
+                  <option key={s} value={s} style={{ backgroundColor: "#001337" }}>{s}</option>
+                ))}
+              </FilterSelect>
+            )}
             <FilterSelect value={filterMerk} onChange={(v) => { setFilterMerk(v); setFilterModel("Alle modellen"); }}>
               {merken.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
             </FilterSelect>
@@ -464,7 +484,7 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                           className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-none"
                           style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)", fontWeight: 600 }}
                         >
-                          {auto.bodytype}
+                          {bodytypeLabel(auto)}
                         </span>
                       </div>
                       <div className="absolute top-4 right-4">
@@ -488,10 +508,15 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                             {auto.model}
                           </h3>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex-shrink-0">
                           <p className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                            €{auto.prijs.toLocaleString("nl-NL")}
+                            {prijsWeergave(auto).tekst}
                           </p>
+                          {prijsWeergave(auto).achtervoegsel && (
+                            <p className="text-[11px] font-semibold" style={{ fontFamily: "var(--font-inter)", color: "rgba(0,19,55,0.5)" }}>
+                              {prijsWeergave(auto).achtervoegsel}
+                            </p>
+                          )}
                         </div>
                       </div>
 

@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAutos, getAutoBySlug, getAutoById } from "@/lib/autos-db";
+import { prijsWeergave } from "@/lib/prijs";
 import AutoDetailClient from "./AutoDetailClient";
 
 const siteUrl = "https://www.jgmobility.nl";
+
+// Foto's zijn óf relatieve /public-paden (oudere auto's) óf absolute Blob-URL's (nieuwe auto's).
+// Voor OG-image en JSON-LD moeten het altijd absolute URL's zijn — relatieve paden krijgen de
+// site-URL ervoor, absolute (http...) blijven ongewijzigd.
+const fotoUrl = (f: string) => (f.startsWith("http") ? f : `${siteUrl}${f}`);
 
 export const revalidate = 300; // Hervalideer elke 5 minuten
 
@@ -26,8 +32,12 @@ export async function generateMetadata(props: {
   const auto = bySlug ?? byId;
   if (!auto) return { title: "Voertuig niet gevonden" };
 
-  const title = `${auto.merk} ${auto.model} — €${auto.prijs.toLocaleString("nl-NL")}`;
-  const description = `Bekijk deze ${auto.merk} ${auto.model} uit ${auto.bouwjaar} met ${auto.km.toLocaleString("nl-NL")} km bij JG Mobility in Barendrecht. Prijs: €${auto.prijs.toLocaleString("nl-NL")}. ${auto.transmissie} | ${auto.brandstof}${auto.apk && auto.apk !== "Onbekend" ? ` | APK ${auto.apk}` : ""}.`;
+  // Hetzelfde bedrag als op de pagina zelf — bij een bedrijfswagen dus zonder btw,
+  // met het achtervoegsel erbij zodat een zoekresultaat niet te goedkoop oogt.
+  const prijs = prijsWeergave(auto);
+  const prijsTekst = `${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""}`;
+  const title = `${auto.merk} ${auto.model} — ${prijsTekst}`;
+  const description = `Bekijk deze ${auto.merk} ${auto.model} uit ${auto.bouwjaar} met ${auto.km.toLocaleString("nl-NL")} km bij JG Mobility in Barendrecht. Prijs: ${prijsTekst}. ${auto.transmissie} | ${auto.brandstof}${auto.apk && auto.apk !== "Onbekend" ? ` | APK ${auto.apk}` : ""}.`;
   const url = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
 
   return {
@@ -49,7 +59,7 @@ export async function generateMetadata(props: {
       url,
       type: "website",
       images: auto.fotos?.[0]
-        ? [{ url: `${siteUrl}${auto.fotos[0]}`, alt: `${auto.merk} ${auto.model}` }]
+        ? [{ url: fotoUrl(auto.fotos[0]), alt: `${auto.merk} ${auto.model}` }]
         : undefined,
     },
   };
@@ -74,6 +84,7 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
   const volgendeAuto = autos[idx - 1];
 
   const autoUrl = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
+  const getoondeP = prijsWeergave(auto);
   const carSchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -96,15 +107,24 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
         color: auto.kleurExterieur || auto.kleur,
         offers: {
           "@type": "Offer",
-          price: auto.prijs,
+          // Google wil het bedrag zien dat ook op de pagina staat. Bij een bedrijfswagen
+          // is dat het bedrag zonder btw — vandaar de priceSpecification eronder, die
+          // erbij vertelt of de btw er al in zit.
+          price: getoondeP.bedrag,
           priceCurrency: "EUR",
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: getoondeP.bedrag,
+            priceCurrency: "EUR",
+            valueAddedTaxIncluded: !auto.prijsExclBtw,
+          },
           availability: auto.verkocht
             ? "https://schema.org/SoldOut"
             : "https://schema.org/InStock",
           seller: { "@id": `${siteUrl}/#organization` },
           url: autoUrl,
         },
-        image: auto.fotos?.map((f) => `${siteUrl}${f}`) ?? [],
+        image: auto.fotos?.map(fotoUrl) ?? [],
       },
       {
         "@type": "BreadcrumbList",

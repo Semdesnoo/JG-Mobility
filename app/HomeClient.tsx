@@ -8,6 +8,8 @@ import Image from "next/image";
 import { ArrowRight, Handshake, Search, CreditCard, Package } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import type { Auto } from "@/lib/autos";
+import { prijsWeergave } from "@/lib/prijs";
+import { bodytypeLabel } from "@/lib/voertuig";
 import AutoFoto from "@/components/AutoFoto";
 
 const diensten = [
@@ -439,7 +441,7 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                         className="text-[10px] tracking-widest uppercase px-2 py-1 rounded"
                         style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
                       >
-                        {auto.bodytype}
+                        {bodytypeLabel(auto)}
                       </span>
                     </div>
                     <div
@@ -473,10 +475,15 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
                           {auto.model}
                         </h3>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex-shrink-0">
                         <p className="text-xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                          €{auto.prijs.toLocaleString("nl-NL")}
+                          {prijsWeergave(auto).tekst}
                         </p>
+                        {prijsWeergave(auto).achtervoegsel && (
+                          <p className="text-[10px] font-semibold" style={{ fontFamily: "var(--font-inter)", color: "rgba(0,19,55,0.5)" }}>
+                            {prijsWeergave(auto).achtervoegsel}
+                          </p>
+                        )}
                       </div>
                     </div>
 

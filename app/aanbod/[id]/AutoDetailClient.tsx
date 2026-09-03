@@ -5,6 +5,8 @@ import { preconnect } from "react-dom";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
+import { prijsWeergave } from "@/lib/prijs";
+import { bodytypeLabel } from "@/lib/voertuig";
 import { motion, AnimatePresence } from "framer-motion";
 import AutoFoto from "@/components/AutoFoto";
 
@@ -61,7 +63,13 @@ export default function AutoDetailClient({
   const heeftFotos = auto.fotos && auto.fotos.length > 0;
   const aantalFotos = auto.fotos?.length ?? 0;
 
-  // In Lease Auto's calculator: marge=1 voor margevoertuigen, marge=0 voor BTW-voertuigen
+  // Wat er op het scherm hoort te staan. Bij een bedrijfswagen is dat het bedrag zonder
+  // btw; `auto.prijs` blijft ook dan het bedrag inclusief btw.
+  const prijs = prijsWeergave(auto);
+
+  // In Lease Auto's calculator: marge=1 voor margevoertuigen, marge=0 voor BTW-voertuigen.
+  // `price` blijft bewust het bedrag INCLUSIEF btw, ook bij een bedrijfswagen — dat is wat
+  // de calculator hier altijd al kreeg, en de marge-vlag vertelt hem hoe hij ermee omgaat.
   const margeParam = /marge/i.test(auto.btw) ? 1 : 0;
   const calculatorSrc =
     `${INLEASE_ORIGIN}/?dealer_id=${INLEASE_DEALER_ID}` +
@@ -144,7 +152,7 @@ export default function AutoDetailClient({
 
                 <div className="absolute top-4 left-4">
                   <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none font-semibold" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
-                    {auto.bodytype}
+                    {bodytypeLabel(auto)}
                   </span>
                 </div>
                 <div className="absolute top-4 right-4">
@@ -234,10 +242,16 @@ export default function AutoDetailClient({
 
                 <div className="mb-6 pb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                   <p className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-                    €{auto.prijs.toLocaleString("nl-NL")},-
+                    {prijs.tekst},-
+                    {prijs.achtervoegsel && (
+                      <span className="text-lg font-semibold ml-2" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-inter)" }}>
+                        {prijs.achtervoegsel}
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
                     Vraagprijs — {auto.btw}
+                    {prijs.tegenhanger ? ` · ${prijs.tegenhanger}` : ""}
                   </p>
                 </div>
 
@@ -336,7 +350,7 @@ export default function AutoDetailClient({
                   { label: "Bouwjaar", value: auto.bouwjaar },
                   { label: "Kilometerstand", value: `${auto.km.toLocaleString("nl-NL")} km` },
                   { label: "APK tot", value: auto.apk },
-                  { label: "Carrosserie", value: auto.bodytype },
+                  { label: "Carrosserie", value: bodytypeLabel(auto) },
                   { label: "BTW / Marge", value: auto.btw },
                   { label: "Vermogen", value: auto.vermogen },
                   { label: "Brandstof", value: auto.brandstof },
@@ -408,9 +422,17 @@ export default function AutoDetailClient({
                 <div className="p-6" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.02)" }}>
                   <p className="text-xs tracking-widest uppercase mb-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Aanschafprijs voertuig</p>
                   <p className="text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                    €{auto.prijs.toLocaleString("nl-NL")},-
+                    {prijs.tekst},-
+                    {prijs.achtervoegsel && (
+                      <span className="text-base font-semibold ml-2" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                        {prijs.achtervoegsel}
+                      </span>
+                    )}
                   </p>
-                  <p className="text-xs mt-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>{auto.btw}</p>
+                  <p className="text-xs mt-1" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
+                    {auto.btw}
+                    {prijs.tegenhanger ? ` · ${prijs.tegenhanger}` : ""}
+                  </p>
                 </div>
 
                 {/* Voordelen */}
@@ -502,7 +524,7 @@ export default function AutoDetailClient({
                       Klik hieronder om direct een e-mail te sturen. Wij reageren binnen 24 uur.
                     </p>
                     <a
-                      href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model} (€${auto.prijs.toLocaleString("nl-NL")})&body=Hallo Jimi,%0D%0A%0D%0AIk heb interesse in de ${auto.merk} ${auto.model} uit ${auto.bouwjaar} (${auto.km.toLocaleString("nl-NL")} km) voor €${auto.prijs.toLocaleString("nl-NL")}. Kunt u contact met mij opnemen?%0D%0A%0D%0AMet vriendelijke groet,`}
+                      href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model} (${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""})&body=Hallo Jimi,%0D%0A%0D%0AIk heb interesse in de ${auto.merk} ${auto.model} uit ${auto.bouwjaar} (${auto.km.toLocaleString("nl-NL")} km) voor ${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""}. Kunt u contact met mij opnemen?%0D%0A%0D%0AMet vriendelijke groet,`}
                       onClick={() => setTimeout(() => setInteresse(true), 500)}
                       className="flex items-center justify-center gap-2 w-full py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
                       style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
