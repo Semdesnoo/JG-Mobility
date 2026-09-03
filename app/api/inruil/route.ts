@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { Resend } from "resend";
 import sql from "@/lib/db";
 
@@ -13,11 +13,21 @@ import sql from "@/lib/db";
  *    hij inruilt.
  * 3. De foto's gaan in een tweede mail als bijlage.
  *
- * De volgorde is met opzet zo. De mail is de snelste weg naar Jimi, dus die gaat eerst en
- * bepaalt of de klant "gelukt" te zien krijgt. Loopt daarna het opslaan of de fotomail
- * stuk, dan is de aanvraag nog steeds aangekomen — dat mag de klant niet als mislukking
- * te zien krijgen. Andersom geldt het niet: mislukt de mail, dan is het écht mislukt en
- * zeggen we dat eerlijk.
+ * WAAROM DE KLANT NIET OP DE MAIL WACHT
+ * Eerst stond de mail vooraan en wachtte de bezoeker op twee volledige Resend-rondjes,
+ * inclusief het uploaden van zijn foto's als bijlage. Dat zijn seconden waarin hij naar
+ * "Versturen…" zit te kijken en zich afvraagt of hij nog een keer moet drukken.
+ *
+ * Nu is de volgorde omgedraaid. Het wegschrijven in `leads` is het snelste dat we hebben
+ * (één rondje naar de database) én meteen het duurzaamste: staat de aanvraag daar, dan
+ * staat hij in het Aanvragen-overzicht en is hij niet meer kwijt te raken. Zodra dat is
+ * gelukt krijgt de klant zijn bevestiging, en gaan de mails er met `after()` achteraan —
+ * na het antwoord, maar wel meteen. Voor Jimi verandert er dus niets aan de snelheid; de
+ * aanvraag staat zelfs eerder in zijn dashboard dan voorheen.
+ *
+ * Lukt het wegschrijven niet, dan valt hij terug op de oude weg: dan gaat de mail alsnog
+ * vóór het antwoord de deur uit en bepaalt die of de klant "gelukt" te zien krijgt. Zo
+ * blijft er altijd één weg over waarlangs de aanvraag echt aankomt.
  */
 
 const TO_EMAIL = "info@jgmobility.nl";
@@ -141,33 +151,65 @@ export async function POST(req: NextRequest) {
     </div>
   `;
 
-  // Stap 1 — de mail. Dit bepaalt of de klant "gelukt" te zien krijgt.
-  const { error } = await resend.emails.send({
-    from: "JG Mobility Website <noreply@jgmobility.nl>",
-    to: TO_EMAIL,
-    replyTo: email,
-    subject: `Inruilaanvraag: ${kenteken}${mijnAuto ? ` (${mijnAuto})` : ""} — interesse in ${autoNaam || "een voertuig"}`,
-    html,
-  });
-  if (error) {
-    console.error("Resend fout (inruil):", error);
-    return NextResponse.json(
-      { ok: false, error: "Het versturen lukte niet. Probeer het nog eens, of app ons even." },
-      { status: 500 }
-    );
+  // ── De bijlagen alvast klaarmaken ──────────────────────────────────────────────
+  // Dit gebeurt bewust vóór het antwoord: de foto's zitten na formData() in het geheugen
+  // van dit verzoek, en dat wil je niet meer aanraken als het verzoek al is afgerond.
+  // Het omzetten kost milliseconden; het versturen is het trage deel en dat gaat erna.
+  const bijlagen: { filename: string; content: string }[] = [];
+  let totaalBytes = 0;
+  for (const [i, foto] of fotos.entries()) {
+    if (totaalBytes + foto.size > MAX_BIJLAGEN_BYTES) break;
+    totaalBytes += foto.size;
+    try {
+      const buf = await foto.arrayBuffer();
+      const ext = (foto.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
+      bijlagen.push({ filename: `${kenteken}-${i + 1}.${ext}`, content: Buffer.from(buf).toString("base64") });
+    } catch (e) {
+      console.error("Foto kon niet gelezen worden:", e);
+    }
   }
 
-  // Stap 2 — in het Aanvragen-overzicht van het dashboard. Mislukt dit, dan is de mail
-  // er al: dat is geen reden om de klant een foutmelding te tonen.
+  /** De mail met de gegevens. Geeft terug of het lukte. */
+  const stuurHoofdmail = async () => {
+    const { error } = await resend.emails.send({
+      from: "JG Mobility Website <noreply@jgmobility.nl>",
+      to: TO_EMAIL,
+      replyTo: email,
+      subject: `Inruilaanvraag: ${kenteken}${mijnAuto ? ` (${mijnAuto})` : ""} — interesse in ${autoNaam || "een voertuig"}`,
+      html,
+    });
+    if (error) console.error("Resend fout (inruil):", error);
+    return !error;
+  };
+
+  /** De foto's, in een tweede mail. Zo komt de hoofdmail altijd aan, ook als dit misgaat. */
+  const stuurFotomail = async () => {
+    if (bijlagen.length === 0) return;
+    try {
+      await resend.emails.send({
+        from: "JG Mobility Website <noreply@jgmobility.nl>",
+        to: TO_EMAIL,
+        replyTo: email,
+        subject: `Foto's bij inruilaanvraag ${kenteken} (${naam})`,
+        html: `<p style="font-family:Arial;font-size:13px;color:#001337">Foto's van de inruilauto van ${veilig(naam)} — kenteken ${veilig(kenteken)}.</p>`,
+        attachments: bijlagen,
+      });
+    } catch (e) {
+      console.error("Fotomail bij inruilaanvraag mislukt:", e);
+    }
+  };
+
+  // ── Vastleggen: het snelste én het duurzaamste ─────────────────────────────────
+  const notitie = [
+    kmTekst && `Kilometerstand: ${kmTekst}`,
+    bijlagen.length ? `${bijlagen.length} foto's per mail` : "geen foto's",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  let opgeslagen = false;
   try {
     const id = `aan_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    const notitie = [
-      kmTekst && `Kilometerstand: ${kmTekst}`,
-      fotos.length ? `${fotos.length} foto's per mail` : "geen foto's",
-    ]
-      .filter(Boolean)
-      .join(" · ");
-
     await sql`
       INSERT INTO leads (
         id, naam, telefoon, email, bron, interesse, notitie, status,
@@ -178,39 +220,29 @@ export async function POST(req: NextRequest) {
         ${[mijnAuto, kmTekst].filter(Boolean).join(" · ")}, ${bijzonderheden}
       )
     `;
+    opgeslagen = true;
   } catch (e) {
     console.error("Inruilaanvraag niet opgeslagen in leads:", e);
   }
 
-  // Stap 3 — de foto's, in een aparte mail. Ook dit mag de bevestiging niet tegenhouden.
-  if (fotos.length > 0) {
-    try {
-      const bijlagen: { filename: string; content: string }[] = [];
-      let totaal = 0;
-      for (const [i, foto] of fotos.entries()) {
-        if (totaal + foto.size > MAX_BIJLAGEN_BYTES) break;
-        totaal += foto.size;
-        const buf = await foto.arrayBuffer();
-        const ext = (foto.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
-        bijlagen.push({
-          filename: `${kenteken}-${i + 1}.${ext}`,
-          content: Buffer.from(buf).toString("base64"),
-        });
-      }
-      if (bijlagen.length > 0) {
-        await resend.emails.send({
-          from: "JG Mobility Website <noreply@jgmobility.nl>",
-          to: TO_EMAIL,
-          replyTo: email,
-          subject: `Foto's bij inruilaanvraag ${kenteken} (${naam})`,
-          html: `<p style="font-family:Arial;font-size:13px;color:#001337">Foto's van de inruilauto van ${veilig(naam)} — kenteken ${veilig(kenteken)}.</p>`,
-          attachments: bijlagen,
-        });
-      }
-    } catch (e) {
-      console.error("Fotomail bij inruilaanvraag mislukt:", e);
-    }
+  // Staat de aanvraag in het dashboard, dan is hij binnen. De klant hoeft niet te wachten
+  // tot de mails de deur uit zijn; die gaan er direct na het antwoord achteraan.
+  if (opgeslagen) {
+    after(async () => {
+      await stuurHoofdmail();
+      await stuurFotomail();
+    });
+    return NextResponse.json({ ok: true });
   }
 
+  // Database onbereikbaar: dan is de mail de enige weg, en wachten we er wél op.
+  const gelukt = await stuurHoofdmail();
+  if (!gelukt) {
+    return NextResponse.json(
+      { ok: false, error: "Het versturen lukte niet. Probeer het nog eens, of app ons even." },
+      { status: 500 }
+    );
+  }
+  after(stuurFotomail);
   return NextResponse.json({ ok: true });
 }

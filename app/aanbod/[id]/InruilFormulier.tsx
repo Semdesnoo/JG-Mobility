@@ -57,6 +57,9 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
   const [email, setEmail] = useState("");
   const [telefoon, setTelefoon] = useState("");
   const [fotos, setFotos] = useState<(File | null)[]>(Array(MAX_FOTOS).fill(null));
+  // Welke vakjes staan te verkleinen. Een foto van een telefoon is zo 4 MB; zonder dit
+  // gebeurt er na het kiezen even helemaal niets zichtbaars.
+  const [bezigeFotos, setBezigeFotos] = useState<number[]>([]);
   const [rdw, setRdw] = useState<RdwStand>({ soort: "leeg" });
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState("");
@@ -110,8 +113,13 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
   const kiesFoto = async (index: number, bestand: File | undefined) => {
     if (!bestand) return;
     setFout("");
-    const klein = await verkleinFoto(bestand);
-    setFotos((vorige) => vorige.map((f, i) => (i === index ? klein : f)));
+    setBezigeFotos((v) => (v.includes(index) ? v : [...v, index]));
+    try {
+      const klein = await verkleinFoto(bestand);
+      setFotos((vorige) => vorige.map((f, i) => (i === index ? klein : f)));
+    } finally {
+      setBezigeFotos((v) => v.filter((i) => i !== index));
+    }
   };
 
   const versturen = async (e: React.FormEvent) => {
@@ -120,6 +128,10 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
 
     if (!naam.trim() || !email.trim() || !kenteken.trim()) {
       setFout("Vul in elk geval je naam, e-mailadres en kenteken in.");
+      return;
+    }
+    if (bezigeFotos.length > 0) {
+      setFout("Je foto's worden nog klaargemaakt — nog heel even geduld.");
       return;
     }
 
@@ -251,7 +263,14 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
                     e.target.value = "";
                   }}
                 />
-                {foto ? (
+                {bezigeFotos.includes(i) ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" style={{ color: "#001337" }} />
+                    <span className="text-[10px]" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
+                      Verkleinen…
+                    </span>
+                  </>
+                ) : foto ? (
                   <>
                     <Check size={16} style={{ color: "#15803d" }} />
                     <span className="text-[10px] px-2 text-center truncate w-full" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
