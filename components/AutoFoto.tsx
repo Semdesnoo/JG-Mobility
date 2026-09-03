@@ -28,6 +28,9 @@ export default function AutoFoto({
   className = "object-cover",
   priority = false,
   lui = false,
+  /** "low" voor foto's die alleen vast klaargezet worden — die mogen nooit voordringen
+   *  bij de foto die de bezoeker op dit moment zit te bekijken. */
+  fetchPriority,
   /** Hoe groot de merkletters in het terugvalvlak zijn. Klein voor duimnagels. */
   tekstGrootte = 180,
 }: {
@@ -39,6 +42,7 @@ export default function AutoFoto({
   className?: string;
   priority?: boolean;
   lui?: boolean;
+  fetchPriority?: "high" | "low" | "auto";
   tekstGrootte?: number;
 }) {
   const [mislukt, setMislukt] = useState(false);
@@ -73,6 +77,7 @@ export default function AutoFoto({
       className={className}
       // priority en loading sluiten elkaar uit; alleen de een of de ander meegeven.
       {...(priority ? { priority: true } : lui ? { loading: "lazy" as const } : {})}
+      {...(fetchPriority ? { fetchPriority } : {})}
       onError={() => setMislukt(true)}
     />
   );

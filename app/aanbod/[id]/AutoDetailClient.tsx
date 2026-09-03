@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
@@ -8,6 +8,7 @@ import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
 import { bodytypeLabel } from "@/lib/voertuig";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
 
 const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
@@ -82,6 +83,57 @@ export default function AutoDetailClient({
   const volgendeFoto = () => setFotoIndex((i) => (i + 1) % aantalFotos);
   const vorigeFoto = () => setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
 
+  /**
+   * Doorklikken zonder te wachten.
+   *
+   * WAT HIER EERDER GEBEURDE
+   * Er hing één foto in beeld en bij een klik werd de bron vervangen. Pas op dat moment
+   * begon de browser aan het ophalen: een half rondje naar de server van ongeveer 85 tot
+   * 230 ms, plus uitpakken. Precies die tijd stond de bezoeker naar de vorige foto te
+   * kijken terwijl hij al doorgeklikt had.
+   *
+   * Nu staan de buren al klaar. Ze hangen onzichtbaar op dezelfde plek en het doorklikken
+   * is nog maar het omzetten van één doorzichtigheid — geen netwerk, geen uitpakken.
+   *
+   * Twee grendels, want vooruit laden mag nooit ten koste gaan van wat je nu ziet:
+   * • het klaarzetten begint pas als de browser rustig is (requestIdleCallback), zodat de
+   *   eerste foto — waar Google de laadtijd van de pagina aan afmeet — voorrang houdt;
+   * • de buren laden met fetchPriority "low", zodat ze ook daarna nooit voordringen.
+   *
+   * Twee vooruit en twee terug. Ver genoeg om normaal doorbladeren voor te blijven, dicht
+   * genoeg om op een telefoon niet stiekem de hele reeks binnen te halen.
+   */
+  const [rustig, setRustig] = useState(false);
+  const [voorbeschouwd, setVoorbeschouwd] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (aantalFotos < 2) return;
+    type MetIdle = Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const w = window as MetIdle;
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setRustig(true), { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(() => setRustig(true), 1200);
+    return () => window.clearTimeout(id);
+  }, [aantalFotos]);
+
+  const zichtbareFotos = useMemo(() => {
+    if (!heeftFotos) return [];
+    const uit = [fotoIndex];
+    const voegToe = (i: number) => {
+      const n = ((i % aantalFotos) + aantalFotos) % aantalFotos;
+      if (!uit.includes(n)) uit.push(n);
+    };
+    if (rustig && aantalFotos > 1) [1, -1, 2, -2].forEach((stap) => voegToe(fotoIndex + stap));
+    // Zweef je over een duimnagel, dan is dat de foto die je zo aanklikt.
+    if (voorbeschouwd != null) voegToe(voorbeschouwd);
+    return uit;
+  }, [heeftFotos, fotoIndex, aantalFotos, rustig, voorbeschouwd]);
+
   return (
     <>
       {/* Broodkruimel */}
@@ -110,13 +162,26 @@ export default function AutoDetailClient({
                 onClick={() => heeftFotos && setLightbox(true)}
               >
                 {heeftFotos ? (
-                  <AutoFoto
-                    src={auto.fotos![fotoIndex]}
-                    alt={`${auto.merk} ${auto.model}`}
-                    merk={auto.merk}
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    priority={fotoIndex === 0}
-                  />
+                  zichtbareFotos.map((i) => (
+                    <div
+                      key={i}
+                      className="absolute inset-0"
+                      style={{ opacity: i === fotoIndex ? 1 : 0, transition: "opacity 120ms ease-out" }}
+                      aria-hidden={i !== fotoIndex}
+                    >
+                      <AutoFoto
+                        src={auto.fotos![i]}
+                        alt={i === fotoIndex ? `${auto.merk} ${auto.model}` : ""}
+                        merk={auto.merk}
+                        sizes="(max-width: 1024px) 100vw, 60vw"
+                        priority={i === 0}
+                        // Foto 0 draagt priority (dat is de foto waar Google de laadtijd
+                        // aan meet) en mag daar niet mee in de knoop raken; de rest laadt
+                        // laag geprioriteerd zolang je er niet naar kijkt.
+                        fetchPriority={i === fotoIndex || i === 0 ? undefined : "low"}
+                      />
+                    </div>
+                  ))
                 ) : (
                   <>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -169,6 +234,8 @@ export default function AutoDetailClient({
                     <button
                       key={i}
                       onClick={() => setFotoIndex(i)}
+                      onPointerEnter={() => setVoorbeschouwd(i)}
+                      onFocus={() => setVoorbeschouwd(i)}
                       className="relative flex-shrink-0 w-20 h-14 rounded-none overflow-hidden transition-all"
                       style={{ border: fotoIndex === i ? "2px solid #ffffff" : "2px solid rgba(255,255,255,0.15)" }}
                       aria-label={`Foto ${i + 1}`}
@@ -201,12 +268,22 @@ export default function AutoDetailClient({
                   >
                     <ChevronLeft size={20} color="white" />
                   </button>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  {/* Bewust next/image en geen kale <img>.
+                      Hier stond het ORIGINEEL van de opslag: ruim 4 MB per foto, elke keer
+                      opnieuw, ook als je alleen maar doorklikt. De geoptimaliseerde variant
+                      is er een van 370 kB én het is exact hetzelfde bestand dat de
+                      hoofdweergave al heeft opgehaald — zowel op de telefoon als op een
+                      groot scherm valt "90vw" hier in dezelfde maat als de foto erachter.
+                      Daardoor opent de vergroting uit de cache in plaats van uit het
+                      netwerk. */}
+                  <Image
                     src={auto.fotos![fotoIndex]}
-                    alt=""
-                    decoding="async"
-                    className="max-w-[90vw] max-h-[85vh] object-contain rounded-none"
+                    alt={`${auto.merk} ${auto.model} — foto ${fotoIndex + 1} van ${aantalFotos}`}
+                    width={1920}
+                    height={1080}
+                    sizes="90vw"
+                    priority
+                    className="w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-none"
                     onClick={(e) => e.stopPropagation()}
                   />
                   <button
