@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getAutos, getAutoBySlug, getAutoById } from "@/lib/autos-db";
 import { prijsWeergave } from "@/lib/prijs";
 import AutoDetailClient from "./AutoDetailClient";
+import GerelateerdeVoertuigen from "./GerelateerdeVoertuigen";
+import { gerelateerdeAutos } from "@/lib/gerelateerd";
 
 const siteUrl = "https://www.jgmobility.nl";
 
@@ -83,6 +85,16 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
   const vorigeAuto = autos[idx + 1];
   const volgendeAuto = autos[idx - 1];
 
+  // De lijst is hier al binnen voor de vorige/volgende-navigatie, dus dit kost geen extra
+  // database-aanvraag. Die twee buren worden uitgesloten: ze staan een paar honderd pixels
+  // lager al met naam en toenaam in de balk.
+  const gerelateerd = gerelateerdeAutos(
+    auto,
+    autos,
+    3,
+    [vorigeAuto?.id, volgendeAuto?.id].filter((v): v is number => typeof v === "number")
+  );
+
   const autoUrl = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
   const getoondeP = prijsWeergave(auto);
   const carSchema = {
@@ -149,6 +161,9 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
         vorigeAuto={vorigeAuto}
         volgendeAuto={volgendeAuto}
         autoUrl={autoUrl}
+        // Als kant-en-klare JSX doorgegeven in plaats van als lijst auto's: zo blijven de
+        // omschrijvingen en optielijsten van die drie auto's op de server.
+        gerelateerd={<GerelateerdeVoertuigen autos={gerelateerd} />}
       />
     </>
   );

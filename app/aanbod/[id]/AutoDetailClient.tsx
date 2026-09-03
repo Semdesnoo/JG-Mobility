@@ -3,15 +3,27 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Mail, Phone, MapPin, CheckCircle, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, Phone, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
 import { bodytypeLabel } from "@/lib/voertuig";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
+import ContactBlok from "./ContactBlok";
 
-const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Contact"];
+// "Contact" stond hier ook. Dat is nu een eigen sectie onder de auto (ContactBlok):
+// de belangrijkste handeling van de pagina hoort niet achter een tabblad te zitten.
+// Op die vrijgekomen plek staat nu Inruilen — voorlopig een korte uitleg met een
+// contactknop; hier komt later de echte inruilfunctie.
+const tabs = ["Kenmerken", "Opties", "Omschrijving", "Financieren", "Inruilen"];
+
+/** De stappen zoals ze ook op /diensten/inkoop-taxatie staan — geen nieuwe beloftes. */
+const INRUIL_STAPPEN = [
+  { stap: "01", titel: "Gratis taxatie", tekst: "Wij bepalen de marktwaarde op basis van actuele data en de staat van je voertuig. Vrijblijvend." },
+  { stap: "02", titel: "Bod binnen 24 uur", tekst: "Je hoort snel wat je auto waard is. Geen onderhandelingstactieken, geen verborgen kosten." },
+  { stap: "03", titel: "Verrekend met deze auto", tekst: "Akkoord? Dan gaat dat bedrag van de prijs af en regelen wij de overdracht en het kenteken." },
+];
 
 // In Lease Auto's — dealer ID van JG Mobility (publiek, staat in de iframe-URL)
 const INLEASE_DEALER_ID = "13504";
@@ -22,10 +34,13 @@ export default function AutoDetailClient({
   vorigeAuto,
   volgendeAuto,
   autoUrl,
+  gerelateerd,
 }: {
   auto: Auto;
   vorigeAuto: Auto | undefined;
   volgendeAuto: Auto | undefined;
+  /** Op de server gerenderd blok "Vergelijkbare voertuigen". */
+  gerelateerd?: React.ReactNode;
   autoUrl: string;
 }) {
   const [activeTab, setActiveTab] = useState("Kenmerken");
@@ -57,7 +72,6 @@ export default function AutoDetailClient({
       }
     }, 0);
   };
-  const [interesse, setInteresse] = useState(false);
   const [fotoIndex, setFotoIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
@@ -565,65 +579,65 @@ export default function AutoDetailClient({
             </div>
           )}
 
-          {activeTab === "Contact" && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Neem contact op</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl">
-                <div>
-                  <p className="text-sm text-gray-500 mb-6 leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
-                    Interesse in de {auto.merk} {auto.model}? Neem vrijblijvend contact op met Jimi. We plannen graag een proefrit of beantwoorden al je vragen.
-                  </p>
-                  <div className="flex flex-col gap-4">
-                    {[
-                      { icon: <Mail size={14} />, label: "E-mail", value: "info@jgmobility.nl", href: `mailto:info@jgmobility.nl?subject=Interesse ${auto.merk} ${auto.model}` },
-                      { icon: <Phone size={14} />, label: "Telefoon", value: "+31 6 21331374", href: "tel:+31621331374" },
-                      { icon: <MapPin size={14} />, label: "Locatie", value: "Barendrecht, Zuid-Holland", href: "#" },
-                    ].map((item) => (
-                      <a key={item.label} href={item.href} className="flex items-center gap-4 group">
-                        <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
-                          <span style={{ color: "#001337" }}>{item.icon}</span>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>{item.label}</div>
-                          <div className="text-sm font-semibold group-hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{item.value}</div>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
 
-                {!interesse ? (
-                  <div className="p-6 rounded-none" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
-                    <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                      Interesse aangeven
-                    </h3>
-                    <p className="text-xs text-gray-400 mb-5" style={{ fontFamily: "var(--font-inter)" }}>
-                      Klik hieronder om direct een e-mail te sturen. Wij reageren binnen 24 uur.
+          {activeTab === "Inruilen" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Je auto inruilen
+              </h2>
+              <p className="text-sm text-gray-500 mb-8 leading-relaxed max-w-2xl" style={{ fontFamily: "var(--font-inter)" }}>
+                Rijd je nu al iets? Je huidige auto kan mee in de deal. Laat ons merk, model, bouwjaar en
+                kilometerstand weten, dan taxeren we hem vrijblijvend en verrekenen we dat bedrag met de prijs
+                van deze {auto.merk} {auto.model}.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-4xl">
+                {INRUIL_STAPPEN.map((s) => (
+                  <div key={s.stap} className="p-5 rounded-none" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
+                    <p className="text-[10px] tracking-widest uppercase mb-2" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
+                      {s.stap}
                     </p>
-                    <a
-                      href={`mailto:info@jgmobility.nl?subject=Interesse in ${auto.merk} ${auto.model} (${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""})&body=Hallo Jimi,%0D%0A%0D%0AIk heb interesse in de ${auto.merk} ${auto.model} uit ${auto.bouwjaar} (${auto.km.toLocaleString("nl-NL")} km) voor ${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""}. Kunt u contact met mij opnemen?%0D%0A%0D%0AMet vriendelijke groet,`}
-                      onClick={() => setTimeout(() => setInteresse(true), 500)}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
-                      style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
-                    >
-                      <Mail size={14} />
-                      Stuur interesse-mail
-                      <ArrowRight size={14} />
-                    </a>
+                    <h3 className="text-base font-bold mb-2" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                      {s.titel}
+                    </h3>
+                    <p className="text-xs leading-relaxed" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>
+                      {s.tekst}
+                    </p>
                   </div>
-                ) : (
-                  <div className="p-6 rounded-none flex flex-col items-center justify-center gap-3 text-center" style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}>
-                    <CheckCircle size={28} color="#001337" />
-                    <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>E-mailclient geopend!</p>
-                    <p className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>We nemen zo snel mogelijk contact op.</p>
-                  </div>
-                )}
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`https://wa.me/31621331374?text=${encodeURIComponent(
+                    `Hallo Jimi, ik heb interesse in de ${auto.merk} ${auto.model} en wil mijn huidige auto inruilen.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
+                  style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                >
+                  Inruilprijs opvragen
+                  <ArrowRight size={14} />
+                </a>
+                <Link
+                  href="/diensten/inkoop-taxatie"
+                  className="flex items-center gap-2 px-6 py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-70"
+                  style={{ border: "1px solid rgba(0,19,55,0.15)", color: "#001337", fontFamily: "var(--font-inter)" }}
+                >
+                  Hoe onze taxatie werkt
+                  <ChevronRight size={14} />
+                </Link>
               </div>
             </motion.div>
           )}
 
         </div>
       </section>
+
+      <ContactBlok auto={auto} />
+
+      {gerelateerd}
 
       {/* Navigatie vorige/volgende */}
       <section className="py-12 px-6" style={{ backgroundColor: "#f5f5f5", borderTop: "1px solid rgba(0,19,55,0.06)" }}>
