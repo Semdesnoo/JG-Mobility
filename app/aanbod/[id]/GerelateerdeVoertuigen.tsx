@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import AutoKaart from "@/components/AutoKaart";
 import type { Auto } from "@/lib/autos";
@@ -22,16 +23,28 @@ export default function GerelateerdeVoertuigen({ autos }: { autos: Auto[] }) {
     <section aria-labelledby="gerelateerd-kop" className="py-16 px-6" style={{ backgroundColor: "#f5f5f5" }}>
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll>
-          <div className="mb-10">
-            <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-              Verder kijken
-            </p>
-            <h2 id="gerelateerd-kop" className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-              Vergelijkbare voertuigen
-            </h2>
-            <p className="text-sm mt-3 max-w-md" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-              Andere voertuigen uit ons aanbod in dezelfde prijsklasse.
-            </p>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                Verder kijken
+              </p>
+              <h2 id="gerelateerd-kop" className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Vergelijkbare voertuigen
+              </h2>
+              <p className="text-sm mt-3 max-w-md" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                Andere voertuigen uit ons aanbod in dezelfde prijsklasse.
+              </p>
+            </div>
+            {/* De balk met "Alle voertuigen" onderaan de pagina is weg; deze ene link houdt
+                de weg terug naar het overzicht open zonder er een tweede blok voor te maken. */}
+            <Link
+              href="/aanbod"
+              className="group flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:opacity-70 transition-opacity"
+              style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+            >
+              Bekijk het hele aanbod
+              <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </Link>
           </div>
         </AnimateOnScroll>
 

@@ -81,19 +81,9 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
   const auto = autoBySlug ?? autoById;
   if (!auto) notFound();
 
-  const idx = autos.findIndex((a) => a.slug === id || String(a.id) === id);
-  const vorigeAuto = autos[idx + 1];
-  const volgendeAuto = autos[idx - 1];
-
-  // De lijst is hier al binnen voor de vorige/volgende-navigatie, dus dit kost geen extra
-  // database-aanvraag. Die twee buren worden uitgesloten: ze staan een paar honderd pixels
-  // lager al met naam en toenaam in de balk.
-  const gerelateerd = gerelateerdeAutos(
-    auto,
-    autos,
-    3,
-    [vorigeAuto?.id, volgendeAuto?.id].filter((v): v is number => typeof v === "number")
-  );
+  // De volledige lijst is hier toch al binnen, dus het kiezen van vergelijkbare auto's
+  // kost geen extra database-aanvraag.
+  const gerelateerd = gerelateerdeAutos(auto, autos, 3);
 
   const autoUrl = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
   const getoondeP = prijsWeergave(auto);
@@ -158,8 +148,6 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
       />
       <AutoDetailClient
         auto={auto}
-        vorigeAuto={vorigeAuto}
-        volgendeAuto={volgendeAuto}
         autoUrl={autoUrl}
         // Als kant-en-klare JSX doorgegeven in plaats van als lijst auto's: zo blijven de
         // omschrijvingen en optielijsten van die drie auto's op de server.

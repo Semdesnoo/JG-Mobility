@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
 import ContactBlok from "./ContactBlok";
+import InruilFormulier from "./InruilFormulier";
 
 // "Contact" stond hier ook. Dat is nu een eigen sectie onder de auto (ContactBlok):
 // de belangrijkste handeling van de pagina hoort niet achter een tabblad te zitten.
@@ -31,20 +32,18 @@ const INLEASE_ORIGIN = "https://calculator.inleaseautos.nl";
 
 export default function AutoDetailClient({
   auto,
-  vorigeAuto,
-  volgendeAuto,
   autoUrl,
   gerelateerd,
 }: {
   auto: Auto;
-  vorigeAuto: Auto | undefined;
-  volgendeAuto: Auto | undefined;
   /** Op de server gerenderd blok "Vergelijkbare voertuigen". */
   gerelateerd?: React.ReactNode;
   autoUrl: string;
 }) {
   const [activeTab, setActiveTab] = useState("Kenmerken");
   const [calcArmed, setCalcArmed] = useState(false);
+  // Blijft true zodra het inruiltabblad één keer geopend is, zodat het formulier gemonteerd blijft.
+  const [inruilGeopend, setInruilGeopend] = useState(false);
   const [calcLoaded, setCalcLoaded] = useState(false);
   const armCalculator = () => setCalcArmed(true);
   const tabSectionRef = useRef<HTMLElement>(null);
@@ -64,6 +63,7 @@ export default function AutoDetailClient({
 
   const switchTab = (tab: string) => {
     if (tab === "Financieren") setCalcArmed(true);
+    if (tab === "Inruilen") setInruilGeopend(true);
     setActiveTab(tab);
     setTimeout(() => {
       if (tabSectionRef.current) {
@@ -580,8 +580,12 @@ export default function AutoDetailClient({
           )}
 
 
-          {activeTab === "Inruilen" && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          {/* Eenmaal geopend blijft dit paneel staan, verborgen in plaats van weggehaald.
+              Anders gooit één tik op een ander tabblad het halve ingevulde formulier weg —
+              inclusief vier al gekozen foto's. Dezelfde afweging als bij de calculator
+              hierboven, maar daar ging het om laadtijd en hier om werk van de bezoeker. */}
+          {inruilGeopend && (
+            <div style={{ display: activeTab === "Inruilen" ? "block" : "none" }}>
               <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
                 Je auto inruilen
               </h2>
@@ -607,29 +611,28 @@ export default function AutoDetailClient({
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <InruilFormulier auto={auto} autoUrl={autoUrl} />
+
+              <p className="text-xs mt-8" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
+                Liever even appen of eerst lezen hoe we taxeren?{" "}
                 <a
                   href={`https://wa.me/31621331374?text=${encodeURIComponent(
                     `Hallo Jimi, ik heb interesse in de ${auto.merk} ${auto.model} en wil mijn huidige auto inruilen.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                  className="font-semibold underline hover:opacity-70"
+                  style={{ color: "#001337" }}
                 >
-                  Inruilprijs opvragen
-                  <ArrowRight size={14} />
-                </a>
-                <Link
-                  href="/diensten/inkoop-taxatie"
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-70"
-                  style={{ border: "1px solid rgba(0,19,55,0.15)", color: "#001337", fontFamily: "var(--font-inter)" }}
-                >
-                  Hoe onze taxatie werkt
-                  <ChevronRight size={14} />
+                  Stuur een WhatsApp
+                </a>{" "}
+                of bekijk{" "}
+                <Link href="/diensten/inkoop-taxatie" className="font-semibold underline hover:opacity-70" style={{ color: "#001337" }}>
+                  hoe onze taxatie werkt
                 </Link>
-              </div>
-            </motion.div>
+                .
+              </p>
+            </div>
           )}
 
         </div>
@@ -639,34 +642,6 @@ export default function AutoDetailClient({
 
       {gerelateerd}
 
-      {/* Navigatie vorige/volgende */}
-      <section className="py-12 px-6" style={{ backgroundColor: "#f5f5f5", borderTop: "1px solid rgba(0,19,55,0.06)" }}>
-        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center gap-4">
-          {vorigeAuto ? (
-            <Link href={`/aanbod/${vorigeAuto.slug || vorigeAuto.id}`} className="group flex items-center gap-3 text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="text-[10px] tracking-widest uppercase text-gray-400">Vorige</div>
-                <div className="truncate">{vorigeAuto.merk} {vorigeAuto.model}</div>
-              </div>
-            </Link>
-          ) : <div />}
-
-          <Link href="/aanbod" className="text-xs tracking-widest uppercase hover:opacity-70 transition-opacity text-center" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-            Alle voertuigen
-          </Link>
-
-          {volgendeAuto ? (
-            <Link href={`/aanbod/${volgendeAuto.slug || volgendeAuto.id}`} className="group flex items-center gap-3 text-sm font-semibold text-right justify-end hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-              <div className="min-w-0">
-                <div className="text-[10px] tracking-widest uppercase text-gray-400">Volgende</div>
-                <div className="truncate">{volgendeAuto.merk} {volgendeAuto.model}</div>
-              </div>
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
-            </Link>
-          ) : <div />}
-        </div>
-      </section>
     </>
   );
 }

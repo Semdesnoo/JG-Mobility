@@ -55,21 +55,12 @@ function score(kandidaat: Auto, huidige: Auto): number {
  * netjes — nooit een half blok — maar het levert doodlopende wegen op precies waar je
  * iemand wilt laten doorkijken. Liever twee kaarten dan drie waarvan er één weg is.
  *
- * `uitsluiten` is voor de auto's die vlak eronder al in de vorige/volgende-balk staan.
- * Zonder dat staat dezelfde auto twee keer binnen een paar honderd pixels.
- *
  * Verborgen auto's zitten hier sowieso niet bij: die worden al bij het uitlezen uit de
  * database geweerd (zie lib/autos-db.ts).
  */
-export function gerelateerdeAutos(
-  huidige: Auto,
-  alle: Auto[],
-  aantal = 3,
-  uitsluiten: number[] = []
-): Auto[] {
-  const geblokkeerd = new Set([huidige.id, ...uitsluiten]);
+export function gerelateerdeAutos(huidige: Auto, alle: Auto[], aantal = 3): Auto[] {
   return alle
-    .filter((a) => !geblokkeerd.has(a.id) && !a.verkocht)
+    .filter((a) => a.id !== huidige.id && !a.verkocht)
     .sort((a, b) => score(a, huidige) - score(b, huidige))
     .slice(0, aantal);
 }
