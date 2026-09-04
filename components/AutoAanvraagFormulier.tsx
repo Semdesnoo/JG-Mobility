@@ -6,14 +6,23 @@ import type { Auto } from "@/lib/autos";
 import { verkleinFoto } from "@/lib/foto-verkleinen";
 
 /**
- * Inruilaanvraag bij een auto uit het aanbod.
+ * Een aanvraag waarbij de bezoeker zijn eigen auto beschrijft.
+ *
+ * Twee smaken, één formulier:
+ * • "inruil"  — op de pagina van een auto uit het aanbod: wat is mijn auto waard als ik
+ *   hem inruil tegen déze auto?
+ * • "taxatie" — op Inkoop & Taxatie: wat is mijn auto waard als ik hem verkoop?
+ *
+ * Ze vragen bijna hetzelfde en verwerken precies hetzelfde, dus het is één component
+ * gebleven. Een tweede kopie zou binnen een half jaar uit de pas lopen — dat is in deze
+ * codebase al drie keer gebeurd met de autokaart.
  *
  * De bezoeker vult zijn eigen kenteken in, wij zoeken dat op bij de RDW en tonen wat we
  * vinden. Dat is niet alleen service: het scheelt Jimi het narekenen van een typefout, en
  * de klant ziet meteen dat hij de goede auto te pakken heeft.
  *
- * De aanvraag gaat naar /api/inruil en komt daar zowel per mail als in het
- * Aanvragen-overzicht van het dashboard terecht.
+ * De aanvraag gaat naar /api/inruil of /api/taxatie en komt daar zowel per mail als in
+ * het Aanvragen-overzicht van het dashboard terecht.
  *
  * LET OP BIJ WIJZIGEN
  * Dit formulier controleert het antwoord van de server voordat het "gelukt" toont. Twee
@@ -23,6 +32,26 @@ import { verkleinFoto } from "@/lib/foto-verkleinen";
  */
 
 const MAX_FOTOS = 4;
+
+export type AanvraagSoort = "inruil" | "taxatie";
+
+const TEKSTEN: Record<
+  AanvraagSoort,
+  { knop: string; endpoint: string; bevestiging: string; privacy: string }
+> = {
+  inruil: {
+    knop: "Aanvraag versturen",
+    endpoint: "/api/inruil",
+    bevestiging: "en neemt contact met je op met een indicatie van de inruilwaarde",
+    privacy: "We gebruiken je gegevens alleen om je inruilaanvraag te beantwoorden.",
+  },
+  taxatie: {
+    knop: "Taxatie aanvragen",
+    endpoint: "/api/taxatie",
+    bevestiging: "en neemt binnen 24 uur contact met je op met een bod",
+    privacy: "We gebruiken je gegevens alleen om je taxatieaanvraag te beantwoorden.",
+  },
+};
 
 type RdwStand =
   | { soort: "leeg" }
@@ -49,10 +78,23 @@ function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: str
   );
 }
 
-export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl: string }) {
+export default function AutoAanvraagFormulier({
+  soort,
+  auto,
+  autoUrl,
+}: {
+  soort: AanvraagSoort;
+  /** Alleen bij een inruilaanvraag: de auto waar de bezoeker op reageert. */
+  auto?: Auto;
+  autoUrl?: string;
+}) {
+  const tekstenVanSoort = TEKSTEN[soort];
   const [kenteken, setKenteken] = useState("");
   const [km, setKm] = useState("");
   const [bijzonderheden, setBijzonderheden] = useState("");
+  // Alleen bij een taxatie: waar de verkoper zelf aan denkt. Scheelt een rondje heen en
+  // weer als zijn verwachting mijlenver van de markt af ligt.
+  const [gewenstePrijs, setGewenstePrijs] = useState("");
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
   const [telefoon, setTelefoon] = useState("");
@@ -145,13 +187,16 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
       fd.append("email", email);
       fd.append("telefoon", telefoon);
       fd.append("mijnAuto", rdw.soort === "gevonden" ? rdw.omschrijving : "");
-      fd.append("autoNaam", `${auto.merk} ${auto.model}`);
-      fd.append("autoId", String(auto.id));
-      fd.append("autoUrl", autoUrl);
+      if (auto) {
+        fd.append("autoNaam", `${auto.merk} ${auto.model}`);
+        fd.append("autoId", String(auto.id));
+        fd.append("autoUrl", autoUrl ?? "");
+      }
+      if (soort === "taxatie") fd.append("gewenstePrijs", gewenstePrijs);
       fd.append("website", honeypot.current?.value ?? "");
       fotos.forEach((f) => f && fd.append("fotos", f));
 
-      const res = await fetch("/api/inruil", { method: "POST", body: fd });
+      const res = await fetch(tekstenVanSoort.endpoint, { method: "POST", body: fd });
       const data = await res.json().catch(() => null);
 
       // Wél kijken of het gelukt is voordat we "gelukt" zeggen.
@@ -177,8 +222,8 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
           Je aanvraag is binnen
         </h3>
         <p className="text-sm max-w-md" style={{ color: "rgba(0,19,55,0.55)", fontFamily: "var(--font-inter)" }}>
-          Jimi bekijkt je {rdw.soort === "gevonden" ? rdw.omschrijving : "auto"} en neemt contact met je op met een
-          indicatie van de inruilwaarde bij deze {auto.merk} {auto.model}.
+          Jimi bekijkt je {rdw.soort === "gevonden" ? rdw.omschrijving : "auto"} {tekstenVanSoort.bevestiging}
+          {auto ? ` bij deze ${auto.merk} ${auto.model}` : ""}.
         </p>
       </div>
     );
@@ -305,6 +350,21 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
         </p>
       </div>
 
+      {soort === "taxatie" && (
+        <div className="mb-4 max-w-xs">
+          <Label htmlFor="inruil-prijs">Gewenste prijs (optioneel)</Label>
+          <input
+            id="inruil-prijs"
+            value={gewenstePrijs}
+            onChange={(e) => setGewenstePrijs(e.target.value.replace(/\D/g, "").slice(0, 8))}
+            inputMode="numeric"
+            placeholder="bijv. 8500"
+            className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
+            style={veldStijl}
+          />
+        </div>
+      )}
+
       <div className="mb-8">
         <Label htmlFor="inruil-bijzonderheden">Bijzonderheden (optioneel)</Label>
         <textarea
@@ -355,10 +415,10 @@ export default function InruilFormulier({ auto, autoUrl }: { auto: Auto; autoUrl
           style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
         >
           {bezig && <Loader2 size={14} className="animate-spin" />}
-          {bezig ? "Versturen…" : "Aanvraag versturen"}
+          {bezig ? "Versturen…" : tekstenVanSoort.knop}
         </button>
         <p className="text-xs max-w-xs" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
-          We gebruiken je gegevens alleen om je inruilaanvraag te beantwoorden.
+          {tekstenVanSoort.privacy}
         </p>
       </div>
     </form>

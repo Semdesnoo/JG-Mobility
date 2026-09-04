@@ -117,7 +117,7 @@ export default async function StadPage(props: {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/contact"
+              href="/diensten/inkoop-taxatie#taxatie-aanvragen"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold transition-all hover:scale-105"
               style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
             >
@@ -235,7 +235,7 @@ export default async function StadPage(props: {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/contact"
+              href="/diensten/inkoop-taxatie#taxatie-aanvragen"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold transition-all hover:scale-105"
               style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
             >

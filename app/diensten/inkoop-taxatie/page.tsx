@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Clock, TrendingUp, Shield, Phone } from "lucide-react";
+import { CheckCircle, Clock, TrendingUp, Shield } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import AutoAanvraagFormulier from "@/components/AutoAanvraagFormulier";
 
 const stappen = [
   { step: "01", title: "Neem contact op", desc: "Bel, mail of stuur een bericht. Vertel ons de basics: merk, model, bouwjaar en kilometerstand." },
@@ -27,7 +28,7 @@ export default function InkoopTaxatiePage() {
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 80% at 20% 60%, rgba(255,255,255,0.04) 0%, transparent 70%)" }} />
         <div className="relative max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Link href="/diensten" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase mb-6 hover:opacity-70 transition-opacity" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
+            <Link href="/diensten" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase mb-6 hover:opacity-70 transition-opacity" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               ← Diensten
             </Link>
           </motion.div>
@@ -117,22 +118,33 @@ export default function InkoopTaxatiePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 px-6" style={{ backgroundColor: "#ffffff", borderTop: "1px solid rgba(0,19,55,0.06)" }}>
-        <div className="max-w-3xl mx-auto text-center">
+      {/* Het taxatieformulier zelf. Hier stond een knop naar de contactpagina; wie zijn
+          auto wil laten taxeren moest daar opnieuw uitleggen waar het over ging. Nu kan
+          hij het in één keer kwijt, met kenteken en foto's erbij. */}
+      <section id="taxatie-aanvragen" className="py-16 px-6" style={{ backgroundColor: "#ffffff", borderTop: "1px solid rgba(0,19,55,0.06)" }}>
+        <div className="max-w-3xl mx-auto">
           <AnimateOnScroll>
-            <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Klaar om uw auto te verkopen?</h2>
-            <p className="text-sm text-gray-500 mb-8" style={{ fontFamily: "var(--font-inter)" }}>Neem contact op en ontvang binnen 24 uur een gratis taxatie.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
-                Gratis taxatie aanvragen
-                <ArrowRight size={14} />
-              </Link>
-              <a href="tel:+31621331374" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:opacity-85" style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}>
-                <Phone size={14} />
-                Bel direct
-              </a>
+            <div className="mb-10">
+              <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                Gratis en vrijblijvend
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Vraag je taxatie aan
+              </h2>
+              <p className="text-sm max-w-xl leading-relaxed" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
+                Vul je kenteken in — we halen merk, model en bouwjaar er automatisch bij. Hoe meer je
+                erbij zet, hoe scherper het bod dat je terugkrijgt. Je hoort binnen 24 uur van ons.
+              </p>
             </div>
+
+            <AutoAanvraagFormulier soort="taxatie" />
+
+            <p className="text-xs mt-8" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
+              Liever even bellen?{" "}
+              <a href="tel:+31621331374" className="font-semibold underline hover:opacity-70" style={{ color: "#001337" }}>
+                +31 6 21331374
+              </a>
+            </p>
           </AnimateOnScroll>
         </div>
       </section>

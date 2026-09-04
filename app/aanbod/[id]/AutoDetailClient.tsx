@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
 import ContactBlok from "./ContactBlok";
-import InruilFormulier from "./InruilFormulier";
+import AutoAanvraagFormulier from "@/components/AutoAanvraagFormulier";
 
 // "Contact" stond hier ook. Dat is nu een eigen sectie onder de auto (ContactBlok):
 // de belangrijkste handeling van de pagina hoort niet achter een tabblad te zitten.
@@ -611,7 +611,7 @@ export default function AutoDetailClient({
                 ))}
               </div>
 
-              <InruilFormulier auto={auto} autoUrl={autoUrl} />
+              <AutoAanvraagFormulier soort="inruil" auto={auto} autoUrl={autoUrl} />
 
               <p className="text-xs mt-8" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
                 Liever even appen of eerst lezen hoe we taxeren?{" "}

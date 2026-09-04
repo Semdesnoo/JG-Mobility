@@ -226,11 +226,11 @@ export default async function BlogPostPage(props: {
             Wij staan voor je klaar, zeven dagen per week van 10:00 tot 21:00.
           </p>
           <Link
-            href="/contact"
+            href="/diensten/inkoop-taxatie#taxatie-aanvragen"
             className="inline-flex items-center gap-2 px-8 py-4 text-sm font-semibold transition-all hover:scale-105"
             style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
           >
-            Contact opnemen <ArrowRight size={14} />
+            Taxatie aanvragen <ArrowRight size={14} />
           </Link>
         </AnimateOnScroll>
       </section>
