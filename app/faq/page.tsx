@@ -59,7 +59,7 @@ const faqItems = [
   {
     question: "Hoe neem ik contact op met JG Mobility?",
     answer:
-      "Bel of WhatsApp ons op +31 6 21331374, stuur een e-mail naar info@jgmobility.nl of vul het contactformulier in op onze website. We reageren altijd binnen één werkdag.",
+      "Bel of WhatsApp ons op +31 6 21331374, stuur een e-mail naar info@jgmobility.nl of vul het contactformulier in op onze website. We reageren altijd binnen 24 uur.",
   },
   {
     question: "Rijden jullie ook buiten Barendrecht voor taxaties?",

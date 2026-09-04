@@ -58,7 +58,7 @@ export default function ContactClient() {
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,255,255,0.03) 0%, transparent 70%)" }} />
         <div className="relative max-w-7xl mx-auto">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+            className="text-xs tracking-widest uppercase mb-3" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
             Neem contact op
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
@@ -102,15 +102,21 @@ export default function ContactClient() {
         <div className="ticker-track">
           {[0, 1].map((copy) => (
             <div key={copy} className="flex items-center gap-0">
+              {/* Wie hier is, heeft ons al gevonden — die heeft geen verkoopargumenten meer
+                  nodig maar antwoorden. Vandaar alleen controleerbare feiten, elk los te
+                  lezen, want de band schuift voorbij en niemand leest hem van begin tot eind.
+                  Let op "bereikbaar" in de tweede regel: de afsprakenplanner hierboven laat
+                  geen zondagen toe, dus een kale "elke dag open" zou de knop erboven
+                  tegenspreken. */}
               {[
-                "Kom gerust langs",
-                "Persoonlijk advies van Jimi",
-                "Geen verborgen kosten",
-                "Volledig ontzorgd van A tot Z",
-                "Eerlijke taxatie — altijd",
-                "Premium voertuigen, zorgvuldig geselecteerd",
-                "Barendrecht, Zuid-Holland",
-                "Direct contact, geen tussenpersoon",
+                "Arnhemseweg 10a, Barendrecht",
+                "Zeven dagen bereikbaar, 10:00–21:00",
+                "Bezoek en taxatie op afspraak",
+                "Bellen of appen met Jimi",
+                "Reactie binnen 24 uur",
+                "Tussen Rotterdam en Dordrecht",
+                "Taxatie gratis en vrijblijvend",
+                "Één aanspreekpunt: Jimi",
               ].map((tekst) => (
                 <span key={tekst} className="flex items-center gap-6 px-6">
                   <span
