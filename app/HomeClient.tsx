@@ -339,9 +339,9 @@ function ReviewsSection() {
           </div>
         </AnimateOnScroll>
 
-        {/* Review kaarten — Google-stijl: 6 op desktop (3 kol × 2 rijen), 1 kolom op mobiel.
-            De kaarten spiegelen Google's eigen opmaak: ronde avatar, 5 gekleurde sterren,
-            citaat, naam + "Review van Google"-regel, tijd geleden. */}
+        {/* Review kaarten — Google-stijl, vierkante kaarten naast elkaar op desktop.
+            3 kolommen op xl, 2 op md, 1 op mobiel. Avatars ook vierkant om bij de
+            Google-bedrijfspagina te blijven waar initialen in een vierkant staan. */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {reviews.slice(0, 6).map((review, i) => (
             <AnimateOnScroll key={review.naam} delay={i * 0.08}>
@@ -350,17 +350,17 @@ function ReviewsSection() {
                 style={{
                   backgroundColor: "#ffffff",
                   border: "1px solid rgba(0,19,55,0.06)",
-                  borderRadius: "16px",
+                  borderRadius: 0,
                 }}
               >
-                {/* Header: ronde avatar + naam + Google-sterretje */}
+                {/* Header: vierkante avatar + naam + "Review van Google" */}
                 <div className="flex items-start gap-3">
                   <div
                     className="w-10 h-10 flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
                     style={{
                       backgroundColor: review.kleur,
                       fontFamily: "var(--font-inter)",
-                      borderRadius: "9999px",
+                      borderRadius: 0,
                     }}
                   >
                     {review.initialen}
