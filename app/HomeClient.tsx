@@ -254,7 +254,7 @@ function ReviewsSection() {
 
             {/* Google score blok — spiegelt Google's eigen "Beoordelingen"-kaart */}
             <div
-              className="flex items-center gap-5 px-6 py-4 rounded-2xl"
+              className="flex items-center gap-5 px-6 py-4 rounded-none"
               style={{ backgroundColor: "#001337", minWidth: "300px", border: "1px solid rgba(255,255,255,0.08)" }}
             >
               <div className="min-w-0">
