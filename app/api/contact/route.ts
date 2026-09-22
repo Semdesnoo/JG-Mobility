@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { put } from "@vercel/blob";
 import sql from "@/lib/db";
 
 const TO_EMAIL = "info@jgmobility.nl";
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding: 8px 0; font-size: 13px; color: #666;">E-mail:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;"><a href="mailto:${email}">${email}</a></td></tr>
               ${telefoon ? `<tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Telefoon:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;">${telefoon}</td></tr>` : ""}
             </table>
-            <div style="margin-top: 24px; padding: 16px; background: white; border-left: 3px solid #ffffff; border-radius: 4px;">
+            <div style="margin-top: 24px; padding: 16px; background: white; border-left: 3px solid #ffffff; border-radius: 0;">
               <p style="font-size: 13px; color: #001337; margin: 0; white-space: pre-wrap;">${bericht}</p>
             </div>
           </div>
@@ -125,8 +126,8 @@ export async function POST(req: NextRequest) {
           <tr><td style="padding: 6px 0; font-size: 13px; color: #666;">Kilometerstand:</td><td style="padding: 6px 0; font-size: 13px; color: #001337;">${parseInt(km).toLocaleString("nl-NL")} km</td></tr>
           ${vraagprijs ? `<tr><td style="padding: 6px 0; font-size: 13px; color: #666;">Vraagprijs:</td><td style="padding: 6px 0; font-size: 13px; color: #001337;">€${parseInt(vraagprijs).toLocaleString("nl-NL")}</td></tr>` : ""}
         </table>
-        ${opmerking ? `<div style="padding: 16px; background: white; border-left: 3px solid #001337; border-radius: 4px; margin-bottom: 16px;"><p style="font-size: 13px; color: #001337; margin: 0; white-space: pre-wrap;">${opmerking}</p></div>` : ""}
-        ${fotoNamen ? `<div style="padding: 16px; background: white; border-radius: 4px;"><p style="font-size: 12px; color: #666; margin: 0 0 6px;">Bijgevoegde foto's:</p><p style="font-size: 12px; color: #001337; margin: 0;">${fotoNamen}</p></div>` : ""}
+        ${opmerking ? `<div style="padding: 16px; background: white; border-left: 3px solid #001337; border-radius: 0; margin-bottom: 16px;"><p style="font-size: 13px; color: #001337; margin: 0; white-space: pre-wrap;">${opmerking}</p></div>` : ""}
+        ${fotoNamen ? `<div style="padding: 16px; background: white; border-radius: 0;"><p style="font-size: 12px; color: #666; margin: 0 0 6px;">Bijgevoegde foto's:</p><p style="font-size: 12px; color: #001337; margin: 0;">${fotoNamen}</p></div>` : ""}
       </div>
     </div>
   `;
@@ -144,15 +145,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: result.error.message }, { status: 500 });
   }
 
+  // Consignatie-aanvraag: sleutels voor blob-pad en database-rij.
+  const now = new Date();
+  const id = `cos_${Date.now()}`;
+  const datum = now.toLocaleDateString("nl-NL");
+  const tijd = now.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+
+  // Foto's naar Vercel Blob uploaden zodat ze in het dashboard te bekijken zijn.
+  // Zonder token (bijv. lokaal) of bij een fout valt dit netjes weg: de aanvraag en de
+  // mail met bijlagen gaan sowieso door. De publieke blob-URL's zijn dezelfde opslag die
+  // het admin-dashboard al gebruikt voor de voorraadfoto's.
+  const fotoUrls: string[] = [];
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    for (const foto of fotos) {
+      if (fotoUrls.length >= 10) break;
+      try {
+        const veilig = (foto.name || "foto").replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await put(`consignatie/${id}/${veilig}`, foto, {
+          access: "public",
+          addRandomSuffix: true,
+        });
+        fotoUrls.push(blob.url);
+      } catch {
+        // upload van deze foto mislukt — sla over, de rest gaat door
+      }
+    }
+  }
+
   // Sla op in database
   try {
-    const now = new Date();
-    const id = `cos_${Date.now()}`;
-    const datum = now.toLocaleDateString("nl-NL");
-    const tijd = now.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+    await sql`ALTER TABLE cosignaties ADD COLUMN IF NOT EXISTS fotos JSONB DEFAULT '[]'`.catch(() => null);
     await sql`
-      INSERT INTO cosignaties (id, datum, tijd, naam, email, telefoon, merk, model, bouwjaar, km, vraagprijs, opmerking, aantal_fotos)
-      VALUES (${id}, ${datum}, ${tijd}, ${naam ?? ""}, ${email ?? ""}, ${telefoon ?? ""}, ${merk ?? ""}, ${model ?? ""}, ${bouwjaar ?? ""}, ${km ?? ""}, ${vraagprijs ?? ""}, ${opmerking ?? ""}, ${fotos.length})
+      INSERT INTO cosignaties (id, datum, tijd, naam, email, telefoon, merk, model, bouwjaar, km, vraagprijs, opmerking, aantal_fotos, fotos)
+      VALUES (${id}, ${datum}, ${tijd}, ${naam ?? ""}, ${email ?? ""}, ${telefoon ?? ""}, ${merk ?? ""}, ${model ?? ""}, ${bouwjaar ?? ""}, ${km ?? ""}, ${vraagprijs ?? ""}, ${opmerking ?? ""}, ${fotos.length}, ${JSON.stringify(fotoUrls)}::jsonb)
     `;
   } catch {
     // DB opslaan mislukt → mail is al verstuurd, geen blocker
