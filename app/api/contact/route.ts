@@ -49,17 +49,9 @@ export async function POST(req: NextRequest) {
         subject: `Nieuwe afspraak: ${datum} om ${tijd}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
-            <div style="padding: 0; line-height: 0; font-size: 0; text-align: center;">
-              ${(() => {
-                const src = logoDataUrl();
-                // Volledige-breedte header-banner (2000×423 → bij 600px breed ~127px hoog).
-                return src
-                  ? `<img src="${src}" alt="JG Mobility" width="600" height="127" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;mso-line-height-rule:exactly" />`
-                  : "";
-              })()}
-            </div>
-            <div style="background: #001337; padding: 18px 30px 22px; text-align: center;">
-              <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 0;">Nieuwe afspraakverzoek</p>
+            <div style="background: #001337; padding: 24px; text-align: center;">
+              <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
+              <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe afspraakverzoek</p>
             </div>
             <div style="padding: 32px; background: #f8f8f8;">
               <table style="width: 100%; border-collapse: collapse;">
@@ -89,17 +81,9 @@ export async function POST(req: NextRequest) {
       subject: `Nieuw contactbericht van ${naam}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
-          <div style="padding: 0; line-height: 0; font-size: 0; text-align: center;">
-            ${(() => {
-              const src = logoDataUrl();
-              // Volledige-breedte header-banner (2000×423 → bij 600px breed ~127px hoog).
-              return src
-                ? `<img src="${src}" alt="JG Mobility" width="600" height="127" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;mso-line-height-rule:exactly" />`
-                : "";
-            })()}
-          </div>
-          <div style="background: #001337; padding: 18px 30px 22px; text-align: center;">
-            <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 0;">Nieuw contactbericht</p>
+          <div style="background: #001337; padding: 24px; text-align: center;">
+            <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
+            <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuw contactbericht</p>
           </div>
           <div style="padding: 32px; background: #f8f8f8;">
             <table style="width: 100%; border-collapse: collapse;">
@@ -146,17 +130,9 @@ export async function POST(req: NextRequest) {
 
   const mailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
-      <div style="padding: 0; line-height: 0; font-size: 0; text-align: center;">
-        ${(() => {
-          const src = logoDataUrl();
-          // Volledige-breedte header-banner (2000×423 → bij 600px breed ~127px hoog).
-          return src
-            ? `<img src="${src}" alt="JG Mobility" width="600" height="127" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;mso-line-height-rule:exactly" />`
-            : "";
-        })()}
-      </div>
-      <div style="background: #001337; padding: 18px 30px 22px; text-align: center;">
-        <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 0;">Nieuwe consignatie-aanvraag</p>
+      <div style="background: #001337; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
+        <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe consignatie-aanvraag</p>
       </div>
       <div style="padding: 32px; background: #f8f8f8;">
         <h2 style="color: #001337; font-family: Georgia, serif; font-size: 18px; margin: 0 0 16px;">Aanbieder</h2>
@@ -248,17 +224,9 @@ export async function POST(req: NextRequest) {
           replyTo: email,
           subject: `Foto's bij consignatie: ${merk} ${model} (${naam})`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e2e8f0">
-            <div style="padding:0;line-height:0;font-size:0;text-align:center">
-              ${(() => {
-                const src = logoDataUrl();
-                // Volledige-breedte header-banner (2000×423 → bij 600px breed ~127px hoog).
-                return src
-                  ? `<img src="${src}" alt="JG Mobility" width="600" height="127" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;mso-line-height-rule:exactly" />`
-                  : "";
-              })()}
-            </div>
-            <div style="background:#001337;padding:18px 30px 22px;text-align:center">
-              <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin:0;">Foto's bij consignatie</div>
+            <div style="background:#001337;padding:20px;text-align:center">
+              <div style="color:#ffffff;font-family:Georgia,serif;font-size:20px;font-weight:bold;letter-spacing:1px">JG Mobility</div>
+              <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;">Foto's bij consignatie</div>
             </div>
             <div style="padding:24px;background:#f8f8f8">
               <p style="font-family:Arial;font-size:13px;color:#001337;margin:0;">Zie bijlagen voor de foto's van de ${merk} ${model} van ${naam}.</p>
