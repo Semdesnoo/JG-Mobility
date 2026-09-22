@@ -12,11 +12,32 @@
  * JavaScript voor naar de browser.
  */
 
+"use client";
+
+import { useEffect, useState } from "react";
+
 // Zelfde nummer als achter alle tel:-links op de site. Internationaal, zonder + of
 // spaties — zo wil wa.me het hebben.
 const WHATSAPP_NUMMER = "31621331374";
 
 export default function WhatsAppKnop() {
+  // Verberg de knop zodra het mobiele menu open is. De Header zet een
+  // data-attribuut op <body> zodra 'menuOpen' aan staat; wij lezen dat hier
+  // en renderen niets terwijl het er staat. Een korte animatie houdt het
+  // natuurlijk — geen abrupte pop.
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const check = () => setMenuOpen(document.body.hasAttribute("data-menu-open"));
+    check();
+    // Observer voor het geval een ander component het attribuut vanuit een
+    // ander deel van de boom zet — wij gebruiken alleen de Header, maar dit
+    // maakt de koppeling robuust tegen toekomstige wijzigingen.
+    const observer = new MutationObserver(check);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-menu-open"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <a
       href={`https://wa.me/${WHATSAPP_NUMMER}`}
@@ -24,8 +45,15 @@ export default function WhatsAppKnop() {
       rel="noopener noreferrer"
       aria-label="Stuur Jimi een WhatsApp-bericht"
       title="WhatsApp Jimi"
-      className="fixed bottom-4 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-110"
-      style={{ backgroundColor: "#ffffff" }}
+      aria-hidden={menuOpen || undefined}
+      tabIndex={menuOpen ? -1 : undefined}
+      className="fixed bottom-4 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110"
+      style={{
+        backgroundColor: "#ffffff",
+        opacity: menuOpen ? 0 : 1,
+        pointerEvents: menuOpen ? "none" : "auto",
+        transform: menuOpen ? "translateY(8px)" : "translateY(0)",
+      }}
     >
       {/* Het officiële WhatsApp-logo (Simple Icons, CC0) in de merkkleur. */}
       <svg width="26" height="26" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">

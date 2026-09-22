@@ -96,6 +96,20 @@ export default function Header() {
     setMobileDienstenOpen(false);
   }, [pathname]);
 
+  // Zet een body-flag zodat andere componenten (zoals de zwevende WhatsApp-knop)
+  // weten wanneer het mobiele menu open is. Op een gewone pagina staat de
+  // overlay nog steeds boven de knop qua z-index, maar op een smal scherm pakt
+  // de WhatsApp-knop soms pixels die buiten de overlay vallen — dan stoort 'ie
+  // in beeld. Met deze flag kan de knop zichzelf verbergen.
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.setAttribute("data-menu-open", "true");
+    } else {
+      document.body.removeAttribute("data-menu-open");
+    }
+    return () => document.body.removeAttribute("data-menu-open");
+  }, [menuOpen]);
+
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
