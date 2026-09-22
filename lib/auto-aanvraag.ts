@@ -162,15 +162,15 @@ export async function verwerkAutoAanvraag(req: NextRequest, soort: AanvraagSoort
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-      <div style="background:#001337;padding:24px;text-align:center">
+      <div style="background:#001337;padding:32px;text-align:center">
         ${(() => {
           const src = logoDataUrl();
+          // Alleen het logo — de merknaam zit al in de PNG.
           return src
-            ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+            ? `<img src="${src}" alt="JG Mobility" width="140" height="140" style="display:block;margin:0 auto;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none" />`
             : "";
         })()}
-        <h1 style="color:#ffffff;font-family:Georgia,serif;margin:0">JG Mobility</h1>
-        <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:8px 0 0">${labels.mailkop}</p>
+        <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:14px 0 0">${labels.mailkop}</p>
       </div>
       <div style="padding:32px;background:#f8f8f8">
         <h2 style="color:#001337;font-family:Georgia,serif;font-size:18px;margin:0 0 16px">Auto van de klant</h2>

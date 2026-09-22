@@ -103,7 +103,7 @@ export default function ConsignatiePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-xs tracking-widest uppercase mb-4"
-            style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
+            style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}
           >
             Vrijblijvend & gratis
           </motion.p>

@@ -49,15 +49,15 @@ export async function POST(req: NextRequest) {
         subject: `Nieuwe afspraak: ${datum} om ${tijd}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #001337; padding: 24px; text-align: center;">
+            <div style="background: #001337; padding: 32px; text-align: center;">
               ${(() => {
                 const src = logoDataUrl();
+                // Alleen het logo — de merknaam zit al in de PNG.
                 return src
-                  ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+                  ? `<img src="${src}" alt="JG Mobility" width="140" height="140" style="display:block;margin:0 auto;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none" />`
                   : "";
               })()}
-              <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
-              <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe afspraakverzoek</p>
+              <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 14px 0 0;">Nieuwe afspraakverzoek</p>
             </div>
             <div style="padding: 32px; background: #f8f8f8;">
               <table style="width: 100%; border-collapse: collapse;">
@@ -87,15 +87,15 @@ export async function POST(req: NextRequest) {
       subject: `Nieuw contactbericht van ${naam}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: #001337; padding: 24px; text-align: center;">
+          <div style="background: #001337; padding: 32px; text-align: center;">
             ${(() => {
               const src = logoDataUrl();
+              // Alleen het logo — de merknaam zit al in de PNG.
               return src
-                ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+                ? `<img src="${src}" alt="JG Mobility" width="140" height="140" style="display:block;margin:0 auto;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none" />`
                 : "";
             })()}
-            <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
-            <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuw contactbericht</p>
+            <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 14px 0 0;">Nieuw contactbericht</p>
           </div>
           <div style="padding: 32px; background: #f8f8f8;">
             <table style="width: 100%; border-collapse: collapse;">
@@ -142,15 +142,15 @@ export async function POST(req: NextRequest) {
 
   const mailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="background: #001337; padding: 24px; text-align: center;">
+      <div style="background: #001337; padding: 32px; text-align: center;">
         ${(() => {
           const src = logoDataUrl();
+          // Alleen het logo — de merknaam zit al in de PNG.
           return src
-            ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+            ? `<img src="${src}" alt="JG Mobility" width="140" height="140" style="display:block;margin:0 auto;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none" />`
             : "";
         })()}
-        <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
-        <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe consignatie-aanvraag</p>
+        <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 14px 0 0;">Nieuwe consignatie-aanvraag</p>
       </div>
       <div style="padding: 32px; background: #f8f8f8;">
         <h2 style="color: #001337; font-family: Georgia, serif; font-size: 18px; margin: 0 0 16px;">Aanbieder</h2>
@@ -242,14 +242,15 @@ export async function POST(req: NextRequest) {
           replyTo: email,
           subject: `Foto's bij consignatie: ${merk} ${model} (${naam})`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
-            <div style="background:#001337;padding:20px;text-align:center">
+            <div style="background:#001337;padding:32px;text-align:center">
               ${(() => {
                 const src = logoDataUrl();
+                // Alleen het logo — de merknaam zit al in de PNG.
                 return src
-                  ? `<img src="${src}" alt="JG Mobility" width="90" style="display:block;margin:0 auto 10px;width:90px;max-width:90px;height:auto;border:0" />`
+                  ? `<img src="${src}" alt="JG Mobility" width="140" height="140" style="display:block;margin:0 auto;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none" />`
                   : "";
               })()}
-              <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1.5px;text-transform:uppercase">Foto's bij consignatie</div>
+              <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-top:14px;">Foto's bij consignatie</div>
             </div>
             <div style="padding:24px;background:#f8f8f8">
               <p style="font-family:Arial;font-size:13px;color:#001337;margin:0;">Zie bijlagen voor de foto's van de ${merk} ${model} van ${naam}.</p>
