@@ -5,6 +5,28 @@ import sql from "@/lib/db";
 
 const TO_EMAIL = "info@jgmobility.nl";
 
+/**
+ * Het JG Mobility logo als data-URL, klaar om in mail-HTML te bakken.
+ * Server-side lezen we het PNG-bestand en stoppen het als base64 in de HTML
+ * zodat Gmail/Outlook de image niet als externe blokkeren.
+ */
+let _logoCache: string | null = null;
+function logoDataUrl(): string {
+  if (_logoCache) return _logoCache;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require("fs") as typeof import("fs");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require("path") as typeof import("path");
+    const p = path.join(process.cwd(), "public", "JG Mobility Transparant.png");
+    const buf = fs.readFileSync(p);
+    _logoCache = `data:image/png;base64,${buf.toString("base64")}`;
+    return _logoCache;
+  } catch {
+    return "";
+  }
+}
+
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
@@ -28,6 +50,12 @@ export async function POST(req: NextRequest) {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: #001337; padding: 24px; text-align: center;">
+              ${(() => {
+                const src = logoDataUrl();
+                return src
+                  ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+                  : "";
+              })()}
               <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
               <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe afspraakverzoek</p>
             </div>
@@ -60,6 +88,12 @@ export async function POST(req: NextRequest) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #001337; padding: 24px; text-align: center;">
+            ${(() => {
+              const src = logoDataUrl();
+              return src
+                ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+                : "";
+            })()}
             <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
             <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuw contactbericht</p>
           </div>
@@ -109,6 +143,12 @@ export async function POST(req: NextRequest) {
   const mailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background: #001337; padding: 24px; text-align: center;">
+        ${(() => {
+          const src = logoDataUrl();
+          return src
+            ? `<img src="${src}" alt="JG Mobility" width="100" style="display:block;margin:0 auto 12px;width:100px;max-width:100px;height:auto;border:0" />`
+            : "";
+        })()}
         <h1 style="color: #ffffff; font-family: Georgia, serif; margin: 0;">JG Mobility</h1>
         <p style="color: rgba(255,255,255,0.6); font-size: 12px; margin: 8px 0 0;">Nieuwe consignatie-aanvraag</p>
       </div>
@@ -201,7 +241,20 @@ export async function POST(req: NextRequest) {
           to: TO_EMAIL,
           replyTo: email,
           subject: `Foto's bij consignatie: ${merk} ${model} (${naam})`,
-          html: `<p style="font-family:Arial;font-size:13px;color:#001337;">Zie bijlagen voor de foto's van de ${merk} ${model} van ${naam}.</p>`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <div style="background:#001337;padding:20px;text-align:center">
+              ${(() => {
+                const src = logoDataUrl();
+                return src
+                  ? `<img src="${src}" alt="JG Mobility" width="90" style="display:block;margin:0 auto 10px;width:90px;max-width:90px;height:auto;border:0" />`
+                  : "";
+              })()}
+              <div style="color:rgba(255,255,255,0.6);font-size:11px;letter-spacing:1.5px;text-transform:uppercase">Foto's bij consignatie</div>
+            </div>
+            <div style="padding:24px;background:#f8f8f8">
+              <p style="font-family:Arial;font-size:13px;color:#001337;margin:0;">Zie bijlagen voor de foto's van de ${merk} ${model} van ${naam}.</p>
+            </div>
+          </div>`,
           attachments: bijlagen.map(b => ({ filename: b.filename, content: b.content })),
         });
       }
