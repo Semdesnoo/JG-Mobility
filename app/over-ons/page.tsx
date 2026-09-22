@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
@@ -28,21 +29,26 @@ export default function OverOnsPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center">
           <AnimateOnScroll direction="left">
             <div className="relative">
+              {/* Echte showroom-foto met Jimi en de BMW X5 M. De gradient blijft
+                  subtiel aanwezig voor visuele diepte zonder de foto te verbergen. */}
               <div
-                className="rounded-none overflow-hidden aspect-[3/4] flex items-center justify-center"
-                style={{ backgroundColor: "#001337" }}
+                className="aspect-[3/4] overflow-hidden"
+                style={{ borderRadius: "0" }}
               >
-                <div className="text-center relative z-10">
-                  <div className="text-8xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#ffffff", opacity: 0.15 }}>JG</div>
-                  <p className="text-white/30 text-xs tracking-widest uppercase mt-4" style={{ fontFamily: "var(--font-inter)" }}>Jimi Gaillard</p>
-                  <p className="text-white/20 text-xs mt-1" style={{ fontFamily: "var(--font-inter)" }}>Oprichter</p>
-                </div>
-                <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 60%)" }} />
+                <Image
+                  src="/jimi-showroom.png"
+                  alt="Jimi Gaillard in de showroom bij een BMW X5 M"
+                  width={1152}
+                  height={1366}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               {/* Decoratief element */}
               <div
                 className="absolute -bottom-4 -right-4 w-32 h-32 rounded-none -z-10"
-                style={{ backgroundColor: "#ffffff", opacity: 0.15 }}
+                style={{ backgroundColor: "#001337", opacity: 0.1 }}
               />
             </div>
           </AnimateOnScroll>

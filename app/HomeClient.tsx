@@ -645,8 +645,8 @@ export default function HomeClient({ autos }: { autos: Auto[] }) {
           <AnimateOnScroll direction="left">
             <div className="aspect-[4/3] rounded-none relative overflow-hidden">
               <Image
-                src="/Showroom Jimi Gaillard.png"
-                alt="Showroom Jimi Gaillard"
+                src="/jimi-showroom.png"
+                alt="Jimi Gaillard bij een BMW X5 M in de showroom"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
