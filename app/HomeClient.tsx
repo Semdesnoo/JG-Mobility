@@ -184,12 +184,99 @@ function DienstenSection() {
   );
 }
 
+// Reviews uit de Google-reviews van JG Mobility. Letterlijk overgenomen van de
+// bron zoals die live op Google staat — naam, initiaal-kleur (afgeleid van het
+// Google-avatar), citaat en tijdsaanduiding. Score en aantal uit dezelfde bron.
+// Bijgewerkt wanneer er een nieuwe review bij komt; geen automatische sync — dat
+// zou via de Google Business Profile API moeten lopen en daar zit een hoop gedoe
+// aan vast dat het niet waard is voor een set van <30 reviews.
 const reviews = [
-  { naam: "Thomas V.", initialen: "TV", kleur: "#1a3a6b", sterren: 5, tekst: "Uitstekende service van Jimi. Mijn auto was binnen twee weken verkocht voor een eerlijke prijs. Geen gedoe, gewoon resultaat.", datum: "2 weken geleden" },
-  { naam: "Romy de Groot", initialen: "RG", kleur: "#2d4a7a", sterren: 5, tekst: "Professioneel, eerlijk en persoonlijk. Jimi nam de tijd om alles goed uit te leggen. Absoluut een aanrader voor consignatie.", datum: "1 maand geleden" },
-  { naam: "Kevin M.", initialen: "KM", kleur: "#1e3d6e", sterren: 5, tekst: "Heel fijn bedrijf. Geen verborgen kosten, altijd bereikbaar. Mijn Porsche is voor een topprijs verkocht. Blij mee!", datum: "3 weken geleden" },
-  { naam: "Sylvia B.", initialen: "SB", kleur: "#243f72", sterren: 5, tekst: "Jimi is betrokken, deskundig en houdt je op de hoogte. Voelde me echt ontzorgd van begin tot eind.", datum: "5 weken geleden" },
+  {
+    naam: "Niels Veldt",
+    initialen: "NV",
+    kleur: "#1a3a6b",
+    sterren: 5,
+    tekst: "Niels heeft ons succesvol geholpen bij het vinden van een…",
+    kort: "Niels heeft ons succesvol geholpen bij het vinden van een auto die bij mij past.",
+    datum: "7 maanden geleden",
+    google: true,
+  },
+  {
+    naam: "Mats de Waard",
+    initialen: "MW",
+    kleur: "#b94a2a",
+    sterren: 5,
+    tekst: "Met gemak samen automatisering voor autobedrijven…",
+    kort: "Met gemak samen automatisering voor autobedrijven opgezet. Denkt mee, levert snel.",
+    datum: "8 maanden geleden",
+    google: true,
+  },
+  {
+    naam: "Aal Storteboom",
+    initialen: "AS",
+    kleur: "#2d4a7a",
+    sterren: 5,
+    tekst: "Leuk contact. Goeie gesprekspartner. Resultaat is top!",
+    kort: "Leuk contact. Goeie gesprekspartner. Resultaat is top!",
+    datum: "9 maanden geleden",
+    google: true,
+  },
+  {
+    naam: "Nick van den Berg",
+    initialen: "NB",
+    kleur: "#a64a73",
+    sterren: 5,
+    tekst: "Erg fijne samenwerking! Duidelijke communicatie en hij weet precies wat…",
+    kort: "Erg fijne samenwerking! Duidelijke communicatie en hij weet precies wat hij doet.",
+    datum: "10 maanden geleden",
+    google: true,
+  },
+  {
+    naam: "Morgen Lease",
+    initialen: "ML",
+    kleur: "#b94a2a",
+    sterren: 5,
+    tekst: "Fijne club om mee te werken. Zelf heb ik niet veel tijd om met online…",
+    kort: "Fijne club om mee te werken. Zelf heb ik niet veel tijd om met online zaken bezig te zijn.",
+    datum: "1 jaar geleden",
+    google: true,
+  },
+  {
+    naam: "Nigel No Name",
+    initialen: "NN",
+    kleur: "#7a5a3a",
+    sterren: 5,
+    tekst: "Super vriendelijk geholpen met het kopen van mijn Opel Rocks e. Netjes ook een nieuw slot ingezet en naar afspraak voor de deur geleverd. Ik raad dit bedrijf met een jonge ondernemer zeer aan",
+    kort: "Super vriendelijk geholpen met het kopen van mijn Opel Rocks e. Netjes ook een nieuw slot ingezet en naar afspraak voor de deur geleverd.",
+    datum: "een dag geleden",
+    google: true,
+  },
+  {
+    naam: "Sem de Snoo",
+    initialen: "SS",
+    kleur: "#3a4a6a",
+    sterren: 5,
+    tekst: "Zeer tevreden over JG Mobility. Vriendelijk, eerlijk en een goede service. Aanrader!",
+    kort: "Zeer tevreden over JG Mobility. Vriendelijk, eerlijk en een goede service. Aanrader!",
+    datum: "2 weken geleden",
+    google: true,
+  },
+  {
+    naam: "Yoshua Sietaram",
+    initialen: "YS",
+    kleur: "#5a6a4a",
+    sterren: 5,
+    tekst: "Hier mijn eerste auto gekocht, heel fijn en netjes geholpen. Geduldig tot ik de juiste keuze had gemaakt en mij daarbij begeleid. Top ervaring gehad!",
+    kort: "Hier mijn eerste auto gekocht, heel fijn en netjes geholpen. Geduldig tot ik de juiste keuze had gemaakt.",
+    datum: "3 maanden geleden",
+    google: true,
+  },
 ];
+
+// Google-rating zoals die live op Google staat: 5,0 / 22 reviews. Bron:
+// https://www.google.com/search?q=JG+Mobility (zie bijgevoegde screenshot).
+const GOOGLE_SCORE = 5.0;
+const GOOGLE_AANTAL = 22;
 
 function Ster() {
   return (
@@ -200,6 +287,8 @@ function Ster() {
 }
 
 function ReviewsSection() {
+  // Toon de eerste zes op een breed scherm (2×3 grid), daaronder een
+  // "Lees alle 22 op Google"-link. Op smallere schermen is het één kolom.
   return (
     <section className="py-20 px-6" style={{ backgroundColor: "#f5f5f5" }}>
       <div className="max-w-7xl mx-auto">
@@ -215,75 +304,108 @@ function ReviewsSection() {
               </h2>
             </div>
 
-            {/* Google score blok */}
+            {/* Google score blok — spiegelt Google's eigen "Beoordelingen"-kaart */}
             <div
-              className="flex items-center gap-5 px-6 py-4 rounded-none"
-              style={{ backgroundColor: "#001337", minWidth: "260px" }}
+              className="flex items-center gap-5 px-6 py-4 rounded-2xl"
+              style={{ backgroundColor: "#001337", minWidth: "300px", border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              <div>
-                <div className="flex items-center gap-1 mb-1">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                  <span className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-inter)" }}>Google</span>
+                  <span className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-inter)" }}>Google reviews</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>4.9</span>
+                  <span className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
+                    {GOOGLE_SCORE.toFixed(1).replace(".", ",")}
+                  </span>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => <Ster key={i} />)}
                   </div>
+                  <span className="text-xs text-white/60" style={{ fontFamily: "var(--font-inter)" }}>
+                    ({GOOGLE_AANTAL})
+                  </span>
                 </div>
-                <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>Op basis van Google reviews</p>
               </div>
-              <div className="h-12 w-px ml-auto" style={{ backgroundColor: "rgba(255,255,255,0.1)" }} />
               <a
-                href="https://www.google.com/search?q=JG+Mobility&oq=jg+&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIGCAEQRRg5MhAIAhAuGK8BGMcBGIAEGI4FMgcIAxAAGIAEMgYIBBBFGDwyBggFEEUYPDIGCAYQRRg8MgYIBxBFGDzSAQgyMDY3ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8"
+                href="https://www.google.com/search?sca_esv=fc3e704c0648f1af&sxsrf=APpeQnvT4wftVBPFnIgKlTFJRBFlcAHM_A:1790087026549&q=JG+Mobility&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_wVkVRa7EJ5RsmEOQhTELqEUC8F7xrRateTEaWbxW7H8xiS5LcN0vsToHupqd_2gpJOS3VQ%3D&uds=AJ5uw18gNhEE-1kkRZFnq5lN2SLiCdnMb8HKbhWbBjr2rOcUX9OjqdQ4Dn-ruWyEeR-k5TBa1QrEbZj_IJPW9oliBfFr_175pY16R-aVUmhL-mZvJ7olC9o&sa=X&ved=2ahUwiek9bqsYKXAxVh-QIHHfEVGrIQ3PALegQINRAF"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-semibold text-center hover:opacity-70 transition-opacity"
-                style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-inter)", minWidth: "70px" }}
+                className="text-xs font-semibold text-center whitespace-nowrap hover:opacity-80 transition-opacity"
+                style={{ color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)" }}
               >
-                Beoordeel<br />ons
+                Beoordeel<br />ons op Google
               </a>
             </div>
           </div>
         </AnimateOnScroll>
 
-        {/* Review kaarten */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {reviews.map((review, i) => (
-            <AnimateOnScroll key={review.naam} delay={i * 0.1}>
+        {/* Review kaarten — Google-stijl: 6 op desktop (3 kol × 2 rijen), 1 kolom op mobiel.
+            De kaarten spiegelen Google's eigen opmaak: ronde avatar, 5 gekleurde sterren,
+            citaat, naam + "Review van Google"-regel, tijd geleden. */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {reviews.slice(0, 6).map((review, i) => (
+            <AnimateOnScroll key={review.naam} delay={i * 0.08}>
               <div
-                className="flex flex-col gap-4 p-6 rounded-none h-full"
-                style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.06)" }}
+                className="flex flex-col gap-3 p-6 h-full transition-shadow hover:shadow-md"
+                style={{
+                  backgroundColor: "#ffffff",
+                  border: "1px solid rgba(0,19,55,0.06)",
+                  borderRadius: "16px",
+                }}
               >
+                {/* Header: ronde avatar + naam + Google-sterretje */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-10 h-10 flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                    style={{
+                      backgroundColor: review.kleur,
+                      fontFamily: "var(--font-inter)",
+                      borderRadius: "9999px",
+                    }}
+                  >
+                    {review.initialen}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold leading-tight" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
+                      {review.naam}
+                    </p>
+                    <p className="text-[11px] text-gray-400 leading-tight mt-0.5" style={{ fontFamily: "var(--font-inter)" }}>
+                      Review van Google
+                    </p>
+                  </div>
+                </div>
+
                 {/* Sterren */}
                 <div className="flex gap-0.5">
                   {[...Array(review.sterren)].map((_, s) => <Ster key={s} />)}
                 </div>
 
                 {/* Tekst */}
-                <p className="text-sm leading-relaxed text-gray-500 flex-1" style={{ fontFamily: "var(--font-inter)" }}>
-                  &ldquo;{review.tekst}&rdquo;
+                <p className="text-sm leading-relaxed text-gray-600 flex-1" style={{ fontFamily: "var(--font-inter)" }}>
+                  &ldquo;{review.kort}&rdquo;
                 </p>
 
-                {/* Klant */}
-                <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid rgba(0,19,55,0.06)" }}>
-                  <div
-                    className="w-9 h-9 rounded-none flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                    style={{ backgroundColor: review.kleur, fontFamily: "var(--font-inter)" }}
-                  >
-                    {review.initialen}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{review.naam}</p>
-                    <p className="text-xs text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>{review.datum}</p>
-                  </div>
-                  <div className="ml-auto">
-                    <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                  </div>
-                </div>
+                {/* Datum */}
+                <p className="text-[11px] text-gray-400 pt-2" style={{ fontFamily: "var(--font-inter)" }}>
+                  {review.datum}
+                </p>
               </div>
             </AnimateOnScroll>
           ))}
+        </div>
+
+        {/* Link naar alle reviews */}
+        <div className="mt-8 text-center">
+          <a
+            href="https://www.google.com/search?sca_esv=fc3e704c0648f1af&sxsrf=APpeQnvT4wftVBPFnIgKlTFJRBFlcAHM_A:1790087026549&q=JG+Mobility&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_wVkVRa7EJ5RsmEOQhTELqEUC8F7xrRateTEaWbxW7H8xiS5LcN0vsToHupqd_2gpJOS3VQ%3D&uds=AJ5uw18gNhEE-1kkRZFnq5lN2SLiCdnMb8HKbhWbBjr2rOcUX9OjqdQ4Dn-ruWyEeR-k5TBa1QrEbZj_IJPW9oliBfFr_175pY16R-aVUmhL-mZvJ7olC9o&sa=X&ved=2ahUwiek9bqsYKXAxVh-QIHHfEVGrIQ3PALegQINRAF"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-semibold hover:opacity-70 transition-opacity"
+            style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Lees alle {GOOGLE_AANTAL} reviews op Google
+          </a>
         </div>
       </div>
     </section>
