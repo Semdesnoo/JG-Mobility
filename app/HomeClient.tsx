@@ -192,56 +192,6 @@ function DienstenSection() {
 // aan vast dat het niet waard is voor een set van <30 reviews.
 const reviews = [
   {
-    naam: "Niels Veldt",
-    initialen: "NV",
-    kleur: "#1a3a6b",
-    sterren: 5,
-    tekst: "Niels heeft ons succesvol geholpen bij het vinden van een…",
-    kort: "Niels heeft ons succesvol geholpen bij het vinden van een auto die bij mij past.",
-    datum: "7 maanden geleden",
-    google: true,
-  },
-  {
-    naam: "Mats de Waard",
-    initialen: "MW",
-    kleur: "#b94a2a",
-    sterren: 5,
-    tekst: "Met gemak samen automatisering voor autobedrijven…",
-    kort: "Met gemak samen automatisering voor autobedrijven opgezet. Denkt mee, levert snel.",
-    datum: "8 maanden geleden",
-    google: true,
-  },
-  {
-    naam: "Aal Storteboom",
-    initialen: "AS",
-    kleur: "#2d4a7a",
-    sterren: 5,
-    tekst: "Leuk contact. Goeie gesprekspartner. Resultaat is top!",
-    kort: "Leuk contact. Goeie gesprekspartner. Resultaat is top!",
-    datum: "9 maanden geleden",
-    google: true,
-  },
-  {
-    naam: "Nick van den Berg",
-    initialen: "NB",
-    kleur: "#a64a73",
-    sterren: 5,
-    tekst: "Erg fijne samenwerking! Duidelijke communicatie en hij weet precies wat…",
-    kort: "Erg fijne samenwerking! Duidelijke communicatie en hij weet precies wat hij doet.",
-    datum: "10 maanden geleden",
-    google: true,
-  },
-  {
-    naam: "Morgen Lease",
-    initialen: "ML",
-    kleur: "#b94a2a",
-    sterren: 5,
-    tekst: "Fijne club om mee te werken. Zelf heb ik niet veel tijd om met online…",
-    kort: "Fijne club om mee te werken. Zelf heb ik niet veel tijd om met online zaken bezig te zijn.",
-    datum: "1 jaar geleden",
-    google: true,
-  },
-  {
     naam: "Nigel No Name",
     initialen: "NN",
     kleur: "#7a5a3a",
@@ -273,10 +223,10 @@ const reviews = [
   },
 ];
 
-// Google-rating zoals die live op Google staat: 5,0 / 22 reviews. Bron:
+// Google-rating zoals die live op Google staat: 5,0 / 3 reviews. Bron:
 // https://www.google.com/search?q=JG+Mobility (zie bijgevoegde screenshot).
 const GOOGLE_SCORE = 5.0;
-const GOOGLE_AANTAL = 22;
+const GOOGLE_AANTAL = 3;
 
 function Ster() {
   return (
@@ -287,8 +237,6 @@ function Ster() {
 }
 
 function ReviewsSection() {
-  // Toon de eerste zes op een breed scherm (2×3 grid), daaronder een
-  // "Lees alle 22 op Google"-link. Op smallere schermen is het één kolom.
   return (
     <section className="py-20 px-6" style={{ backgroundColor: "#f5f5f5" }}>
       <div className="max-w-7xl mx-auto">
@@ -339,11 +287,9 @@ function ReviewsSection() {
           </div>
         </AnimateOnScroll>
 
-        {/* Review kaarten — Google-stijl, vierkante kaarten naast elkaar op desktop.
-            3 kolommen op xl, 2 op md, 1 op mobiel. Avatars ook vierkant om bij de
-            Google-bedrijfspagina te blijven waar initialen in een vierkant staan. */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {reviews.slice(0, 6).map((review, i) => (
+        {/* Review kaarten — 3 reviews uit Google, vierkant naast elkaar op desktop. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {reviews.map((review, i) => (
             <AnimateOnScroll key={review.naam} delay={i * 0.08}>
               <div
                 className="flex flex-col gap-3 p-6 h-full transition-shadow hover:shadow-md"
@@ -404,7 +350,7 @@ function ReviewsSection() {
             style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-            Lees alle {GOOGLE_AANTAL} reviews op Google
+            Bekijk onze reviews op Google
           </a>
         </div>
       </div>
