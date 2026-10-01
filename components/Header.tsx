@@ -13,11 +13,11 @@ import { motion, AnimatePresence } from "framer-motion";
 const TELEFOON_LINK = "tel:+31621331374";
 const TELEFOON_TEKST = "06-21331374";
 
-// Wat er in het Diensten-menu hangt. Inruilen en financial lease staan al als eigen
-// item in de balk, dus die zouden hier dubbel staan — vandaar alleen de rest.
-// Consignatie is hierlangs bereikbaar; het staat niet als los item in de balk omdat
-// de balk dan niet meer op één regel past.
+// Wat er in het Diensten-menu hangt. Inruilen en financial lease horen hier onder
+// (keuze van de eigenaar): de balk zelf blijft zo rustig, met alleen het aanbod vooraan.
 const diensten = [
+  { label: "Inruilen", href: "/diensten/inkoop-taxatie" },
+  { label: "Financial lease", href: "/financial-lease" },
   { label: "Consignatie", href: "/consignatie" },
   { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
   { label: "Alle diensten", href: "/diensten" },
@@ -30,8 +30,6 @@ const navItems = [
   { label: "AANBOD", href: "/aanbod" },
   { label: "BEDRIJFSWAGENS", href: "/bedrijfswagens" },
   { label: "PERSONENAUTO'S", href: "/personenautos" },
-  { label: "INRUILEN", href: "/diensten/inkoop-taxatie" },
-  { label: "FINANCIAL LEASE", href: "/financial-lease" },
   { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
   { label: "OVER ONS", href: "/over-ons" },
   { label: "CONTACT", href: "/contact" },
