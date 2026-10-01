@@ -83,13 +83,44 @@ export default function HomeClient({
   const videoDesktopRef = useRef<HTMLVideoElement>(null);
   const videoMobielRef = useRef<HTMLVideoElement>(null);
 
+  /**
+   * De hero-video moet op de telefoon altijd lopen.
+   *
+   * WAAROM AUTOPLAY ALLEEN NIET GENOEG IS
+   * • React zet `muted` niet als attribuut in de server-HTML. Safari op de iPhone ziet dus
+   *   eerst een video mét geluid en weigert autoplay; daarom zetten we het hier zelf.
+   * • In de energiebesparingsmodus (iOS) of met databesparing (Android) wijst de browser
+   *   elke automatische play() af. Eén aanraking of scroll van de bezoeker telt wél als
+   *   toestemming — dan starten we hem alsnog.
+   * • Ga je naar een andere app en kom je terug, dan staat de video op pauze. Bij
+   *   terugkeer starten we hem opnieuw.
+   * Alleen de zichtbare video wordt gestart, zodat de telefoon niet ook de laptopversie laadt.
+   */
   useEffect(() => {
-    // Only play the video that is actually visible — avoids loading both on mobile
-    const ref = window.innerWidth < 768 ? videoMobielRef : videoDesktopRef;
-    if (ref.current) {
-      ref.current.muted = true;
-      ref.current.play().catch(() => {});
-    }
+    const video = (window.innerWidth < 768 ? videoMobielRef : videoDesktopRef).current;
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+
+    const speel = () => {
+      if (video.paused) video.play().catch(() => {});
+    };
+    const bijInteractie = ["touchstart", "pointerdown", "scroll", "keydown"] as const;
+    const bijTerugkeer = () => {
+      if (document.visibilityState === "visible") speel();
+    };
+
+    speel();
+    bijInteractie.forEach((e) => window.addEventListener(e, speel, { passive: true }));
+    document.addEventListener("visibilitychange", bijTerugkeer);
+    window.addEventListener("pageshow", speel);
+    return () => {
+      bijInteractie.forEach((e) => window.removeEventListener(e, speel));
+      document.removeEventListener("visibilitychange", bijTerugkeer);
+      window.removeEventListener("pageshow", speel);
+    };
   }, []);
 
   return (
