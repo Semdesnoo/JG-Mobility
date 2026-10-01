@@ -42,7 +42,7 @@ const diensten = [
     sub: "Uw nieuwe auto klaar voor de weg",
     desc: "Van een grondige APK-keuring tot een volledige detailing beurt — wij leveren uw voertuig af precies zoals u het wil hebben. Kies uit onze pakketten of stel zelf samen.",
     href: "/diensten/afleverpakketten",
-    punten: ["APK & keuring", "Professionele detailing", "Garantieopties", "Maatwerk mogelijk"],
+    punten: ["APK & keuring", "Professionele detailing", "Rijklaar afgeleverd", "Maatwerk mogelijk"],
   },
 ];
 

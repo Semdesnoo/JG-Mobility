@@ -14,7 +14,6 @@ import {
   Repeat,
   Play,
   Camera,
-  ShieldCheck,
   Info,
 } from "lucide-react";
 import { type Auto } from "@/lib/autos";
@@ -48,7 +47,6 @@ const WHATSAPP_NUMMER = "31621331374";
 /** Wat er bij ontbrekende gegevens staat: liever dit dan een lege regel. */
 const opAanvraag = (waarde?: string) => (waarde && waarde.trim()) || "Op aanvraag";
 
-const GARANTIE_STANDAARD = "Garantie mogelijk via onze afleverpakketten";
 const BIJZONDERHEDEN_STANDAARD =
   "Vraag ons gerust naar de staat — we zijn transparant over gebruikssporen.";
 
@@ -839,31 +837,32 @@ export default function AutoDetailClient({
         </div>
       </section>
 
-      {/* ── Garantie en gebruikssporen ──
-          Bewust niet achter een tabblad. Dit zijn de twee dingen waar een koper over
-          twijfelt bij een occasion: zit er garantie op, en wat ga ik tegenkomen als ik
-          hem van dichtbij bekijk. Staan ze er niet, dan vult hij ze zelf in — en dan
-          altijd somberder dan het is. */}
+      {/* ── Zelf bekijken en gebruikssporen ──
+          Bewust niet achter een tabblad. Een koper twijfelt bij een occasion vooral over
+          de staat. Geen garantiebeloftes hier (keuze van de eigenaar) — wel het aanbod om
+          de auto zelf te komen bekijken en een eerlijk verhaal over de gebruikssporen. */}
       <section className="py-14 px-6" style={{ backgroundColor: "#f5f5f5" }}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-6 md:p-7 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
             <div className="flex items-center gap-2.5 mb-3">
-              <ShieldCheck size={18} style={{ color: "#001337", flexShrink: 0 }} />
+              <CalendarDays size={18} style={{ color: "#001337", flexShrink: 0 }} />
               <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                Garantie
+                Zelf bekijken &amp; proefrijden
               </h2>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
-              {auto.garantie?.trim() || GARANTIE_STANDAARD}
+              Foto&apos;s zeggen veel, maar zelf kijken zegt meer. Plan een bezichtiging in
+              Barendrecht: dan nemen we de auto samen door en maak je een proefrit.
             </p>
-            <Link
-              href="/diensten/afleverpakketten"
+            <button
+              type="button"
+              onClick={naarBezichtiging}
               className="inline-flex items-center gap-1.5 text-sm font-semibold mt-4 underline hover:opacity-70"
               style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
             >
-              Bekijk onze afleverpakketten
+              Plan een bezichtiging
               <ArrowRight size={13} />
-            </Link>
+            </button>
           </div>
 
           <div className="p-6 md:p-7 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>

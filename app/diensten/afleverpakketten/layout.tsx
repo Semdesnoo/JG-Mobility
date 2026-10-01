@@ -3,19 +3,17 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Afleverpakketten",
   description:
-    "Neem uw nieuwe auto in topconditie in ontvangst met een afleverpakket van JG Mobility. Keuring, garantie en perfecte presentatie. Actief in Barendrecht, Rotterdam en heel Zuid-Holland.",
+    "Neem uw nieuwe auto in topconditie in ontvangst met een afleverpakket van JG Mobility. Keuring, detailing en perfecte presentatie. Actief in Barendrecht, Rotterdam en heel Zuid-Holland.",
   keywords: [
     "auto afleverpakket Barendrecht",
-    "auto garantie Rotterdam",
     "auto keuring Rotterdam",
     "auto aflevering Zuid-Holland",
-    "occasion garantie",
   ],
   alternates: { canonical: "https://www.jgmobility.nl/diensten/afleverpakketten" },
   openGraph: {
     title: "Afleverpakketten | JG Mobility",
     description:
-      "Afleverpakketten met keuring en garantie bij JG Mobility. Actief in Rotterdam, Barendrecht en omgeving.",
+      "Afleverpakketten met keuring en detailing bij JG Mobility. Actief in Rotterdam, Barendrecht en omgeving.",
     url: "https://www.jgmobility.nl/diensten/afleverpakketten",
   },
 };
@@ -35,7 +33,7 @@ const service = {
   "@type": "Service",
   name: "Auto Afleverpakketten",
   description:
-    "Professionele afleverpakketten inclusief APK-keuring, garantie en perfecte presentatie van uw nieuwe auto bij JG Mobility.",
+    "Professionele afleverpakketten inclusief APK-keuring, detailing en perfecte presentatie van uw nieuwe auto bij JG Mobility.",
   provider: { "@type": "AutoDealer", name: "JG Mobility", url: "https://www.jgmobility.nl" },
   areaServed: ["Barendrecht", "Rotterdam", "Ridderkerk", "Dordrecht", "Hendrik-Ido-Ambacht", "Spijkenisse", "Capelle aan den IJssel", "Zwijndrecht", "Zuid-Holland"],
   serviceType: "Auto Afleverpakketten",

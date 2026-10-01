@@ -10,7 +10,7 @@ import {
   Repeat,
   CreditCard,
   Handshake,
-  ShieldCheck,
+  BadgeEuro,
   Search,
   Package,
 } from "lucide-react";
@@ -31,14 +31,13 @@ const WHATSAPP_URL = "https://wa.me/31621331374";
 const WHATSAPP_BEDRIJFSWAGEN_URL =
   "https://wa.me/31621331374?text=Hoi%20Jimi%2C%20ik%20zoek%20een%20specifieke%20bedrijfswagen.%20Kun%20je%20meezoeken%3F";
 
-// De vier dingen waar elke koper binnen tien seconden antwoord op wil. "Mogelijk"
-// staat er bewust bij inruil en garantie: het hangt van de auto af, en een harde
-// belofte die we niet bij elk voertuig kunnen nakomen is geen belofte.
+// De vier dingen waar elke koper binnen tien seconden antwoord op wil. Alleen wat we
+// bij elke auto waarmaken — garantie staat hier bewust niet (keuze van de eigenaar).
 const usps = [
   { icon: <Repeat size={20} />, label: "Inruil mogelijk" },
   { icon: <CreditCard size={20} />, label: "Financial lease" },
   { icon: <Handshake size={20} />, label: "Persoonlijke service" },
-  { icon: <ShieldCheck size={20} />, label: "Garantie mogelijk" },
+  { icon: <BadgeEuro size={20} />, label: "Transparante prijzen" },
 ];
 
 // De bedrijfswagens waar in deze regio het meest naar gezocht wordt. De pagina's

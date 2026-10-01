@@ -45,7 +45,6 @@ const pakketten = [
       "Alles uit Comfort",
       "Volledige detailing beurt",
       "Lak- en glascoating",
-      "12 maanden garantie",
       "Thuisbezorgd op uw locatie",
       "Maatwerk op aanvraag",
     ],
