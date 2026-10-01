@@ -20,7 +20,7 @@ const diensten = [
     nummer: "02",
     title: "Consignatie",
     sub: "Uw auto verkopen zonder zorgen",
-    desc: "U levert uw auto in bij JG Mobility. Wij regelen alles: professionele fotografie, advertenties, onderhandelingen en de complete overdracht. U ontvangt de beste marktprijs — zonder ook maar één no-show.",
+    desc: "U blijft gewoon in uw auto rijden tot hij verkocht is. Wij regelen alles: professionele fotografie, advertenties, onderhandelingen en de complete overdracht. U ontvangt de beste marktprijs — zonder ook maar één no-show.",
     href: "/diensten/consignatie",
     // Zelfde vergoeding-formulering als op /consignatie en in de FAQ: geen kosten
     // vooraf, vergoeding alleen bij verkoop.

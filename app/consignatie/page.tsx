@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 // hier iets, wijzig het daar mee.
 const voordelen = [
   { icon: <TrendingUp size={22} />, title: "Hogere verkoopprijs", desc: "Wij kennen de markt. Wij weten hoe en waar te presenteren om de beste prijs te halen." },
-  { icon: <Clock size={22} />, title: "Wij ontzorgen jou", desc: "Geen foto's, geen advertenties, geen no-shows, geen gebel. Jij levert in — wij doen de rest." },
+  { icon: <Clock size={22} />, title: "Wij ontzorgen jou", desc: "Geen foto's, geen advertenties, geen no-shows, geen gebel. Jij rijdt gewoon door — wij doen de rest." },
   { icon: <Shield size={22} />, title: "Volledig veilig", desc: "Geen vreemden over de vloer, geen valse betalingen. Elke overdracht veilig en professioneel." },
   { icon: <Eye size={22} />, title: "Professionele presentatie", desc: "Professionele fotografie, advertentietekst en plaatsing op de grootste autoplatformen." },
   { icon: <Handshake size={22} />, title: "Persoonlijk & direct", desc: "Jimi begeleidt het volledige verkoopproces persoonlijk. Altijd direct contact, geen tussenpersonen." },
@@ -23,7 +23,7 @@ const voordelen = [
 // De vier stappen, in dezelfde formulering als op /diensten/consignatie.
 const stappen = [
   { step: "01", icon: <Camera size={20} />, title: "Aanmelden & taxatie", desc: "Vul het formulier in met foto's. Wij taxeren je auto en bepalen samen een realistische vraagprijs." },
-  { step: "02", icon: <Car size={20} />, title: "Inleveren & presentatie", desc: "Je levert de auto in bij JG Mobility. Wij verzorgen fotografie, advertentietekst en plaatsing." },
+  { step: "02", icon: <Car size={20} />, title: "Fotografie & presentatie", desc: "Wij maken professionele foto's en verzorgen advertentietekst en plaatsing. Jij blijft gewoon in je auto rijden." },
   { step: "03", icon: <Handshake size={20} />, title: "Wij verkopen", desc: "Bezichtigingen, onderhandelingen en de administratie nemen wij over. Jij hoeft nergens voor te komen." },
   { step: "04", icon: <User size={20} />, title: "Uitbetaling", desc: "Na verkoop ontvang je het afgesproken bedrag. Wij regelen betaling, kenteken en papieren." },
 ];
@@ -137,7 +137,7 @@ export default function ConsignatiePage() {
             className="text-base leading-relaxed max-w-xl mx-auto"
             style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)" }}
           >
-            U levert uw auto in bij JG Mobility. Wij regelen alles — van fotografie tot overdracht.
+            U blijft gewoon in uw auto rijden. Wij regelen alles — van fotografie tot overdracht.
             U ontvangt de beste prijs, zonder gedoe.
           </motion.p>
         </div>

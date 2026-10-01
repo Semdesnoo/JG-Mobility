@@ -118,7 +118,7 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         heading: "Wat betekent consignatie?",
-        body: "Consignatie is een verkoopmethode waarbij jij als eigenaar je auto in opdracht geeft aan JG Mobility. Jij levert de auto bij ons in; wij verkopen hem voor je en regelen de presentatie, de bezichtigingen, de onderhandelingen en alle administratie. Jij hoeft er verder niets voor te doen.",
+        body: "Consignatie is een verkoopmethode waarbij jij als eigenaar je auto in opdracht geeft aan JG Mobility. Jij rijdt gewoon door in je auto; wij verkopen hem voor je en regelen de presentatie, de bezichtigingen, de onderhandelingen en alle administratie. Jij hoeft er verder niets voor te doen.",
       },
       {
         // Dezelfde vier stappen als op /consignatie en /diensten/consignatie. Stonden
@@ -127,7 +127,7 @@ export const blogPosts: BlogPost[] = [
         body: "Het begint met een gratis taxatie. We kijken samen naar de staat van je auto en bepalen een eerlijke, marktconforme vraagprijs. Daarna verzorgen wij professionele foto's, plaatsen we de auto op de grootste autoplatformen en begeleiden we alle potentiële kopers. Zodra er een koper is, handelen wij de overdracht netjes af.",
         list: [
           "Stap 1: Aanmelden & taxatie — je meldt je auto aan met foto's, wij bepalen samen de vraagprijs",
-          "Stap 2: Inleveren & presentatie — fotografie, advertentietekst en plaatsing op de grootste autoplatformen",
+          "Stap 2: Fotografie & presentatie — jij rijdt gewoon door, wij verzorgen fotografie, advertentietekst en plaatsing op de grootste autoplatformen",
           "Stap 3: Wij verkopen — bezichtigingen, onderhandelingen en administratie",
           "Stap 4: Uitbetaling — je ontvangt het afgesproken bedrag, wij regelen kenteken en papieren",
         ],

@@ -12,12 +12,12 @@ const faqItems = [
   {
     question: "Wat is auto consignatie?",
     answer:
-      "Bij consignatie verkoopt JG Mobility jouw auto in jouw opdracht. Jij levert de auto bij ons in; wij verzorgen de presentatie, de advertenties, de bezichtigingen, de onderhandelingen en alle administratie. Pas bij een succesvolle verkoop betaal je een vergoeding.",
+      "Bij consignatie verkoopt JG Mobility jouw auto in jouw opdracht. Jij rijdt gewoon door in je auto tot hij verkocht is; wij verzorgen de presentatie, de advertenties, de bezichtigingen, de onderhandelingen en alle administratie. Pas bij een succesvolle verkoop betaal je een vergoeding.",
   },
   {
     question: "Hoe werkt consignatie bij JG Mobility?",
     answer:
-      "In vier stappen. 1) Je meldt je auto aan via het formulier met foto's; wij taxeren hem en bepalen samen een realistische vraagprijs. 2) Je levert de auto in bij JG Mobility en wij verzorgen fotografie, advertentietekst en plaatsing op de grootste autoplatformen. 3) Wij doen de bezichtigingen, de onderhandelingen en de administratie. 4) Na verkoop ontvang je het afgesproken bedrag en regelen wij de betaling, het kenteken en de papieren. Wij nemen binnen 24 uur contact op als je auto in ons aanbod past.",
+      "In vier stappen. 1) Je meldt je auto aan via het formulier met foto's; wij taxeren hem en bepalen samen een realistische vraagprijs. 2) Wij verzorgen fotografie, advertentietekst en plaatsing — jij blijft ondertussen gewoon in je auto rijden op de grootste autoplatformen. 3) Wij doen de bezichtigingen, de onderhandelingen en de administratie. 4) Na verkoop ontvang je het afgesproken bedrag en regelen wij de betaling, het kenteken en de papieren. Wij nemen binnen 24 uur contact op als je auto in ons aanbod past.",
   },
   {
     question: "Wat zijn de kosten voor consignatie?",

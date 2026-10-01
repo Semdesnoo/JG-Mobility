@@ -22,7 +22,7 @@ const voordelen = [
 
 const stappen = [
   { icon: <Camera size={20} />, step: "01", title: "Aanmelden & taxatie", desc: "Vul het formulier in met foto's. Wij taxeren uw auto en bepalen samen een realistische vraagprijs." },
-  { icon: <Car size={20} />, step: "02", title: "Inleveren & presentatie", desc: "U levert de auto in bij JG Mobility. Wij verzorgen fotografie, advertentietekst en plaatsing." },
+  { icon: <Car size={20} />, step: "02", title: "Fotografie & presentatie", desc: "Wij maken professionele foto's en verzorgen advertentietekst en plaatsing. U blijft gewoon in uw auto rijden." },
   { icon: <Handshake size={20} />, step: "03", title: "Wij verkopen", desc: "Bezichtigingen, onderhandelingen en de administratie nemen wij over. U hoeft nergens voor te komen." },
   { icon: <User size={20} />, step: "04", title: "Uitbetaling", desc: "Na verkoop ontvangt u het afgesproken bedrag. Wij regelen betaling, kenteken en papieren." },
 ];
@@ -45,7 +45,7 @@ export default function ConsignatieDienstPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }}
             className="text-sm md:text-base max-w-xl" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)", lineHeight: 1.8 }}>
-            U levert uw auto in bij JG Mobility. Wij regelen alles — van fotografie tot overdracht. U ontvangt de beste prijs, zonder gedoe.
+            U blijft gewoon in uw auto rijden. Wij regelen alles — van fotografie tot overdracht. U ontvangt de beste prijs, zonder gedoe.
           </motion.p>
         </div>
       </div>
