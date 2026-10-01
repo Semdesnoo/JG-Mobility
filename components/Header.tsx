@@ -27,9 +27,9 @@ const diensten = [
 // op 12px / px-3 vanaf lg en gaan ze pas op xl naar de ruimere variant — zo past de
 // balk op een 1024px-laptop zonder tweede regel of afgekapte labels.
 const navItems = [
-  { label: "AANBOD", href: "/aanbod" },
-  { label: "BEDRIJFSWAGENS", href: "/bedrijfswagens" },
   { label: "PERSONENAUTO'S", href: "/personenautos" },
+  { label: "BEDRIJFSWAGENS", href: "/bedrijfswagens" },
+  { label: "AANBOD", href: "/aanbod" },
   { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
   { label: "OVER ONS", href: "/over-ons" },
   { label: "CONTACT", href: "/contact" },
