@@ -4,25 +4,39 @@ import { useState, useRef } from "react";
 import { Send, Upload, X, CheckCircle, Car, User, Camera, TrendingUp, Clock, Shield, Eye, Handshake, BadgeCheck, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
 
+// Let op: de voorwaarden, de vergoeding en de stappen staan ook op
+// /diensten/consignatie, in de FAQ en in het blogartikel "wat-is-consignatie". Ze
+// liepen uit elkaar (drie, vier en vijf stappen, en twee verschillende verhalen over
+// waar de auto tijdens de verkoop staat). Deze pagina is sindsdien de maat: wijzig je
+// hier iets, wijzig het daar mee.
 const voordelen = [
   { icon: <TrendingUp size={22} />, title: "Hogere verkoopprijs", desc: "Wij kennen de markt. Wij weten hoe en waar te presenteren om de beste prijs te halen." },
   { icon: <Clock size={22} />, title: "Wij ontzorgen jou", desc: "Geen foto's, geen advertenties, geen no-shows, geen gebel. Jij levert in — wij doen de rest." },
   { icon: <Shield size={22} />, title: "Volledig veilig", desc: "Geen vreemden over de vloer, geen valse betalingen. Elke overdracht veilig en professioneel." },
-  { icon: <Eye size={22} />, title: "Premiumuitstraling", desc: "Professionele fotografie en plaatsing op de juiste premium kanalen voor maximaal bereik." },
+  { icon: <Eye size={22} />, title: "Professionele presentatie", desc: "Professionele fotografie, advertentietekst en plaatsing op de grootste autoplatformen." },
   { icon: <Handshake size={22} />, title: "Persoonlijk & direct", desc: "Jimi begeleidt het volledige verkoopproces persoonlijk. Altijd direct contact, geen tussenpersonen." },
-  { icon: <BadgeCheck size={22} />, title: "€0 kosten vooraf", desc: "Geen instapkosten, geen advertentiekosten. Onze vergoeding is enkel verschuldigd bij verkoop." },
+  { icon: <BadgeCheck size={22} />, title: "Geen kosten vooraf", desc: "Geen instapkosten, geen advertentiekosten. Onze vergoeding betaal je alleen bij een succesvolle verkoop." },
   { icon: <Car size={22} />, title: "Maximaal bereik", desc: "Jouw auto wordt gepresenteerd aan ons kopers-netwerk én meerdere advertentieplatformen." },
   { icon: <CreditCard size={22} />, title: "Zorgeloos afronden", desc: "Wij regelen betaling, kentekenoverdracht en alle papieren. Jij ontvangt het geld — zonder stress." },
+];
+
+// De vier stappen, in dezelfde formulering als op /diensten/consignatie.
+const stappen = [
+  { step: "01", icon: <Camera size={20} />, title: "Aanmelden & taxatie", desc: "Vul het formulier in met foto's. Wij taxeren je auto en bepalen samen een realistische vraagprijs." },
+  { step: "02", icon: <Car size={20} />, title: "Inleveren & presentatie", desc: "Je levert de auto in bij JG Mobility. Wij verzorgen fotografie, advertentietekst en plaatsing." },
+  { step: "03", icon: <Handshake size={20} />, title: "Wij verkopen", desc: "Bezichtigingen, onderhandelingen en de administratie nemen wij over. Jij hoeft nergens voor te komen." },
+  { step: "04", icon: <User size={20} />, title: "Uitbetaling", desc: "Na verkoop ontvang je het afgesproken bedrag. Wij regelen betaling, kenteken en papieren." },
 ];
 
 const inputStyle = {
   width: "100%",
   backgroundColor: "#f9f9fb",
   border: "1px solid rgba(0,19,55,0.12)",
-  borderRadius: "8px",
+  borderRadius: 0,
   padding: "15px 18px",
   color: "#001337",
-  fontSize: "15px",
+  // 16px: onder die maat zoomt Safari op iOS automatisch in zodra je in een veld tikt.
+  fontSize: "16px",
   fontFamily: "var(--font-inter)",
   outline: "none",
 };
@@ -255,18 +269,17 @@ export default function ConsignatiePage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
-              In 3 stappen
+              In 4 stappen
             </p>
             <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
               Hoe werkt het?
             </h2>
+            <p className="text-sm mt-3" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>
+              Wij beoordelen elke aanmelding en nemen binnen 24 uur contact op als uw auto in ons aanbod past.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { step: "01", icon: <Camera size={20} />, title: "Formulier invullen", desc: "Vul de gegevens van uw auto in en voeg foto's toe." },
-              { step: "02", icon: <Car size={20} />, title: "Wij beoordelen", desc: "JG Mobility beoordeelt uw auto en bepaalt of het in ons aanbod past." },
-              { step: "03", icon: <User size={20} />, title: "Contact bij interesse", desc: "Als we interesse hebben, nemen we binnen 24 uur contact op." },
-            ].map((item) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            {stappen.map((item) => (
               <div key={item.step} className="flex items-start gap-4">
                 <div
                   className="flex-shrink-0 w-11 h-11 rounded-none flex items-center justify-center"
@@ -307,8 +320,8 @@ export default function ConsignatiePage() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-center justify-center rounded-full"
-                style={{ width: 120, height: 120, backgroundColor: "#001337" }}
+                className="flex items-center justify-center"
+                style={{ width: 120, height: 120, backgroundColor: "#001337", borderRadius: 0 }}
               >
                 <motion.div
                   initial={{ scale: 0, opacity: 0 }}
@@ -340,7 +353,7 @@ export default function ConsignatiePage() {
               {/* Jouw gegevens */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                  <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                     <User size={14} color="#001337" />
                   </div>
                   <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Uw gegevens</h2>
@@ -366,7 +379,7 @@ export default function ConsignatiePage() {
               {/* Autogegevens */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                  <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                     <Car size={14} color="#001337" />
                   </div>
                   <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Autogegevens</h2>
@@ -409,7 +422,7 @@ export default function ConsignatiePage() {
               {/* Foto's */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 rounded flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                  <div className="w-8 h-8 rounded-none flex items-center justify-center" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                     <Camera size={14} color="#001337" />
                   </div>
                   <div>

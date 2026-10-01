@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 
+// Titel en omschrijving volgen de pagina: daar staat nu "Gratis inruilvoorstel" en niet
+// meer "Inkoop & Taxatie". De inkoop- en taxatie-zoektermen blijven er wel in staan —
+// daarop wordt gezocht, en het is nog steeds dezelfde dienst op dezelfde URL.
 export const metadata: Metadata = {
-  title: "Auto Inkoop & Taxatie",
+  title: "Gratis inruilvoorstel — auto inruilen of verkopen",
   description:
-    "Wij kopen uw auto direct in voor de beste marktprijs. Gratis taxatie bij JG Mobility, actief in Barendrecht, Rotterdam, Ridderkerk, Dordrecht en heel Zuid-Holland. Snel en transparant.",
+    "Wat is je auto waard? Vul je kenteken in en ontvang binnen 24 uur een gratis inruilvoorstel van JG Mobility in Barendrecht. Inruilen tegen een voertuig uit ons aanbod of direct verkopen — altijd vrijblijvend.",
   keywords: [
+    "auto inruilen Barendrecht",
+    "inruilvoorstel auto",
+    "gratis inruilvoorstel",
     "auto inkoop Barendrecht",
     "auto inkoop Rotterdam",
     "auto inkoop Ridderkerk",
@@ -17,9 +23,9 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://www.jgmobility.nl/diensten/inkoop-taxatie" },
   openGraph: {
-    title: "Auto Inkoop & Taxatie | JG Mobility",
+    title: "Gratis inruilvoorstel | JG Mobility",
     description:
-      "Gratis taxatie en directe inkoop van uw auto. Actief in Rotterdam, Barendrecht, Ridderkerk en omgeving. Eerlijke prijs, snel geregeld.",
+      "Vul je kenteken in en ontvang binnen 24 uur een gratis inruilvoorstel. Inruilen of direct verkopen, altijd vrijblijvend. JG Mobility, Barendrecht.",
     url: "https://www.jgmobility.nl/diensten/inkoop-taxatie",
   },
 };
@@ -30,16 +36,16 @@ const breadcrumb = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://www.jgmobility.nl" },
     { "@type": "ListItem", position: 2, name: "Diensten", item: "https://www.jgmobility.nl/diensten" },
-    { "@type": "ListItem", position: 3, name: "Inkoop & Taxatie", item: "https://www.jgmobility.nl/diensten/inkoop-taxatie" },
+    { "@type": "ListItem", position: 3, name: "Gratis inruilvoorstel", item: "https://www.jgmobility.nl/diensten/inkoop-taxatie" },
   ],
 };
 
 const service = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: "Auto Inkoop & Taxatie",
+  name: "Gratis inruilvoorstel — auto inruilen, inkoop & taxatie",
   description:
-    "Gratis en eerlijke taxatie van uw auto, gevolgd door directe inkoop tegen de beste marktprijs. Geen gedoe, snel geregeld.",
+    "Gratis en eerlijke taxatie van uw auto, gevolgd door een inruilvoorstel of directe inkoop tegen de beste marktprijs. Geen gedoe, snel geregeld.",
   provider: { "@type": "AutoDealer", name: "JG Mobility", url: "https://www.jgmobility.nl" },
   areaServed: ["Barendrecht", "Rotterdam", "Ridderkerk", "Dordrecht", "Hendrik-Ido-Ambacht", "Spijkenisse", "Capelle aan den IJssel", "Zwijndrecht", "Zuid-Holland"],
   serviceType: "Auto Inkoop en Taxatie",

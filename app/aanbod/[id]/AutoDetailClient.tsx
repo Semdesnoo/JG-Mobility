@@ -3,10 +3,23 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { preconnect } from "react-dom";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Mail, Phone, ChevronRight, ChevronLeft, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronRight,
+  ChevronLeft,
+  X,
+  CalendarDays,
+  Calculator,
+  Repeat,
+  Play,
+  Camera,
+  ShieldCheck,
+  Info,
+} from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
-import { bodytypeLabel } from "@/lib/voertuig";
+import { bodytypeLabel, isBedrijfswagen } from "@/lib/voertuig";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
@@ -29,6 +42,33 @@ const INRUIL_STAPPEN = [
 // In Lease Auto's — dealer ID van JG Mobility (publiek, staat in de iframe-URL)
 const INLEASE_DEALER_ID = "13504";
 const INLEASE_ORIGIN = "https://calculator.inleaseautos.nl";
+
+const WHATSAPP_NUMMER = "31621331374";
+
+/** Wat er bij ontbrekende gegevens staat: liever dit dan een lege regel. */
+const opAanvraag = (waarde?: string) => (waarde && waarde.trim()) || "Op aanvraag";
+
+const GARANTIE_STANDAARD = "Garantie mogelijk via onze afleverpakketten";
+const BIJZONDERHEDEN_STANDAARD =
+  "Vraag ons gerust naar de staat — we zijn transparant over gebruikssporen.";
+
+/**
+ * Het btw-verhaal in één regel onder de prijs.
+ *
+ * WAAROM DIT NIET GEWOON `auto.btw` IS
+ * Daar staat "Marge" of "BTW-auto" — dealertaal. Een particulier weet niet dat "Marge"
+ * betekent dat er niets meer bij komt, en een ondernemer wil weten of hij de btw kan
+ * terugvragen. Allebei lezen ze het verkeerd als het er niet staat, en een verkeerd
+ * gelezen prijs is een telefoontje waar niemand blij van wordt.
+ *
+ * Let op het derde geval: een BTW-auto waarvan we de prijs mét btw tonen. Daar mag niet
+ * "prijs excl. btw" boven staan, want dat is dan simpelweg onwaar.
+ */
+function btwLabel(auto: Auto): string {
+  if (/marge/i.test(auto.btw)) return "Margeauto — geen btw verrekenbaar";
+  if (auto.prijsExclBtw) return "BTW-auto — prijs excl. btw";
+  return "BTW-auto — prijs incl. btw, btw verrekenbaar";
+}
 
 export default function AutoDetailClient({
   auto,
@@ -72,8 +112,31 @@ export default function AutoDetailClient({
       }
     }, 0);
   };
+  /**
+   * De bezichtiging gebeurt met de afspraakplanner onderaan de pagina (ContactBlok).
+   * Die staat daar dichtgeklapt; de knop hierboven zet hem open en scrollt erheen, zodat
+   * "Plan een bezichtiging" niet naar een andere pagina stuurt waar je alles opnieuw moet
+   * uitleggen. Open blijft open — ook als je daarna nog even een tabblad aanklikt.
+   */
+  const [bezichtiging, setBezichtiging] = useState(false);
+  const naarBezichtiging = () => {
+    setBezichtiging(true);
+    // Eén tik later, zodat de planner er al staat voordat we ernaartoe scrollen.
+    setTimeout(() => {
+      const el = document.getElementById("bezichtiging");
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }, 0);
+  };
+
   const [fotoIndex, setFotoIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  // Staat er een walkaround-video bij, dan kan die de hoofdfoto overnemen. Hij laadt pas
+  // als je hem opent (preload="none"): een video is een paar megabyte en niemand die hem
+  // niet aanklikt hoort daarvoor te betalen.
+  const [videoAan, setVideoAan] = useState(false);
 
   const heeftFotos = auto.fotos && auto.fotos.length > 0;
   const aantalFotos = auto.fotos?.length ?? 0;
@@ -93,6 +156,14 @@ export default function AutoDetailClient({
   // Warm de verbinding met de calculator-server al bij het laden van de pagina,
   // zodat DNS/TLS niet op het kritieke pad zit wanneer de iframe laadt.
   preconnect(INLEASE_ORIGIN);
+
+  // De eerste vraag komt bijna altijd per WhatsApp. Merk, model, kenteken en de link naar
+  // deze pagina staan er al in: Jimi weet dan meteen om welk voertuig het gaat, en de
+  // bezoeker hoeft niets op te zoeken of over te typen.
+  const whatsappVraag = encodeURIComponent(
+    `Hallo Jimi, ik heb een vraag over de ${auto.merk} ${auto.model}` +
+      `${auto.kenteken ? ` (${auto.kenteken})` : ""} uit ${auto.bouwjaar}.\n${autoUrl}`
+  );
 
   const volgendeFoto = () => setFotoIndex((i) => (i + 1) % aantalFotos);
   const vorigeFoto = () => setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
@@ -171,11 +242,26 @@ export default function AutoDetailClient({
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="relative rounded-none overflow-hidden aspect-[16/10] cursor-pointer"
+                className={`relative rounded-none overflow-hidden aspect-[16/10] ${videoAan ? "" : "cursor-pointer"}`}
                 style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
-                onClick={() => heeftFotos && setLightbox(true)}
+                // Staat de video aan, dan hoort een klik bij de speler en niet bij de
+                // vergroting van een foto die er niet staat.
+                onClick={() => !videoAan && heeftFotos && setLightbox(true)}
               >
-                {heeftFotos ? (
+                {videoAan && auto.video ? (
+                  /* De walkaround. `preload="none"` want hij mag de pagina niet vertragen,
+                     `playsInline` zodat iOS hem in de pagina afspeelt in plaats van het
+                     scherm over te nemen. */
+                  <video
+                    src={auto.video}
+                    controls
+                    autoPlay
+                    preload="none"
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-contain rounded-none"
+                    style={{ backgroundColor: "#000000", borderRadius: 0 }}
+                  />
+                ) : heeftFotos ? (
                   zichtbareFotos.map((i) => (
                     <div
                       key={i}
@@ -207,7 +293,7 @@ export default function AutoDetailClient({
                   </>
                 )}
 
-                {aantalFotos > 1 && (
+                {!videoAan && aantalFotos > 1 && (
                   <>
                     <button
                       onClick={(e) => { e.stopPropagation(); vorigeFoto(); }}
@@ -229,21 +315,43 @@ export default function AutoDetailClient({
                   </>
                 )}
 
-                <div className="absolute top-4 left-4">
-                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none font-semibold" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
-                    {bodytypeLabel(auto)}
-                  </span>
-                </div>
-                <div className="absolute top-4 right-4">
-                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none" style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
-                    {auto.kleurExterieur}
-                  </span>
-                </div>
+                {!videoAan && (
+                  <>
+                    <div className="absolute top-4 left-4">
+                      <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none font-semibold" style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}>
+                        {bodytypeLabel(auto)}
+                      </span>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-none" style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}>
+                        {auto.kleurExterieur}
+                      </span>
+                    </div>
+                  </>
+                )}
               </motion.div>
 
-              {/* Thumbnail rij */}
+              {/* Walkaround-video: hij wisselt met het fotovak hierboven in plaats van
+                  eronder te komen staan. Zo blijft de hoofdfoto de bovenste helft van de
+                  pagina — die foto is waar Google de laadtijd aan meet — en hoeft de
+                  bezoeker niet te scrollen om van de video terug te kunnen. */}
+              {auto.video && (
+                <button
+                  type="button"
+                  onClick={() => setVideoAan((aan) => !aan)}
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto mt-3 px-5 py-3 rounded-none text-sm font-semibold transition-all hover:bg-white/10"
+                  style={{ border: "1px solid rgba(255,255,255,0.2)", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                >
+                  {videoAan ? <Camera size={14} /> : <Play size={14} />}
+                  {videoAan ? "Terug naar de foto's" : "Bekijk walkaround-video"}
+                </button>
+              )}
+
+              {/* Thumbnail rij — vanaf 640px. Op een telefoon zouden deze duimnagels de
+                  prijs en de kenmerken onder de rand van het scherm duwen, en daar zijn
+                  de pijlen en de teller op de foto zelf voor. */}
               {aantalFotos > 1 && (
-                <div className="flex gap-2 mt-3 overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                <div className="hidden sm:flex gap-2 mt-3 overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                   {auto.fotos!.map((foto, i) => (
                     <button
                       key={i}
@@ -324,14 +432,14 @@ export default function AutoDetailClient({
                 <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
                   {auto.merk}
                 </p>
-                <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: "var(--font-playfair)" }}>
+                <h1 className="text-3xl font-bold text-white mb-3" style={{ fontFamily: "var(--font-playfair)" }}>
                   {auto.model}
                 </h1>
-                <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)" }}>
-                  {auto.versie}
-                </p>
 
-                <div className="mb-6 pb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                {/* Prijs direct onder de kop, en de uitvoering eronder in plaats van
+                    ertussen. Op een telefoon scheelt dat de twee regels die bepaalden of
+                    de prijs nog net wel of net niet in beeld stond. */}
+                <div className="mb-4 pb-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                   <p className="text-4xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
                     {prijs.tekst},-
                     {prijs.achtervoegsel && (
@@ -340,45 +448,100 @@ export default function AutoDetailClient({
                       </span>
                     )}
                   </p>
-                  <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
-                    Vraagprijs — {auto.btw}
-                    {prijs.tegenhanger ? ` · ${prijs.tegenhanger}` : ""}
+                  <p className="text-xs font-semibold mt-1.5" style={{ color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-inter)" }}>
+                    {btwLabel(auto)}
                   </p>
+                  {prijs.tegenhanger && (
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
+                      Dat is {prijs.tegenhanger}
+                    </p>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mb-6">
+                <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)" }}>
+                  {auto.versie}
+                </p>
+
+                {/* De vier waar het bij een occasion op staat of valt. Groter dan ze
+                    stonden, en zonder vermogen en APK ertussen — die beslissen niets en
+                    staan nu op één regel eronder. */}
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   {[
-                    { label: "KM-stand", value: `${auto.km.toLocaleString("nl-NL")} km` },
-                    { label: "Transmissie", value: auto.transmissie },
+                    { label: "Kilometerstand", value: `${auto.km.toLocaleString("nl-NL")} km` },
+                    { label: "Bouwjaar", value: String(auto.bouwjaar) },
                     { label: "Brandstof", value: auto.brandstof },
-                    { label: "Bouwjaar", value: auto.bouwjaar },
-                    { label: "Vermogen", value: auto.vermogen },
-                    { label: "APK tot", value: auto.apk },
+                    { label: "Transmissie", value: auto.transmissie },
                   ].map((spec) => (
                     <div key={spec.label} className="py-3 px-4 rounded-none" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
                       <div className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>{spec.label}</div>
-                      <div className="text-sm font-semibold text-white" style={{ fontFamily: "var(--font-inter)" }}>{spec.value}</div>
+                      <div className="text-base font-semibold text-white" style={{ fontFamily: "var(--font-inter)" }}>{spec.value}</div>
                     </div>
                   ))}
                 </div>
 
+                <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)" }}>
+                  {auto.vermogen} · APK tot {auto.apk} · {bodytypeLabel(auto)}
+                </p>
+
+                {/* ── Wat je hierna kunt doen ──
+                    Hier stonden twee knoppen die allebei naar /contact gingen: één met
+                    "Stuur een bericht" en één met "Proefrit aanvragen". Wie erop klikte
+                    kwam op een leeg formulier en moest daar zelf uitleggen welke auto hij
+                    bedoelde. Deze vier doen allemaal iets anders, en alle vier nemen ze
+                    het voertuig mee. */}
                 <div className="flex flex-col gap-3">
-                  <Link
-                    href="/contact"
-                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:scale-[1.01] hover:shadow-lg"
+                  {/* WhatsApp mag hier zijn eigen groen houden: dit is de knop waar de
+                      meeste eerste vragen vandaan komen, en in dat groen herkent iedereen
+                      hem zonder te lezen. */}
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMMER}?text=${whatsappVraag}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 py-4 px-5 rounded-none text-sm font-semibold text-center transition-all hover:opacity-90"
+                    style={{ backgroundColor: "#25D366", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                  >
+                    {/* Officieel WhatsApp-logo (Simple Icons, CC0), zelfde pad als in ContactBlok. */}
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true" style={{ flexShrink: 0 }}>
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                    Stel direct een vraag over dit voertuig
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={naarBezichtiging}
+                    className="flex items-center justify-center gap-2 py-4 px-5 rounded-none text-sm font-semibold transition-all hover:opacity-90"
                     style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
                   >
-                    <Mail size={14} />
-                    Interesse? Stuur een bericht
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-none text-sm font-semibold transition-all hover:bg-white/10"
-                    style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)" }}
-                  >
-                    <Phone size={14} />
-                    Proefrit aanvragen
-                  </Link>
+                    <CalendarDays size={15} />
+                    Plan een bezichtiging
+                  </button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => switchTab("Financieren")}
+                      // Dezelfde vooruitgreep als op het tabblad zelf: zweven of
+                      // aanraken is al genoeg om de calculator te laten laden.
+                      onMouseEnter={armCalculator}
+                      onFocus={armCalculator}
+                      onTouchStart={armCalculator}
+                      className="flex items-center justify-center gap-2 py-4 px-4 rounded-none text-sm font-semibold transition-all hover:bg-white/10"
+                      style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter)" }}
+                    >
+                      <Calculator size={14} />
+                      Bereken financial lease
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => switchTab("Inruilen")}
+                      className="flex items-center justify-center gap-2 py-4 px-4 rounded-none text-sm font-semibold transition-all hover:bg-white/10"
+                      style={{ border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter)" }}
+                    >
+                      <Repeat size={14} />
+                      Vraag inruilvoorstel aan
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -438,9 +601,14 @@ export default function AutoDetailClient({
               <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Kenmerken</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
                 {[
-                  { label: "Bouwjaar", value: auto.bouwjaar },
+                  { label: "Bouwjaar", value: String(auto.bouwjaar) },
                   { label: "Kilometerstand", value: `${auto.km.toLocaleString("nl-NL")} km` },
                   { label: "APK tot", value: auto.apk },
+                  // Onderhoud en tellerstand alleen als we er iets over te melden
+                  // hebben: een regel "Onderhoudshistorie — onbekend" leest als een
+                  // waarschuwing, ook als er niets aan de hand is.
+                  ...(auto.onderhoudshistorie ? [{ label: "Onderhoudshistorie", value: auto.onderhoudshistorie }] : []),
+                  ...(auto.nap ? [{ label: "NAP-tellerstand", value: auto.nap }] : []),
                   { label: "Carrosserie", value: bodytypeLabel(auto) },
                   { label: "BTW / Marge", value: auto.btw },
                   { label: "Vermogen", value: auto.vermogen },
@@ -453,14 +621,45 @@ export default function AutoDetailClient({
                 ].map((kenmerk) => (
                   <div
                     key={kenmerk.label}
-                    className="flex items-center justify-between py-3 px-4 rounded-none"
+                    className="flex items-center justify-between gap-4 py-3 px-4 rounded-none"
                     style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.06)" }}
                   >
-                    <span className="text-sm" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{kenmerk.label}</span>
-                    <span className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{kenmerk.value}</span>
+                    <span className="text-sm flex-shrink-0" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{kenmerk.label}</span>
+                    <span className="text-sm font-semibold text-right" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{kenmerk.value}</span>
                   </div>
                 ))}
               </div>
+
+              {/* ── Bedrijfswagen-specificaties ──
+                  Een zakelijke koper kijkt niet naar de bekleding maar naar wat erin
+                  past en wat erachter kan. Deze vijf blijven hier staan ook als ze niet
+                  ingevuld zijn: "Op aanvraag" is een antwoord, een ontbrekende regel
+                  laat hem denken dat we het verzwijgen. */}
+              {isBedrijfswagen(auto) && (
+                <div className="mt-10">
+                  <h3 className="text-lg font-bold mb-4" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                    Bedrijfswagen-specificaties
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                    {[
+                      { label: "Laadruimte", value: opAanvraag(auto.laadruimte) },
+                      { label: "Laadvermogen", value: opAanvraag(auto.laadvermogen) },
+                      { label: "Trekgewicht", value: opAanvraag(auto.trekgewicht) },
+                      { label: "Euro-emissieklasse", value: opAanvraag(auto.euroklasse) },
+                      { label: "BTW", value: opAanvraag(auto.btw) },
+                    ].map((spec) => (
+                      <div
+                        key={spec.label}
+                        className="flex items-center justify-between gap-4 py-3 px-4 rounded-none"
+                        style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.06)" }}
+                      >
+                        <span className="text-sm flex-shrink-0" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{spec.label}</span>
+                        <span className="text-sm font-semibold text-right" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -536,7 +735,9 @@ export default function AutoDetailClient({
                       { label: "Je wordt eigenaar van de auto" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: "#22c55e" }} />
+                        {/* Vierkant bolletje, zoals de opsommingstekens op het
+                            Opties-tabblad. Dit was het laatste ronde hoekje op deze pagina. */}
+                        <div className="w-2 h-2 rounded-none flex-shrink-0" style={{ backgroundColor: "#22c55e" }} />
                         <span className="text-sm" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{item.label}</span>
                       </div>
                     ))}
@@ -638,7 +839,52 @@ export default function AutoDetailClient({
         </div>
       </section>
 
-      <ContactBlok auto={auto} />
+      {/* ── Garantie en gebruikssporen ──
+          Bewust niet achter een tabblad. Dit zijn de twee dingen waar een koper over
+          twijfelt bij een occasion: zit er garantie op, en wat ga ik tegenkomen als ik
+          hem van dichtbij bekijk. Staan ze er niet, dan vult hij ze zelf in — en dan
+          altijd somberder dan het is. */}
+      <section className="py-14 px-6" style={{ backgroundColor: "#f5f5f5" }}>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-6 md:p-7 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
+            <div className="flex items-center gap-2.5 mb-3">
+              <ShieldCheck size={18} style={{ color: "#001337", flexShrink: 0 }} />
+              <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Garantie
+              </h2>
+            </div>
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
+              {auto.garantie?.trim() || GARANTIE_STANDAARD}
+            </p>
+            <Link
+              href="/diensten/afleverpakketten"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold mt-4 underline hover:opacity-70"
+              style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+            >
+              Bekijk onze afleverpakketten
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          <div className="p-6 md:p-7 rounded-none" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
+            <div className="flex items-center gap-2.5 mb-3">
+              <Info size={18} style={{ color: "#001337", flexShrink: 0 }} />
+              <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Gebruikssporen &amp; bijzonderheden
+              </h2>
+            </div>
+            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
+              {auto.bijzonderheden?.trim() || BIJZONDERHEDEN_STANDAARD}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <ContactBlok
+        auto={auto}
+        bezichtiging={bezichtiging}
+        onBezichtiging={setBezichtiging}
+      />
 
       {gerelateerd}
 

@@ -5,9 +5,9 @@ import { Mail, Phone } from "lucide-react";
 export default function SocialButtons() {
   return (
     <div className="fixed bottom-24 right-4 z-40 flex flex-col gap-2">
-      {/* Telefoon */}
+      {/* Telefoon — hier stond "tel:" zonder nummer, dus de knop deed niets. */}
       <a
-        href="tel:"
+        href="tel:+31621331374"
         title="Bellen"
         className="w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
         style={{ backgroundColor: "#001337", border: "1px solid rgba(255,255,255,0.5)" }}

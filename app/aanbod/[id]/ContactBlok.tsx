@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, ArrowRight, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, CheckCircle, CalendarDays } from "lucide-react";
 import type { Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
+import AppointmentScheduler from "@/components/AppointmentScheduler";
 
 /**
  * Contact opnemen over déze auto.
@@ -17,12 +18,28 @@ import { prijsWeergave } from "@/lib/prijs";
  *
  * Nu staat het onder de auto, altijd zichtbaar, precies waar iemand uitkomt die de foto's
  * en de kenmerken heeft doorgenomen.
+ *
+ * HIER ZIT OOK DE BEZICHTIGING
+ * De afspraakplanner die op /contact staat, staat hier onderaan nog een keer — maar dan
+ * met het voertuig erbij, zodat Jimi weet waarvoor je komt. Hij is dichtgeklapt tot
+ * iemand hem opent: hij is bijna een scherm hoog en zou de contactgegevens erboven
+ * wegduwen. De knop "Plan een bezichtiging" bovenaan de pagina opent hem van een afstand
+ * (vandaar `bezichtiging` als prop en niet als eigen state) en scrollt hierheen.
  */
 
 const WHATSAPP_NUMMER = "31621331374";
 const MAPS_LINK = "https://www.google.com/maps/search/?api=1&query=JG+Mobility+Barendrecht";
 
-export default function ContactBlok({ auto }: { auto: Auto }) {
+export default function ContactBlok({
+  auto,
+  bezichtiging,
+  onBezichtiging,
+}: {
+  auto: Auto;
+  /** Staat de afspraakplanner open? Wordt van de autopagina af aangestuurd. */
+  bezichtiging: boolean;
+  onBezichtiging: (open: boolean) => void;
+}) {
   const [interesse, setInteresse] = useState(false);
   const prijs = prijsWeergave(auto);
   const prijsMetBtw = `${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""}`;
@@ -151,6 +168,37 @@ export default function ContactBlok({ auto }: { auto: Auto }) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* ── Bezichtiging ──
+              Dezelfde planner als op de contactpagina, maar met dit voertuig eraan
+              gekoppeld. Dicht tot je hem nodig hebt; de knop hierboven in de pagina zet
+              hem open en scrollt naar deze kop. */}
+          <div id="bezichtiging" className="mt-12 pt-10" style={{ borderTop: "1px solid rgba(0,19,55,0.08)" }}>
+            <p className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+              Langskomen
+            </p>
+            <h3 className="text-xl md:text-2xl font-bold mb-3" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+              Plan een bezichtiging
+            </h3>
+            <p className="text-sm text-gray-500 mb-6 leading-relaxed max-w-xl" style={{ fontFamily: "var(--font-inter)" }}>
+              Kom de {auto.merk} {auto.model} van dichtbij bekijken, of maak er meteen een proefrit
+              van. Kies hieronder een moment dat jou uitkomt — wij bevestigen het per mail.
+            </p>
+
+            {bezichtiging ? (
+              <AppointmentScheduler voertuig={`${auto.merk} ${auto.model}`} />
+            ) : (
+              <button
+                type="button"
+                onClick={() => onBezichtiging(true)}
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-none text-sm font-semibold transition-all hover:opacity-90"
+                style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+              >
+                <CalendarDays size={15} />
+                Kies een datum en tijd
+              </button>
+            )}
           </div>
         </motion.div>
       </div>

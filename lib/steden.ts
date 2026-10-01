@@ -12,7 +12,7 @@ export const steden: Stad[] = [
     slug: "rotterdam",
     km: 10,
     regio: "Rotterdam",
-    intro: "Als grootste havenstad van Europa is Rotterdam een dynamische markt voor premium occasions. JG Mobility is op slechts 10 minuten rijden van het stadscentrum gevestigd in Barendrecht.",
+    intro: "Als grootste havenstad van Europa is Rotterdam een dynamische markt voor bedrijfswagens en geselecteerde occasions. JG Mobility is op slechts 10 minuten rijden van het stadscentrum gevestigd in Barendrecht.",
   },
   {
     naam: "Den Haag",
@@ -82,7 +82,7 @@ export const steden: Stad[] = [
     slug: "zwijndrecht",
     km: 10,
     regio: "Drechtsteden",
-    intro: "Zwijndrecht ligt aan de overkant van de Oude Maas, op 10 kilometer van JG Mobility in Barendrecht. Wij kopen en verkopen premium occasions in de hele Drechtsteden-regio.",
+    intro: "Zwijndrecht ligt aan de overkant van de Oude Maas, op 10 kilometer van JG Mobility in Barendrecht. Wij kopen en verkopen bedrijfswagens en geselecteerde occasions in de hele Drechtsteden-regio.",
   },
   {
     naam: "Hendrik-Ido-Ambacht",

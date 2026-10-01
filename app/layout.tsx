@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppKnop from "@/components/WhatsAppKnop";
 import ScrollToTop from "@/components/ScrollToTop";
+import { reviews, GOOGLE_SCORE, GOOGLE_AANTAL } from "@/lib/reviews";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -22,6 +24,19 @@ const inter = Inter({
 
 const siteUrl = "https://www.jgmobility.nl";
 
+// Google Search Console verifieert met een meta-tag. De waarde is geen geheim, maar
+// hij hoort niet in de code: zet NEXT_PUBLIC_GSC_VERIFICATION in de omgeving en de
+// tag verschijnt. Staat hij er niet, dan laten we de tag weg in plaats van een lege
+// of verzonnen waarde te zetten.
+const gscVerificatie = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
+
+// Eén beschrijving voor de homepage, gericht op waar mensen écht op zoeken:
+// "bedrijfswagen kopen Barendrecht", "occasions Barendrecht" en "bedrijfswagens
+// Rotterdam". Onder de 160 tekens, want daarna kapt Google hem af. Geen
+// sterrenclaims — de echte score staat in de JSON-LD hieronder.
+const siteBeschrijving =
+  "Bedrijfswagen of occasion kopen in Barendrecht? JG Mobility verkoopt bedrijfswagens en geselecteerde occasions in Barendrecht en regio Rotterdam. Inruil mogelijk.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   icons: {
@@ -30,34 +45,31 @@ export const metadata: Metadata = {
     apple: "/Favicon.png",
   },
   title: {
-    default: "JG Mobility | Autobedrijf Barendrecht — Inkoop, Verkoop & Consignatie",
+    default: "JG Mobility | Bedrijfswagens & Occasions Barendrecht",
     template: "%s | JG Mobility",
   },
-  description:
-    "JG Mobility in Barendrecht is uw specialist voor auto inkoop, verkoop en consignatie. Premium occasions, eerlijke taxatie en persoonlijk advies. Beoordeeld met 4,9 sterren.",
+  description: siteBeschrijving,
   keywords: [
-    "auto inkoop Barendrecht",
-    "auto verkoop Barendrecht",
-    "auto inkoop Rotterdam",
-    "auto verkopen Rotterdam",
-    "auto consignatie Rotterdam",
-    "auto consignatie Barendrecht",
-    "auto taxatie Barendrecht",
-    "auto taxatie Rotterdam",
+    "bedrijfswagen kopen Barendrecht",
+    "bedrijfswagens Barendrecht",
+    "bedrijfswagens Rotterdam",
+    "bedrijfswagen kopen Rotterdam",
+    "bestelbus kopen Barendrecht",
     "occasions Barendrecht",
     "occasions Rotterdam",
+    "occasion kopen Barendrecht",
     "autobedrijf Barendrecht",
     "autobedrijf Rotterdam",
-    "auto inkoop Ridderkerk",
-    "auto inkoop Dordrecht",
-    "auto verkopen Ridderkerk",
-    "auto verkopen Dordrecht",
-    "auto inkoop Spijkenisse",
-    "auto inkoop Capelle aan den IJssel",
-    "auto inkoop Zwijndrecht",
-    "auto inkoop Hendrik-Ido-Ambacht",
-    "auto financiering Zuid-Holland",
-    "premium occasions Zuid-Holland",
+    "financial lease bedrijfswagen",
+    "financial lease Barendrecht",
+    "auto inruilen Barendrecht",
+    "auto taxatie Barendrecht",
+    "auto inkoop Barendrecht",
+    "auto consignatie Barendrecht",
+    "auto consignatie Rotterdam",
+    "bedrijfswagens Ridderkerk",
+    "occasions Dordrecht",
+    "auto kopen Zuid-Holland",
     "JG Mobility",
   ],
   authors: [{ name: "JG Mobility" }],
@@ -66,28 +78,28 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
+  ...(gscVerificatie ? { verification: { google: gscVerificatie } } : {}),
   openGraph: {
     type: "website",
     locale: "nl_NL",
     url: siteUrl,
     siteName: "JG Mobility",
-    title: "JG Mobility | Autobedrijf Barendrecht — Inkoop, Verkoop & Consignatie",
-    description:
-      "JG Mobility in Barendrecht is uw specialist voor auto inkoop, verkoop en consignatie. Premium occasions, eerlijke taxatie en persoonlijk advies.",
+    title: "JG Mobility | Bedrijfswagens & Occasions Barendrecht",
+    description: siteBeschrijving,
     images: [
       {
         url: "/JG Mobility Transparant.png",
         width: 1200,
         height: 630,
-        alt: "JG Mobility — Autobedrijf Barendrecht",
+        alt: "JG Mobility — Bedrijfswagens & Occasions Barendrecht",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "JG Mobility | Autobedrijf Barendrecht",
+    title: "JG Mobility | Bedrijfswagens & Occasions Barendrecht",
     description:
-      "Specialist in auto inkoop, verkoop en consignatie in Barendrecht. Beoordeeld met 4,9 sterren.",
+      "Bedrijfswagens en geselecteerde occasions in Barendrecht. Inruil mogelijk, financial lease voor ondernemers.",
     images: ["/JG Mobility Transparant.png"],
   },
   robots: {
@@ -110,13 +122,15 @@ const jsonLd = {
       "@id": `${siteUrl}/#organization`,
       name: "JG Mobility",
       description:
-        "Specialist in auto consignatie, inkoop, taxatie en verkoop van premium occasions in Barendrecht.",
+        "Autobedrijf in Barendrecht, gespecialiseerd in bedrijfswagens en geselecteerde occasions. Inruil, financial lease, taxatie en consignatie.",
       url: siteUrl,
       logo: {
         "@type": "ImageObject",
         url: `${siteUrl}/JG%20Mobility%20Transparant.png`,
       },
-      image: `${siteUrl}/Showroom%20Jimi%20Gaillard.png`,
+      // Verwees naar /Showroom Jimi Gaillard.png — dat bestand staat niet in /public,
+      // dus Google kreeg een 404 terug voor de afbeelding van het bedrijf.
+      image: `${siteUrl}/jimi-showroom.png`,
       telephone: "+31621331374",
       email: "info@jgmobility.nl",
       address: {
@@ -159,27 +173,23 @@ const jsonLd = {
         name: "Jimi Gaillard",
         jobTitle: "Oprichter & Eigenaar",
       },
+      // Score, aantal én citaten komen uit lib/reviews.ts, dezelfde bron als de
+      // reviewkaarten op de site. Hier stond eerder 4,9 uit 47 reviews met twee
+      // verzonnen citaten; dat is onjuiste informatie in rich results en precies
+      // waar Google structured data voor kan negeren.
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
+        ratingValue: GOOGLE_SCORE.toFixed(1),
         bestRating: "5",
         worstRating: "1",
-        reviewCount: "47",
+        reviewCount: String(GOOGLE_AANTAL),
       },
-      review: [
-        {
-          "@type": "Review",
-          reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-          author: { "@type": "Person", name: "Thomas V." },
-          reviewBody: "Uitstekende service van Jimi. Mijn auto was binnen twee weken verkocht voor een eerlijke prijs. Geen gedoe, gewoon resultaat.",
-        },
-        {
-          "@type": "Review",
-          reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-          author: { "@type": "Person", name: "Kevin M." },
-          reviewBody: "Heel fijn bedrijf. Geen verborgen kosten, altijd bereikbaar. Mijn Porsche is voor een topprijs verkocht. Blij mee!",
-        },
-      ],
+      review: reviews.map((review) => ({
+        "@type": "Review",
+        reviewRating: { "@type": "Rating", ratingValue: String(review.sterren), bestRating: "5" },
+        author: { "@type": "Person", name: review.naam },
+        reviewBody: review.tekst,
+      })),
       sameAs: [
         "https://www.instagram.com/jgmobility/",
         "https://www.facebook.com/profile.php?id=61588831825340",
@@ -191,7 +201,7 @@ const jsonLd = {
       "@id": `${siteUrl}/#website`,
       url: siteUrl,
       name: "JG Mobility",
-      description: "Premium auto consignatie, inkoop en verkoop in Barendrecht",
+      description: "Bedrijfswagens en geselecteerde occasions in Barendrecht",
       inLanguage: "nl-NL",
       publisher: { "@id": `${siteUrl}/#organization` },
       potentialAction: {
@@ -211,6 +221,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // GA4 gaat alleen mee als er een meet-id is. Zonder id staat er niets in de
+  // pagina: geen lege gtag-aanroep, geen request naar Google, en de
+  // privacyverklaring blijft kloppen (die leest dezelfde variabele).
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+
   return (
     <html lang="nl" className={`${playfair.variable} ${inter.variable}`}>
       <head>
@@ -227,6 +242,21 @@ export default function RootLayout({
         <WhatsAppKnop />
         <Analytics />
         <SpeedInsights />
+        {gaId && (
+          <>
+            {/* afterInteractive: meten mag nooit vóór de pagina zelf gaan. */}
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

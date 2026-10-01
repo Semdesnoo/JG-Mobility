@@ -3,11 +3,11 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Gauge, Calendar, Fuel, Zap, ArrowRight, ChevronDown, X } from "lucide-react";
+import { ArrowRight, ChevronDown, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
-import { isBedrijfswagen, bodytypeLabel } from "@/lib/voertuig";
-import AutoFoto from "@/components/AutoFoto";
+import { isBedrijfswagen, isMargeAuto } from "@/lib/voertuig";
+import AutoKaart from "@/components/AutoKaart";
 
 const prijsOpties = [
   { label: "Aanschafprijs", value: "" },
@@ -19,6 +19,22 @@ const prijsOpties = [
   { label: "Tot €100.000", value: "100000" },
 ];
 
+// Vaste reeks en niet uit de data: wie een maximum kiest denkt in ronde getallen, niet in
+// de kilometerstanden die er toevallig in de voorraad staan.
+const kmOpties = [
+  { label: "Kilometerstand", value: "" },
+  { label: "Tot 50.000 km", value: "50000" },
+  { label: "Tot 100.000 km", value: "100000" },
+  { label: "Tot 150.000 km", value: "150000" },
+  { label: "Tot 200.000 km", value: "200000" },
+];
+
+const btwOpties = [
+  { label: "BTW of marge", value: "" },
+  { label: "Marge (geen btw)", value: "marge" },
+  { label: "BTW-auto", value: "btw" },
+];
+
 const sorteerOpties = [
   { label: "Sorteren op", value: "" },
   { label: "Prijs: laag → hoog", value: "prijs-asc" },
@@ -28,8 +44,18 @@ const sorteerOpties = [
   { label: "Minste KM", value: "km-asc" },
 ];
 
+/** De drie tabs boven de filterbalk. `alle` staat ook op /aanbod altijd vooraan. */
+type Categorie = "alle" | "personen" | "bedrijf";
+
+/** Hoort deze auto in de gekozen tab? */
+function inTab(auto: Auto, tab: Categorie): boolean {
+  if (tab === "bedrijf") return isBedrijfswagen(auto);
+  if (tab === "personen") return !isBedrijfswagen(auto);
+  return true;
+}
+
 function FilterSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
-  const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof", "Alle voertuigen"].includes(value);
+  const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof"].includes(value);
   return (
     <div className="relative w-full md:w-auto">
       <select
@@ -88,24 +114,65 @@ function keuzelijst(waarden: string[]): string[] {
     .sort((a, b) => a.localeCompare(b, "nl"));
 }
 
-export default function AanbodClient({ autos }: { autos: Auto[] }) {
+export default function AanbodClient({
+  autos,
+  vasteSoort,
+  titel,
+  intro,
+  children,
+}: {
+  autos: Auto[];
+  /**
+   * Zet de categorie vast en haalt de tabs weg. Zo kunnen /bedrijfswagens en
+   * /personenautos deze lijst hergebruiken zonder dat een bezoeker daar met één klik in
+   * een aanbod belandt waar die pagina niet over gaat.
+   */
+  vasteSoort?: "personen" | "bedrijf";
+  /** De H1 in de hero. Leeg = "Onze collectie". */
+  titel?: string;
+  /** Eén alinea onder de H1 — de inleiding van de pagina die deze lijst hergebruikt. */
+  intro?: string;
+  /**
+   * Komt direct ónder de hero en boven de filterbalk. De hero van deze lijst ís de hero
+   * van /bedrijfswagens en /personenautos, dus hoort hun eigen uitleg (het uspblok) daar
+   * tegenaan te staan en niet pas achter het hele aanbod.
+   */
+  children?: React.ReactNode;
+}) {
 
   /**
-   * De filters gaan alleen over auto's die nog te koop zijn.
+   * Het raster gaat alleen over auto's die nog te koop zijn.
    *
-   * Verkochte auto's blijven wél op de pagina staan — dat een auto weg is zegt iets goeds
-   * over de zaak. Maar een merk aanbieden waar niets van te koop is, is een lege belofte:
-   * je klikt op Renault en krijgt alleen auto's die je niet meer kunt kopen.
+   * WAAROM VERKOCHTE AUTO'S HIER NIET MEER TUSSEN STAAN
+   * Ze stonden er eerst wel, onderaan, met een verkocht-band erover — dat een auto weg is
+   * zegt iets goeds over de zaak. Maar het is ook de helft van wat je ziet als je filtert,
+   * en elke klik erop loopt dood. Die auto's hebben nu hun eigen plek: /recent-verkocht,
+   * met onderaan dit raster een link ernaartoe. Hier staat wat je vandaag kunt kopen.
+   *
+   * Dat de filters alleen over deze auto's gaan blijft daarmee ook kloppen: een merk
+   * aanbieden waar niets van te koop is, is een lege belofte.
    */
   const beschikbaar = useMemo(() => autos.filter((a) => !a.verkocht), [autos]);
 
-  const merken = useMemo(
-    () => ["Alle merken", ...keuzelijst(beschikbaar.map((a) => a.merk))],
-    [beschikbaar]
-  );
-
+  const [categorie, setCategorie] = useState<Categorie>(vasteSoort ?? "alle");
   const [filterMerk, setFilterMerk] = useState("Alle merken");
   const [filterModel, setFilterModel] = useState("Alle modellen");
+  const [filterTransmissie, setFilterTransmissie] = useState("Alle transmissies");
+  const [filterBrandstof, setFilterBrandstof] = useState("Alle brandstof");
+  const [filterPrijs, setFilterPrijs] = useState("");
+  const [filterKm, setFilterKm] = useState("");
+  const [filterBouwjaar, setFilterBouwjaar] = useState("");
+  const [filterBtw, setFilterBtw] = useState("");
+  const [sorteer, setSorteer] = useState("");
+
+  // De voorraad binnen de gekozen tab. Alle keuzelijsten eronder komen hieruit, zodat op
+  // /bedrijfswagens geen merken in de lijst staan waarvan er alleen personenauto's zijn.
+  const inCategorie = useMemo(() => beschikbaar.filter((a) => inTab(a, categorie)), [beschikbaar, categorie]);
+
+  const merken = useMemo(
+    () => ["Alle merken", ...keuzelijst(inCategorie.map((a) => a.merk))],
+    [inCategorie]
+  );
 
   /**
    * Een merk uit de link (?merk=bmw) overnemen.
@@ -133,39 +200,54 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     window.addEventListener("popstate", lees);
     return () => window.removeEventListener("popstate", lees);
   }, [merken]);
-  const [filterSoort, setFilterSoort] = useState("Alle voertuigen");
-  const [filterTransmissie, setFilterTransmissie] = useState("Alle transmissies");
-  const [filterBrandstof, setFilterBrandstof] = useState("Alle brandstof");
-  const [filterPrijs, setFilterPrijs] = useState("");
-  const [sorteer, setSorteer] = useState("");
 
   const modellen = useMemo(() => {
-    const basis = beschikbaar.filter((a) => filterMerk === "Alle merken" || gelijk(a.merk, filterMerk));
+    const basis = inCategorie.filter((a) => filterMerk === "Alle merken" || gelijk(a.merk, filterMerk));
     return ["Alle modellen", ...keuzelijst(basis.map((a) => a.model))];
-  }, [filterMerk, beschikbaar]);
-  // Het soort-filter verschijnt pas zodra er een bedrijfswagen in de voorraad staat.
-  // Sta je vol personenauto's, dan valt er niets te kiezen en hoort het er niet.
-  const toonSoortFilter = useMemo(() => beschikbaar.some(isBedrijfswagen), [beschikbaar]);
+  }, [filterMerk, inCategorie]);
 
   const transmissies = useMemo(
-    () => ["Alle transmissies", ...keuzelijst(beschikbaar.map((a) => a.transmissie))],
-    [beschikbaar]
+    () => ["Alle transmissies", ...keuzelijst(inCategorie.map((a) => a.transmissie))],
+    [inCategorie]
   );
   const brandstofTypes = useMemo(
-    () => ["Alle brandstof", ...keuzelijst(beschikbaar.map((a) => a.brandstof))],
-    [beschikbaar]
+    () => ["Alle brandstof", ...keuzelijst(inCategorie.map((a) => a.brandstof))],
+    [inCategorie]
+  );
+  // Uit de data en niet uit een vaste reeks: staat de oudste auto op 2013, dan hoort 2008
+  // niet in de lijst. Nieuwste bouwjaar bovenaan — daar kijkt men het eerst.
+  const bouwjaren = useMemo(
+    () => [...new Set(inCategorie.map((a) => a.bouwjaar))].sort((a, b) => b - a),
+    [inCategorie]
   );
 
+  const tabs = useMemo(() => {
+    const bedrijf = beschikbaar.filter(isBedrijfswagen).length;
+    return [
+      { key: "alle" as const, label: "Alle", aantal: beschikbaar.length },
+      { key: "personen" as const, label: "Personenauto's", aantal: beschikbaar.length - bedrijf },
+      { key: "bedrijf" as const, label: "Bedrijfswagens", aantal: bedrijf },
+    ];
+  }, [beschikbaar]);
+
+  // De tabs verschijnen alleen als er écht iets te kiezen valt. Staat de voorraad vol
+  // personenauto's, dan is een tab "Bedrijfswagens 0" een lege belofte — dan hoort hij er
+  // niet. En op /bedrijfswagens en /personenautos staat de categorie al vast.
+  const toonTabs = !vasteSoort && tabs.every((t) => t.aantal > 0);
+
   const gefilterd = useMemo(() => {
-    let lijst = autos.filter((a) => {
+    let lijst = beschikbaar.filter((a) => {
+      if (!inTab(a, categorie)) return false;
       // Hoofdletter-ongevoelig: de keuzelijst toont één schrijfwijze, de auto's in de
       // database hebben er soms twee. Zonder dit filtert "BMW" de Bmw 330E weg.
       if (filterMerk !== "Alle merken" && !gelijk(a.merk, filterMerk)) return false;
       if (filterModel !== "Alle modellen" && !gelijk(a.model, filterModel)) return false;
-      if (filterSoort === "Bedrijfswagens" && !isBedrijfswagen(a)) return false;
-      if (filterSoort === "Personenauto's" && isBedrijfswagen(a)) return false;
       if (filterTransmissie !== "Alle transmissies" && !gelijk(a.transmissie, filterTransmissie)) return false;
       if (filterBrandstof !== "Alle brandstof" && !gelijk(a.brandstof, filterBrandstof)) return false;
+      if (filterKm && a.km > parseInt(filterKm)) return false;
+      if (filterBouwjaar && a.bouwjaar < parseInt(filterBouwjaar)) return false;
+      if (filterBtw === "marge" && !isMargeAuto(a)) return false;
+      if (filterBtw === "btw" && isMargeAuto(a)) return false;
       // Op het getoonde bedrag, niet op het bedrag in de database. Bij een bestelbus
       // staat de prijs zonder btw op de kaart; filtert hij dan op het btw-bedrag, dan
       // valt een bus van "€ 12.500" buiten "tot € 15.000" en snapt niemand waarom.
@@ -177,13 +259,20 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
     if (sorteer === "jaar-desc") lijst = [...lijst].sort((a, b) => b.bouwjaar - a.bouwjaar);
     if (sorteer === "jaar-asc") lijst = [...lijst].sort((a, b) => a.bouwjaar - b.bouwjaar);
     if (sorteer === "km-asc") lijst = [...lijst].sort((a, b) => a.km - b.km);
-    // Verkochte auto's altijd onderaan, beschikbare bovenaan (stabiele sort behoudt
-    // de volgorde hierboven binnen elke groep)
-    lijst = [...lijst].sort((a, b) => Number(a.verkocht ?? false) - Number(b.verkocht ?? false));
     return lijst;
-  }, [filterMerk, filterModel, filterSoort, filterTransmissie, filterBrandstof, filterPrijs, sorteer, autos]);
+  }, [beschikbaar, categorie, filterMerk, filterModel, filterTransmissie, filterBrandstof, filterKm, filterBouwjaar, filterBtw, filterPrijs, sorteer]);
 
-  const hasFilters = filterMerk !== "Alle merken" || filterModel !== "Alle modellen" || filterSoort !== "Alle voertuigen" || filterTransmissie !== "Alle transmissies" || filterBrandstof !== "Alle brandstof" || filterPrijs || sorteer;
+  const hasFilters =
+    categorie !== (vasteSoort ?? "alle") ||
+    filterMerk !== "Alle merken" ||
+    filterModel !== "Alle modellen" ||
+    filterTransmissie !== "Alle transmissies" ||
+    filterBrandstof !== "Alle brandstof" ||
+    filterPrijs !== "" ||
+    filterKm !== "" ||
+    filterBouwjaar !== "" ||
+    filterBtw !== "" ||
+    sorteer !== "";
 
   const filterRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLElement>(null);
@@ -278,16 +367,38 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
       window.removeEventListener("touchstart", overnemen);
       window.removeEventListener("keydown", overnemen);
     };
-  }, [filterMerk, filterModel, filterSoort, filterTransmissie, filterBrandstof, filterPrijs, sorteer]);
+  }, [categorie, filterMerk, filterModel, filterTransmissie, filterBrandstof, filterPrijs, filterKm, filterBouwjaar, filterBtw, sorteer]);
 
   const resetFilters = () => {
+    setCategorie(vasteSoort ?? "alle");
     setFilterMerk("Alle merken");
     setFilterModel("Alle modellen");
-    setFilterSoort("Alle voertuigen");
     setFilterTransmissie("Alle transmissies");
     setFilterBrandstof("Alle brandstof");
     setFilterPrijs("");
+    setFilterKm("");
+    setFilterBouwjaar("");
+    setFilterBtw("");
     setSorteer("");
+  };
+
+  /**
+   * Van tab wisselen betekent een ander deel van de voorraad.
+   *
+   * De keuzelijsten eronder komen uit de auto's die in de tab staan: andere merken,
+   * andere brandstoffen, andere bouwjaren. Een gekozen waarde die in de nieuwe tab niet
+   * bestaat zou in de balk blijven staan terwijl er niets meer aan voldoet — je klikt op
+   * Bedrijfswagens en krijgt nul resultaten omdat er nog "Fiat" stond. Daarom gaan de
+   * filters die uit de data komen mee op nul. Prijs, kilometerstand, btw en de sortering
+   * zijn vaste reeksen en blijven staan.
+   */
+  const kiesCategorie = (nieuw: Categorie) => {
+    setCategorie(nieuw);
+    setFilterMerk("Alle merken");
+    setFilterModel("Alle modellen");
+    setFilterTransmissie("Alle transmissies");
+    setFilterBrandstof("Alle brandstof");
+    setFilterBouwjaar("");
   };
 
   return (
@@ -306,17 +417,30 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
             className="text-xs tracking-widest uppercase mb-3"
             style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}
           >
-            Geselecteerde voertuigen
+            Bedrijfswagens &amp; Geselecteerde Occasions
           </motion.p>
+          {/* Op de telefoon kleiner dan voorheen: "Bedrijfswagens kopen in Barendrecht"
+              past op 375 pixels niet op één regel in de oude maat en liep over de rand. */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl font-bold text-white mb-4"
+            className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-4"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Onze collectie
+            {titel ?? "Onze collectie"}
           </motion.h1>
+          {intro && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="text-sm md:text-base max-w-xl mb-4"
+              style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)", lineHeight: 1.8 }}
+            >
+              {intro}
+            </motion.p>
+          )}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -324,10 +448,12 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
             className="text-white/40 text-sm"
             style={{ fontFamily: "var(--font-inter)" }}
           >
-            {beschikbaar.length} {beschikbaar.length === 1 ? "voertuig" : "voertuigen"} beschikbaar
+            {inCategorie.length} {inCategorie.length === 1 ? "voertuig" : "voertuigen"} beschikbaar
           </motion.p>
         </div>
       </div>
+
+      {children}
 
       {/* Filter balk — sticky alleen desktop */}
       <div
@@ -342,28 +468,62 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
         }}
       >
         <div className="max-w-7xl mx-auto">
+          {/* Categorie — als knoppen en niet meer als keuzelijst.
+              Personenauto of bedrijfswagen is de eerste vraag en een heel ander aanbod;
+              dat hoort niet weggestopt in de vierde dropdown van een rij. Het aantal staat
+              erbij, zodat je vóór het klikken ziet wat je te wachten staat. */}
+          {toonTabs && (
+            <div className="grid grid-cols-3 gap-2 mb-3 md:max-w-xl">
+              {tabs.map((tab) => {
+                const actief = categorie === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => kiesCategorie(tab.key)}
+                    aria-pressed={actief}
+                    className="flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 rounded-none transition-all"
+                    style={{
+                      backgroundColor: actief ? "#ffffff" : "rgba(255,255,255,0.06)",
+                      border: actief ? "1px solid #ffffff" : "1px solid rgba(255,255,255,0.12)",
+                      color: actief ? "#001337" : "rgba(255,255,255,0.75)",
+                      fontFamily: "var(--font-inter)",
+                      minHeight: "48px",
+                    }}
+                  >
+                    <span className="text-[10px] md:text-xs tracking-widest uppercase font-semibold leading-tight text-center">
+                      {tab.label}
+                    </span>
+                    <span className="text-[10px]" style={{ opacity: 0.55 }}>{tab.aantal}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:gap-3">
-            {toonSoortFilter && (
-              <FilterSelect value={filterSoort} onChange={setFilterSoort}>
-                {["Alle voertuigen", "Personenauto's", "Bedrijfswagens"].map((s) => (
-                  <option key={s} value={s} style={{ backgroundColor: "#001337" }}>{s}</option>
-                ))}
-              </FilterSelect>
-            )}
+            <FilterSelect value={filterPrijs} onChange={setFilterPrijs}>
+              {prijsOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
+            </FilterSelect>
             <FilterSelect value={filterMerk} onChange={(v) => { setFilterMerk(v); setFilterModel("Alle modellen"); }}>
               {merken.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
             </FilterSelect>
             <FilterSelect value={filterModel} onChange={setFilterModel}>
               {modellen.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterTransmissie} onChange={setFilterTransmissie}>
-              {transmissies.map((t) => <option key={t} value={t} style={{ backgroundColor: "#001337" }}>{t}</option>)}
+            <FilterSelect value={filterKm} onChange={setFilterKm}>
+              {kmOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
             </FilterSelect>
             <FilterSelect value={filterBrandstof} onChange={setFilterBrandstof}>
               {brandstofTypes.map((b) => <option key={b} value={b} style={{ backgroundColor: "#001337" }}>{b}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterPrijs} onChange={setFilterPrijs}>
-              {prijsOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
+            <FilterSelect value={filterTransmissie} onChange={setFilterTransmissie}>
+              {transmissies.map((t) => <option key={t} value={t} style={{ backgroundColor: "#001337" }}>{t}</option>)}
+            </FilterSelect>
+            <FilterSelect value={filterBouwjaar} onChange={setFilterBouwjaar}>
+              <option value="" style={{ backgroundColor: "#001337" }}>Bouwjaar vanaf</option>
+              {bouwjaren.map((j) => <option key={j} value={String(j)} style={{ backgroundColor: "#001337" }}>Vanaf {j}</option>)}
+            </FilterSelect>
+            <FilterSelect value={filterBtw} onChange={setFilterBtw}>
+              {btwOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
             </FilterSelect>
             <FilterSelect value={sorteer} onChange={setSorteer}>
               {sorteerOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
@@ -379,7 +539,7 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
             )}
           </div>
           <div className="mt-2 text-xs text-center md:text-left" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-inter)" }}>
-            {gefilterd.length} van {autos.length} voertuigen
+            {gefilterd.length} van {inCategorie.length} voertuigen
           </div>
         </div>
       </div>
@@ -402,179 +562,55 @@ export default function AanbodClient({ autos }: { autos: Auto[] }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <Link
-                    href={`/aanbod/${auto.slug || auto.id}`}
-                    className="group block rounded-none overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
-                    style={{ backgroundColor: "#ffffff" }}
-                  >
-                    {/* Foto */}
-                    <div className="relative h-56 overflow-hidden" style={{ backgroundColor: "#001337" }}>
-                      {auto.fotos && auto.fotos.length > 0 ? (
-                        <AutoFoto
-                          src={auto.fotos[0]}
-                          alt={`${auto.merk} ${auto.model}`}
-                          merk={auto.merk}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          tekstGrootte={110}
-                          lui
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span
-                            className="text-7xl font-bold"
-                            style={{ fontFamily: "var(--font-playfair)", color: "rgba(255,255,255,0.1)" }}
-                          >
-                            {auto.merk.slice(0, 2).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{ background: "radial-gradient(ellipse at center, rgba(255,255,255,0.08), transparent 70%)" }}
-                      />
-                      {auto.verkocht && (
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                          <div
-                            className="absolute flex items-center justify-center"
-                            style={{
-                              width: "160%",
-                              top: "28%",
-                              left: "-30%",
-                              transform: "rotate(-35deg)",
-                              backgroundColor: "#001337",
-                              padding: "10px 0",
-                              boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
-                            }}
-                          >
-                            <span
-                              className="text-white tracking-widest uppercase"
-                              style={{ fontFamily: "var(--font-playfair)", fontSize: "22px", fontWeight: 700, letterSpacing: "0.15em" }}
-                            >
-                              Verkocht
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {auto.gereserveerd && !auto.verkocht && (
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                          <div
-                            className="absolute flex items-center justify-center"
-                            style={{
-                              width: "160%",
-                              top: "28%",
-                              left: "-30%",
-                              transform: "rotate(-35deg)",
-                              backgroundColor: "#b45309",
-                              padding: "10px 0",
-                              boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
-                            }}
-                          >
-                            <span
-                              className="text-white tracking-widest uppercase"
-                              style={{ fontFamily: "var(--font-playfair)", fontSize: "22px", fontWeight: 700, letterSpacing: "0.15em" }}
-                            >
-                              Gereserveerd
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      <div className="absolute top-4 left-4">
-                        <span
-                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-none"
-                          style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)", fontWeight: 600 }}
-                        >
-                          {bodytypeLabel(auto)}
-                        </span>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <span
-                          className="text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-none"
-                          style={{ backgroundColor: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)", backdropFilter: "blur(4px)" }}
-                        >
-                          {auto.kleur}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <p className="text-[10px] tracking-widest uppercase font-semibold mb-1" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-                            {auto.merk}
-                          </p>
-                          <h3 className="text-xl font-bold leading-tight" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                            {auto.model}
-                          </h3>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <p className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                            {prijsWeergave(auto).tekst}
-                          </p>
-                          {prijsWeergave(auto).achtervoegsel && (
-                            <p className="text-[11px] font-semibold" style={{ fontFamily: "var(--font-inter)", color: "rgba(0,19,55,0.5)" }}>
-                              {prijsWeergave(auto).achtervoegsel}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Specs */}
-                      <div className="grid grid-cols-2 gap-2 mb-5">
-                        {[
-                          { icon: <Calendar size={12} />, label: "Bouwjaar", value: auto.bouwjaar },
-                          { icon: <Gauge size={12} />, label: "Kilometerstand", value: `${auto.km.toLocaleString("nl-NL")} km` },
-                          { icon: <Fuel size={12} />, label: "Brandstof", value: auto.brandstof },
-                          { icon: <Zap size={12} />, label: "Vermogen", value: auto.vermogen },
-                        ].map((spec) => (
-                          <div key={spec.label} className="flex items-center gap-2 py-2.5 px-3 rounded-none" style={{ backgroundColor: "#f5f5f5" }}>
-                            <span style={{ color: "#001337" }}>{spec.icon}</span>
-                            <div>
-                              <div className="text-[9px] text-gray-400 uppercase tracking-wide" style={{ fontFamily: "var(--font-inter)" }}>{spec.label}</div>
-                              <div className="text-xs font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{spec.value}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="h-px mb-5" style={{ backgroundColor: "#f0f0f0" }} />
-
-                      <div
-                        className="flex items-center justify-between w-full py-3.5 px-5 rounded-none text-sm font-semibold tracking-wide transition-all group-hover:shadow-lg group-hover:scale-[1.01]"
-                        style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
-                      >
-                        Bekijk dit voertuig
-                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </Link>
+                  {/* Dezelfde kaart als op de homepage, onder een autopagina en op
+                      /recent-verkocht. Hier stond lang een eigen kopie met zijn eigen
+                      verkocht-band en zijn eigen prijsweergave; die liep gegarandeerd uit
+                      de pas met de rest. Zie components/AutoKaart.tsx. */}
+                  <AutoKaart auto={auto} sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" />
                 </motion.div>
               ))}
             </div>
           )}
+
+          {/* De verkochte auto's die hier eerst onderaan het raster stonden. Dat een auto
+              weg is zegt iets goeds over de zaak, dus het hoort ergens te staan — maar
+              niet tussen de auto's die je kunt kopen. */}
+          <div className="mt-12 pt-8 text-center" style={{ borderTop: "1px solid rgba(0,19,55,0.08)" }}>
+            <Link
+              href="/recent-verkocht"
+              className="group inline-flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:opacity-70 transition-opacity"
+              style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+            >
+              Bekijk recent verkochte voertuigen
+              <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* CTA onderaan */}
-      <section className="py-20 px-6 text-center" style={{ backgroundColor: "#001337" }}>
-        <p className="text-xs tracking-widest uppercase mb-4" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
-          Niet gevonden wat je zoekt?
-        </p>
-        <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-          Wij zoeken jouw droomauto
-        </h2>
-        <p className="text-white/50 text-sm mb-8 max-w-md mx-auto" style={{ fontFamily: "var(--font-inter)" }}>
-          Neem contact op en vertel ons wat je zoekt. We kijken actief mee in ons netwerk.
-        </p>
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105"
-          style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
-        >
-          Contact opnemen <ArrowRight size={14} />
-        </Link>
-      </section>
+      {/* CTA onderaan — alleen op /aanbod.
+          De pagina's die deze lijst hergebruiken sluiten zelf af met een CTA die bij hun
+          onderwerp past; twee bijna gelijke oproepen onder elkaar leest als een vergissing. */}
+      {!vasteSoort && (
+        <section className="py-20 px-6 text-center" style={{ backgroundColor: "#001337" }}>
+          <p className="text-xs tracking-widest uppercase mb-4" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+            Niet gevonden wat je zoekt?
+          </p>
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+            Wij zoeken mee
+          </h2>
+          <p className="text-white/50 text-sm mb-8 max-w-md mx-auto" style={{ fontFamily: "var(--font-inter)" }}>
+            Neem contact op en vertel ons wat je zoekt. We kijken actief mee in ons netwerk.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-none text-sm font-semibold transition-all hover:scale-105"
+            style={{ backgroundColor: "#ffffff", color: "#001337", fontFamily: "var(--font-inter)" }}
+          >
+            Contact opnemen <ArrowRight size={14} />
+          </Link>
+        </section>
+      )}
     </>
   );
 }

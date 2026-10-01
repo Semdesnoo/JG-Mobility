@@ -22,16 +22,18 @@ const diensten = [
     sub: "Uw auto verkopen zonder zorgen",
     desc: "U levert uw auto in bij JG Mobility. Wij regelen alles: professionele fotografie, advertenties, onderhandelingen en de complete overdracht. U ontvangt de beste marktprijs — zonder ook maar één no-show.",
     href: "/diensten/consignatie",
-    punten: ["€0 kosten vooraf", "Professionele presentatie", "Persoonlijk contact", "Veilige overdracht"],
+    // Zelfde vergoeding-formulering als op /consignatie en in de FAQ: geen kosten
+    // vooraf, vergoeding alleen bij verkoop.
+    punten: ["Geen kosten vooraf", "Professionele presentatie", "Persoonlijk contact", "Veilige overdracht"],
   },
   {
     icon: <CreditCard size={28} />,
     nummer: "03",
-    title: "Financiering",
-    sub: "Flexibele oplossingen voor uw aankoop",
-    desc: "Via onze financieringspartners bieden wij u toegang tot scherpe leningen en leasemogelijkheden. Geen ingewikkeld papierwerk — wij begeleiden u van aanvraag tot goedkeuring.",
+    title: "Financiering & financial lease",
+    sub: "Zakelijk of particulier, wij regelen de aanvraag",
+    desc: "Via onze financieringspartners bieden wij toegang tot leningen en leasemogelijkheden. Ondernemers zetten een bedrijfswagen meestal op financial lease; wij begeleiden u van aanvraag tot goedkeuring.",
     href: "/diensten/financiering",
-    punten: ["Lage maandlasten", "Snelle goedkeuring", "Meerdere aanbieders", "Volledig begeleid"],
+    punten: ["Financial lease voor ondernemers", "Snelle goedkeuring", "Meerdere aanbieders", "Volledig begeleid"],
   },
   {
     icon: <Package size={28} />,
@@ -61,7 +63,7 @@ export default function DienstenPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }}
             className="text-sm md:text-base max-w-xl" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)", lineHeight: 1.8 }}>
-            JG Mobility ontzorgt u volledig — of u nu uw auto wilt verkopen, een nieuwe wilt financieren of rijklaar wilt laten afleveren.
+            JG Mobility ontzorgt u volledig — of u nu een bedrijfswagen op financial lease wilt zetten, uw auto wilt inruilen of verkopen, of een occasion rijklaar wilt laten afleveren.
           </motion.p>
         </div>
       </div>

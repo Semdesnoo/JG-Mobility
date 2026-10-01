@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAutos, getAutoBySlug, getAutoById } from "@/lib/autos-db";
 import { prijsWeergave } from "@/lib/prijs";
+import { bodytypeLabel } from "@/lib/voertuig";
 import AutoDetailClient from "./AutoDetailClient";
 import GerelateerdeVoertuigen from "./GerelateerdeVoertuigen";
 import { gerelateerdeAutos } from "@/lib/gerelateerd";
@@ -38,7 +39,10 @@ export async function generateMetadata(props: {
   // met het achtervoegsel erbij zodat een zoekresultaat niet te goedkoop oogt.
   const prijs = prijsWeergave(auto);
   const prijsTekst = `${prijs.tekst}${prijs.achtervoegsel ? ` ${prijs.achtervoegsel}` : ""}`;
-  const title = `${auto.merk} ${auto.model} — ${prijsTekst}`;
+  // Bouwjaar en plaats erin: hier stond alleen merk, model en prijs, terwijl mensen
+  // zoeken op "golf 2019 kopen" en op de plaats waar de auto staat. Dat zijn precies de
+  // twee dingen die een zoekresultaat van een advertentie onderscheiden.
+  const title = `${auto.merk} ${auto.model} ${auto.bouwjaar} kopen in Barendrecht — ${prijsTekst}`;
   const description = `Bekijk deze ${auto.merk} ${auto.model} uit ${auto.bouwjaar} met ${auto.km.toLocaleString("nl-NL")} km bij JG Mobility in Barendrecht. Prijs: ${prijsTekst}. ${auto.transmissie} | ${auto.brandstof}${auto.apk && auto.apk !== "Onbekend" ? ` | APK ${auto.apk}` : ""}.`;
   const url = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
 
@@ -87,6 +91,10 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
 
   const autoUrl = `${siteUrl}/aanbod/${auto.slug || auto.id}`;
   const getoondeP = prijsWeergave(auto);
+  // Het aantal deuren komt als tekst uit de RDW-opzoeking ("5") en is vaak leeg. Google
+  // wil er een getal zien, dus laten we het liever weg dan er "" in te zetten.
+  const deuren = Number(auto.aantalDeuren);
+  const heeftDeuren = Number.isFinite(deuren) && deuren > 0;
   const carSchema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -105,7 +113,14 @@ export default async function AutoDetailPage({ params }: { params: Promise<{ id:
           unitCode: "KMT",
         },
         fuelType: auto.brandstof,
+        // Dezelfde brandstof nog een keer, nu als motorspecificatie: Google leest die
+        // bij een Car-vermelding uit `vehicleEngine` en niet uit het losse `fuelType`.
+        vehicleEngine: { "@type": "EngineSpecification", fuelType: auto.brandstof },
         vehicleTransmission: auto.transmissie,
+        // Het label dat ook op de pagina staat — bij een bestelbus dus "Bedrijfswagen"
+        // en geen RDW-term als "Gesloten opbouw".
+        bodyType: bodytypeLabel(auto),
+        ...(heeftDeuren ? { numberOfDoors: deuren } : {}),
         color: auto.kleurExterieur || auto.kleur,
         offers: {
           "@type": "Offer",

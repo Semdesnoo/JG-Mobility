@@ -1,31 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { Resend } from "resend";
 import { put } from "@vercel/blob";
 import sql from "@/lib/db";
+import { stuurBevestigingsmail, veilig } from "@/lib/bevestigingsmail";
 
 const TO_EMAIL = "info@jgmobility.nl";
 
 /**
- * Het JG Mobility logo als data-URL, klaar om in mail-HTML te bakken.
- * Server-side lezen we het PNG-bestand en stoppen het als base64 in de HTML
- * zodat Gmail/Outlook de image niet als externe blokkeren.
+ * Drie formulieren komen hier binnen: het contactformulier, de afspraakplanner en de
+ * consignatie-aanvraag. Alle drie sturen de klant sinds kort ook zelf een korte
+ * ontvangstbevestiging — dezelfde mail voor de hele site, zie lib/bevestigingsmail.ts.
+ *
+ * Die bevestiging gaat met `after()` de deur uit: ná het antwoord aan de browser, dus de
+ * klant wacht er niet op, en mislukt hij dan is dat een regel in het log en niet een
+ * foutmelding op een formulier dat gewoon goed is aangekomen.
  */
-let _logoCache: string | null = null;
-function logoDataUrl(): string {
-  if (_logoCache) return _logoCache;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require("fs") as typeof import("fs");
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path") as typeof import("path");
-    const p = path.join(process.cwd(), "public", "mail-header.png");
-    const buf = fs.readFileSync(p);
-    _logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-    return _logoCache;
-  } catch {
-    return "";
-  }
-}
+
+// Hier stond een helper die public/mail-header.png als data-URL in de mail-HTML bakte.
+// Niemand gebruikte hem — onze mails hebben een kop van platte tekst op navy, juist omdat
+// Gmail en Outlook afbeeldingen standaard blokkeren. Zie lib/bevestigingsmail.ts.
 
 export const maxDuration = 60;
 
@@ -41,12 +34,14 @@ export async function POST(req: NextRequest) {
 
     // Afspraakformulier
     if (body.type === "appointment") {
-      const { email, telefoon, datum, tijd } = body;
+      // `voertuig` komt mee als de planner op de pagina van een auto staat ("Plan een
+      // bezichtiging"); op de contactpagina is hij er niet en blijft de regel weg.
+      const { email, telefoon, datum, tijd, voertuig } = body;
       const { error: afspraakError } = await resend.emails.send({
         from: "JG Mobility Website <noreply@jgmobility.nl>",
         to: TO_EMAIL,
         replyTo: email,
-        subject: `Nieuwe afspraak: ${datum} om ${tijd}`,
+        subject: `Nieuwe afspraak: ${datum} om ${tijd}${voertuig ? ` — ${voertuig}` : ""}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
             <div style="background: #001337; padding: 24px; text-align: center;">
@@ -57,6 +52,7 @@ export async function POST(req: NextRequest) {
               <table style="width: 100%; border-collapse: collapse;">
                 <tr><td style="padding: 8px 0; font-size: 13px; color: #666; width: 120px;">Datum:</td><td style="padding: 8px 0; font-size: 13px; color: #001337; font-weight: bold;">${datum}</td></tr>
                 <tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Tijd:</td><td style="padding: 8px 0; font-size: 13px; color: #001337; font-weight: bold;">${tijd}</td></tr>
+                ${voertuig ? `<tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Voertuig:</td><td style="padding: 8px 0; font-size: 13px; color: #001337; font-weight: bold;">${veilig(String(voertuig))}</td></tr>` : ""}
                 <tr><td style="padding: 8px 0; font-size: 13px; color: #666;">E-mail:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;"><a href="mailto:${email}">${email}</a></td></tr>
                 ${telefoon ? `<tr><td style="padding: 8px 0; font-size: 13px; color: #666;">Telefoon:</td><td style="padding: 8px 0; font-size: 13px; color: #001337;">${telefoon}</td></tr>` : ""}
               </table>
@@ -68,6 +64,23 @@ export async function POST(req: NextRequest) {
         console.error("Resend fout (afspraak):", afspraakError);
         return NextResponse.json({ ok: false, error: afspraakError.message }, { status: 500 });
       }
+
+      // De afspraak staat nog niet vast: Jimi belt of mailt hem na. Dat staat ook met
+      // zoveel woorden in de bevestiging, anders komt er iemand op een tijd die niet kan.
+      after(() =>
+        stuurBevestigingsmail({
+          naar: String(email ?? ""),
+          titel: "Afspraakverzoek ontvangen",
+          onderwerp: "We hebben je afspraakverzoek ontvangen",
+          regels: [
+            { label: "Datum", waarde: String(datum ?? "") },
+            { label: "Tijd", waarde: String(tijd ?? "") },
+            { label: "Voertuig", waarde: String(voertuig ?? "") },
+            { label: "Telefoon", waarde: String(telefoon ?? "") },
+          ],
+          slot: "We bevestigen dit moment zo snel mogelijk. Komt het onverwacht niet uit, dan stellen we meteen een alternatief voor.",
+        })
+      );
       return NextResponse.json({ ok: true });
     }
 
@@ -103,6 +116,19 @@ export async function POST(req: NextRequest) {
       console.error("Resend fout (contact):", contactError);
       return NextResponse.json({ ok: false, error: contactError.message }, { status: 500 });
     }
+
+    after(() =>
+      stuurBevestigingsmail({
+        naar: String(email ?? ""),
+        titel: "Bericht ontvangen",
+        onderwerp: "We hebben je bericht ontvangen",
+        regels: [
+          { label: "Naam", waarde: String(naam ?? "") },
+          { label: "Telefoon", waarde: String(telefoon ?? "") },
+          { label: "Je bericht", waarde: String(bericht ?? "") },
+        ],
+      })
+    );
 
     return NextResponse.json({ ok: true });
   }
@@ -182,8 +208,10 @@ export async function POST(req: NextRequest) {
     for (const foto of fotos) {
       if (fotoUrls.length >= 10) break;
       try {
-        const veilig = (foto.name || "foto").replace(/[^a-zA-Z0-9._-]/g, "_");
-        const blob = await put(`consignatie/${id}/${veilig}`, foto, {
+        // Heette `veilig`; dat is sinds de ontvangstbevestiging de naam van de
+        // HTML-ontsnapping die deze route bovenaan importeert.
+        const veiligeNaam = (foto.name || "foto").replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await put(`consignatie/${id}/${veiligeNaam}`, foto, {
           access: "public",
           addRandomSuffix: true,
         });
@@ -239,6 +267,24 @@ export async function POST(req: NextRequest) {
       // foto-mail mislukt → hoofdmail is al verstuurd, geen probleem
     }
   }
+
+  after(() =>
+    stuurBevestigingsmail({
+      naar: email ?? "",
+      titel: "Consignatie-aanvraag ontvangen",
+      onderwerp: "We hebben je consignatie-aanvraag ontvangen",
+      regels: [
+        { label: "Naam", waarde: naam ?? "" },
+        { label: "Auto", waarde: [merk, model, bouwjaar].filter(Boolean).join(" ") },
+        { label: "Kilometerstand", waarde: km ? `${parseInt(km, 10).toLocaleString("nl-NL")} km` : "" },
+        { label: "Vraagprijs", waarde: vraagprijs ? `€ ${parseInt(vraagprijs, 10).toLocaleString("nl-NL")}` : "" },
+        { label: "Opmerking", waarde: opmerking ?? "" },
+        { label: "Foto's", waarde: fotos.length ? `${fotos.length} meegestuurd` : "" },
+        { label: "Telefoon", waarde: telefoon ?? "" },
+      ],
+      slot: "We bekijken je auto en komen bij je terug met wat we ervoor denken te kunnen vragen en hoe we hem in consignatie nemen.",
+    })
+  );
 
   return NextResponse.json({ ok: true });
 }

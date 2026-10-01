@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Auto Consignatie",
+  title: "Auto consignatie Barendrecht | Uw auto laten verkopen",
   description:
-    "Verkoop uw auto via consignatie bij JG Mobility. Actief in Barendrecht, Rotterdam, Ridderkerk, Dordrecht en heel Zuid-Holland. Hogere verkoopprijs, geen gedoe — wij regelen alles.",
+    "Verkoop uw auto via consignatie bij JG Mobility in Barendrecht. Geen kosten vooraf, vergoeding alleen bij verkoop. Ook in Rotterdam, Ridderkerk en Dordrecht.",
   keywords: [
     "auto consignatie Barendrecht",
     "auto consignatie Rotterdam",

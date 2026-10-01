@@ -3,11 +3,44 @@
 import Link from "next/link";
 import { Mail, MapPin, Clock, Phone } from "lucide-react";
 
+// Weergave met streepje, link in internationaal formaat — zelfde afspraak als in de
+// Header.
+const TELEFOON_LINK = "tel:+31621331374";
+const TELEFOON_TEKST = "06-21331374";
+
+// De voorraad, de diensten en de rest van het bedrijf, elk in een eigen kolom. De
+// nieuwe pagina's (bedrijfswagens, personenauto's, recent verkocht, financial lease,
+// reviews, privacy) horen hier allemaal in: de footer is de enige plek waar elke
+// pagina van de site te vinden is, en Google leest hem op elke pagina mee.
+const voorraadLinks = [
+  { label: "Volledig aanbod", href: "/aanbod" },
+  { label: "Bedrijfswagens", href: "/bedrijfswagens" },
+  { label: "Personenauto's", href: "/personenautos" },
+  { label: "Recent verkocht", href: "/recent-verkocht" },
+];
+
+const dienstenLinks = [
+  { label: "Inruilen & taxatie", href: "/diensten/inkoop-taxatie" },
+  { label: "Financial lease", href: "/financial-lease" },
+  { label: "Consignatie", href: "/consignatie" },
+  { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
+  { label: "Alle diensten", href: "/diensten" },
+];
+
+const bedrijfLinks = [
+  { label: "Over ons", href: "/over-ons" },
+  { label: "Reviews", href: "/reviews" },
+  { label: "Veelgestelde vragen", href: "/faq" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy- & cookieverklaring", href: "/privacy" },
+];
+
 export default function Footer() {
   return (
     <footer style={{ backgroundColor: "#001337", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 mb-10 md:mb-16 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 mb-10 items-start">
 
           {/* Brand */}
           <div className="md:col-span-2">
@@ -21,7 +54,8 @@ export default function Footer() {
               />
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs" style={{ fontFamily: "var(--font-inter)" }}>
-              Specialist in consignatie, inkoop en verkoop van premium auto&apos;s. Persoonlijk, transparant en betrouwbaar — vanuit Barendrecht.
+              Bedrijfswagens &amp; geselecteerde occasions. Inruil, financial lease en consignatie —
+              persoonlijk, transparant en betrouwbaar, vanuit Barendrecht.
             </p>
             <div className="flex gap-3 mt-6">
               {[
@@ -33,7 +67,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   title={social.label}
-                  className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                  className="w-9 h-9 flex items-center justify-center transition-all hover:scale-110"
                   style={{
                     border: "1px solid rgba(255,255,255,0.1)",
                     color: "rgba(255,255,255,0.4)",
@@ -53,21 +87,13 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Navigatie */}
+          {/* Voorraad */}
           <div className="pt-0 md:pt-10">
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
-              Navigatie
+              Voorraad
             </h4>
             <ul className="flex flex-col gap-3">
-              {[
-                { label: "Diensten", href: "/diensten" },
-                { label: "Consignatie", href: "/consignatie" },
-                { label: "Aanbod", href: "/aanbod" },
-                { label: "Ons Verhaal", href: "/over-ons" },
-                { label: "Contact", href: "/contact" },
-                { label: "Blog", href: "/blog" },
-                { label: "Veelgestelde vragen", href: "/faq" },
-              ].map((item) => (
+              {voorraadLinks.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -83,22 +109,90 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Adres */}
+          {/* Diensten */}
           <div className="pt-0 md:pt-10">
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
-              Adres
+              Diensten
             </h4>
-            <div className="flex items-start gap-3 mb-4">
+            <ul className="flex flex-col gap-3">
+              {dienstenLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm transition-colors"
+                    style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Bedrijf */}
+          <div className="pt-0 md:pt-10">
+            <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+              JG Mobility
+            </h4>
+            <ul className="flex flex-col gap-3">
+              {bedrijfLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm transition-colors"
+                    style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bedrijfsgegevens — volledig, want dit is wat een koper of leasemaatschappij
+            moet kunnen natrekken voordat hij zaken met ons doet. */}
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 py-10 mb-10 md:mb-16"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <div>
+            <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+              Bedrijfsgegevens
+            </h4>
+            <div className="flex items-start gap-3">
               <MapPin size={14} style={{ color: "rgba(255,255,255,0.5)", marginTop: 2, flexShrink: 0 }} />
               <div>
+                <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)" }}>JG Mobility</p>
                 <p className="text-sm" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)" }}>Arnhemseweg 10a</p>
                 <p className="text-sm" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "var(--font-inter)" }}>2994 LA Barendrecht</p>
-                <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-inter)" }}>Zuid-Holland</p>
+                <p className="text-xs mt-2" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>KvK 42042275</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>BTW NL005450398B70</p>
               </div>
             </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+              Contact
+            </h4>
+            <a
+              href={TELEFOON_LINK}
+              className="flex items-center gap-3 text-sm transition-colors"
+              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+            >
+              <Phone size={14} style={{ color: "rgba(255,255,255,0.5)" }} />
+              {TELEFOON_TEKST}
+            </a>
             <a
               href="mailto:info@jgmobility.nl"
-              className="flex items-center gap-3 text-sm transition-colors"
+              className="flex items-center gap-3 text-sm transition-colors mt-3"
               style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
@@ -106,20 +200,10 @@ export default function Footer() {
               <Mail size={14} style={{ color: "rgba(255,255,255,0.5)" }} />
               info@jgmobility.nl
             </a>
-            <a
-              href="tel:+31621331374"
-              className="flex items-center gap-3 text-sm transition-colors mt-3"
-              style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
-            >
-              <Phone size={14} style={{ color: "rgba(255,255,255,0.5)" }} />
-              +31 6 21331374
-            </a>
           </div>
 
           {/* Openingstijden */}
-          <div className="pt-0 md:pt-10">
+          <div>
             <h4 className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
               Openingstijden
             </h4>
@@ -136,6 +220,9 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
+            <p className="text-xs mt-3" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
+              Bezoek en taxatie op afspraak.
+            </p>
           </div>
         </div>
 
@@ -183,7 +270,15 @@ export default function Footer() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-inter)" }}
         >
           <span>© {new Date().getFullYear()} JG Mobility. Alle rechten voorbehouden.</span>
-          <span>KvK: 42042275 &nbsp;·&nbsp; BTW: NL005450398B70</span>
+          <Link
+            href="/privacy"
+            className="transition-colors"
+            style={{ color: "rgba(255,255,255,0.2)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.2)")}
+          >
+            Privacy- &amp; cookieverklaring
+          </Link>
         </div>
       </div>
     </footer>

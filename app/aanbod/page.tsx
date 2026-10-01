@@ -5,16 +5,23 @@ import { getAutos } from "@/lib/autos-db";
 export const revalidate = 300; // Hervalideer elke 5 minuten
 
 export const metadata = {
-  title: "Occasions Barendrecht",
+  title: "Occasions & bedrijfswagens Barendrecht",
   description:
-    "Bekijk ons actuele aanbod van premium occasions bij JG Mobility in Barendrecht. Alle auto's zijn zorgvuldig geselecteerd, gekeurd en klaar voor aflevering.",
+    "Bekijk het actuele aanbod van JG Mobility in Barendrecht: bedrijfswagens en geselecteerde occasions. Marge- en BTW-voertuigen, financial lease mogelijk en inruil welkom.",
+  keywords: [
+    "occasions Barendrecht",
+    "bedrijfswagens Barendrecht",
+    "bestelbus kopen Barendrecht",
+    "occasions Rotterdam",
+    "JG Mobility",
+  ],
   alternates: {
     canonical: "https://www.jgmobility.nl/aanbod",
   },
   openGraph: {
-    title: "Occasions Barendrecht | JG Mobility",
+    title: "Occasions & bedrijfswagens Barendrecht | JG Mobility",
     description:
-      "Premium occasions bij JG Mobility in Barendrecht. Zorgvuldig geselecteerd en gekeurd.",
+      "Bedrijfswagens en geselecteerde occasions bij JG Mobility in Barendrecht. Marge- en BTW-voertuigen, financial lease mogelijk.",
     url: "https://www.jgmobility.nl/aanbod",
   },
 };

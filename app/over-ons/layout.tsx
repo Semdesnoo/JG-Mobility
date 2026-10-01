@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ons Verhaal",
+  title: "Over JG Mobility | Autobedrijf in Barendrecht",
   description:
-    "Leer JG Mobility kennen. Wij zijn een jong en gedreven autobedrijf in Barendrecht met een passie voor premium auto's en eerlijke service. Persoonlijk contact staat bij ons voorop.",
+    "JG Mobility is het autobedrijf van Jimi Gaillard in Barendrecht: bedrijfswagens en geselecteerde occasions, met inruil, financial lease en consignatie.",
   alternates: {
     canonical: "https://www.jgmobility.nl/over-ons",
   },
   openGraph: {
-    title: "Ons Verhaal | JG Mobility Barendrecht",
+    title: "Over JG Mobility | Autobedrijf Barendrecht",
     description:
-      "Jong, gedreven en gepassioneerd. Leer het team van JG Mobility kennen en ontdek waarom klanten ons 4,9 sterren geven.",
+      "Bedrijfswagens en geselecteerde occasions uit Barendrecht. Maak kennis met Jimi Gaillard en lees waarvoor je bij JG Mobility terechtkomt.",
     url: "https://www.jgmobility.nl/over-ons",
   },
 };

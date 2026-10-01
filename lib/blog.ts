@@ -10,11 +10,102 @@ export interface BlogPost {
     heading?: string;
     body: string;
     list?: string[];
+    /**
+     * Doorverwijzingen onder een sectie. `body` wordt als platte tekst gerenderd, dus
+     * een link in een alinea is niet mogelijk — en een artikel over bedrijfswagens dat
+     * niet naar de voorraad linkt, laat de lezer stranden. Vandaar dit veld: de
+     * blogpagina zet er knoppen van onder de sectie.
+     */
+    links?: { label: string; href: string }[];
   }[];
   keywords: string[];
 }
 
+// LET OP: het eerste artikel in deze lijst is het uitgelichte artikel op /blog (zie
+// `const [featured, ...rest] = blogPosts`). Daarom staat het koopgerichte artikel over
+// bedrijfswagens vooraan: dat is waar JG Mobility op gevonden wil worden.
 export const blogPosts: BlogPost[] = [
+  {
+    slug: "bedrijfswagen-kopen-barendrecht",
+    title: "Bedrijfswagen kopen in Barendrecht: waar let je op?",
+    date: "2026-10-01",
+    category: "Bedrijfswagens",
+    readTime: 6,
+    imageQuery: "white delivery van cargo loading",
+    excerpt:
+      "BTW of marge, laadruimte, Euro-klasse, financial lease en inruil: de vijf dingen die bepalen of een bedrijfswagen bij je werk past — en wat ze je kosten als je ze verkeerd inschat.",
+    sections: [
+      {
+        heading: "Begin bij het werk, niet bij de bus",
+        body: "Een bedrijfswagen is gereedschap. Een bus die er goed uitziet maar waar je langste plaat niet in past, kost je elke week tijd. Begin daarom bij wat je vervoert: de langste en hoogste lading, het gewicht van een volle laadvloer, en of je er in de stad mee moet komen. Pas daarna kijk je naar merk, bouwjaar en prijs. In Barendrecht en de regio Rotterdam rijden de meeste ondernemers een Sprinter, Transit, Crafter, Master of Vito — niet omdat dat de mooiste bussen zijn, maar omdat er altijd onderdelen, kennis en opbouwers voor te vinden zijn.",
+        links: [
+          { label: "Bekijk onze bedrijfswagens", href: "/bedrijfswagens" },
+        ],
+      },
+      {
+        heading: "BTW-voertuig of marge-voertuig? Dit is het verschil",
+        body: "Bij bedrijfswagens zie je twee soorten prijzen, en dat verschil is geen detail. Bij een BTW-voertuig staat de btw apart op de factuur. Ben je btw-plichtig ondernemer, dan vorder je die terug; de prijs exclusief btw is dus wat de bus je werkelijk kost. Bij een marge-voertuig is de btw al afgedragen en staat er geen btw op de factuur — die kun je dus ook niet terugvragen. Vergelijk daarom nooit een prijs exclusief btw met een margeprijs: dan lijkt de BTW-bus 21% goedkoper dan hij is, of de margeauto onnodig duur.",
+        list: [
+          "BTW-voertuig: btw apart op de factuur, terug te vorderen als je btw-plichtig bent",
+          "Marge-voertuig: geen btw op de factuur, dus niets terug te vorderen",
+          "Particulier of niet btw-plichtig? Dan rekent alleen het bedrag inclusief btw",
+          "Bij ons staat bij elke bedrijfswagen welke van de twee het is, en wat de prijs exclusief btw is",
+        ],
+      },
+      {
+        heading: "Laadruimte en laadvermogen: meet het na",
+        body: "Bestelbussen worden verkocht in lengte- en hoogtevarianten (L1 tot L4, H1 tot H3) en die maten verschillen per merk. Een L2H2 van het ene merk is niet dezelfde bus als een L2H2 van het andere. Meet dus wat jij vervoert en vergelijk dat met de werkelijke binnenmaten. Let daarnaast op het laadvermogen: dat is het maximumgewicht dat erin mag, en dat is de toegestane massa min het leeggewicht. Een bus met een zware opbouw of een dubbele cabine houdt soms honderden kilo's minder laadvermogen over dan je verwacht — en te zwaar geladen rijden is een boete én een veiligheidsrisico.",
+        list: [
+          "Binnenmaten van de laadruimte (lengte, breedte tussen de wielkasten, hoogte)",
+          "Laadvermogen in kilo's, niet alleen de toegestane massa",
+          "Trekgewicht, als je een aanhanger of machine moet trekken",
+          "Zijdeur, trekhaak, laadvloerbescherming en bevestigingspunten",
+        ],
+      },
+      {
+        heading: "Euro-klasse en zero-emissiezones",
+        body: "Steeds meer Nederlandse steden hebben een zero-emissiezone voor bestel- en vrachtauto's, met overgangsregelingen die afhangen van de Euro-klasse en het eerste registratiejaar van je bus. Of jij daar last van hebt, hangt dus niet af van de bus maar van waar je komt. Rijd je alleen in de regio en op bedrijventerreinen, dan is een nette diesel vaak nog jaren prima. Moet je dagelijks de binnenstad in, reken dan vóór de aankoop uit tot wanneer jouw Euro-klasse daar nog mag komen — en betrek dat in de prijs die je voor de bus wil betalen.",
+        links: [
+          { label: "Zero-emissiezones en je bedrijfswagen", href: "/bedrijfswagens/zero-emissiezones" },
+        ],
+      },
+      {
+        heading: "Technische staat: een bus is harder gelopen dan een auto",
+        body: "Kilometerstanden bij bedrijfswagens zeggen minder dan bij personenauto's. Een bus met 200.000 km die netjes onderhouden snelwegkilometers heeft gemaakt, is vaak gezonder dan een bus met 120.000 stadskilometers vol koud starten en stationair draaien. Kijk daarom naar de onderhoudshistorie, wanneer de distributie en de koppeling zijn gedaan, de staat van de remmen en de uitlaatnabehandeling (roetfilter, EGR, AdBlue) en hoe de laadruimte eruitziet — dat laatste vertelt je hoe er met de bus is omgegaan. Vraag altijd de APK-historie op en laat je niet afschepen met 'hij loopt goed'.",
+      },
+      {
+        heading: "Financial lease: de bus op de zaak",
+        body: "De meeste ondernemers kopen een bedrijfswagen niet in één keer contant. Met financial lease betaal je maandelijks en ben je aan het einde van de looptijd eigenaar; de bus staat op je balans en je mag afschrijven. Bij een BTW-voertuig wordt de btw meestal in één keer betaald en daarna teruggevorderd. Wat een maandbedrag wordt, hangt af van het bedrag, de looptijd, je aanbetaling en de beoordeling van de leasemaatschappij — daarom noemen wij nooit een tarief zonder jouw gegevens. Wij verzorgen de aanvraag via onze partners en laten je vooraf zien wat de voorwaarden zijn.",
+        links: [
+          { label: "Financial lease aanvragen", href: "/financial-lease" },
+        ],
+      },
+      {
+        heading: "Je huidige auto of bus inruilen",
+        body: "Heb je nog een auto of bus staan? Die kun je bij ons inruilen, zodat je niet eerst zelf hoeft te verkopen voordat je verder kunt. Wij taxeren je voertuig en verrekenen de waarde direct met de bedrijfswagen die je koopt: één afspraak, één aanspreekpunt, geen periode waarin je twee voertuigen hebt of helemaal geen. Een taxatie is gratis en vrijblijvend — ook als je uiteindelijk ergens anders koopt.",
+        links: [
+          { label: "Gratis inruilvoorstel aanvragen", href: "/diensten/inkoop-taxatie" },
+        ],
+      },
+      {
+        heading: "Samengevat",
+        body: "Kijk eerst naar wat je vervoert en waar je komt, let daarna op BTW of marge en reken met het juiste bedrag, controleer laadvermogen en onderhoudshistorie, en regel de financiering en de inruil in één keer. Weet je niet welke bus bij je werk past? Bel of app Jimi op 06-21331374 — dan zoeken we mee, ook als de bus die je zoekt nu niet in onze voorraad staat.",
+        links: [
+          { label: "Bekijk onze bedrijfswagens", href: "/bedrijfswagens" },
+          { label: "Contact opnemen", href: "/contact" },
+        ],
+      },
+    ],
+    keywords: [
+      "bedrijfswagen kopen Barendrecht",
+      "bedrijfswagen kopen Rotterdam",
+      "bestelbus kopen Barendrecht",
+      "bedrijfswagen BTW of marge",
+      "laadvermogen bestelbus",
+      "zero-emissiezone bestelauto",
+      "financial lease bedrijfswagen",
+    ],
+  },
   {
     slug: "wat-is-consignatie",
     title: "Wat is consignatie? Zo werkt auto verkopen via JG Mobility",
@@ -27,17 +118,18 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         heading: "Wat betekent consignatie?",
-        body: "Consignatie is een verkoopmethode waarbij jij als eigenaar je auto in opdracht geeft aan JG Mobility. Wij verkopen de auto voor je, regelen de bezichtigingen, onderhandelingen en alle administratie. Jij hoeft niets te doen — en je blijft gewoon in je auto rijden totdat hij verkocht is.",
+        body: "Consignatie is een verkoopmethode waarbij jij als eigenaar je auto in opdracht geeft aan JG Mobility. Jij levert de auto bij ons in; wij verkopen hem voor je en regelen de presentatie, de bezichtigingen, de onderhandelingen en alle administratie. Jij hoeft er verder niets voor te doen.",
       },
       {
+        // Dezelfde vier stappen als op /consignatie en /diensten/consignatie. Stonden
+        // hier eerder als vijf stappen beschreven; dat leest als een ander proces.
         heading: "Hoe werkt het in de praktijk?",
         body: "Het begint met een gratis taxatie. We kijken samen naar de staat van je auto en bepalen een eerlijke, marktconforme vraagprijs. Daarna verzorgen wij professionele foto's, plaatsen we de auto op de grootste autoplatformen en begeleiden we alle potentiële kopers. Zodra er een koper is, handelen wij de overdracht netjes af.",
         list: [
-          "Stap 1: Gratis taxatie en waardebepaling",
-          "Stap 2: Professionele fotografie en advertenties",
-          "Stap 3: Begeleiding van bezichtigingen",
-          "Stap 4: Onderhandelingen en administratie",
-          "Stap 5: Overdracht en uitbetaling",
+          "Stap 1: Aanmelden & taxatie — je meldt je auto aan met foto's, wij bepalen samen de vraagprijs",
+          "Stap 2: Inleveren & presentatie — fotografie, advertentietekst en plaatsing op de grootste autoplatformen",
+          "Stap 3: Wij verkopen — bezichtigingen, onderhandelingen en administratie",
+          "Stap 4: Uitbetaling — je ontvangt het afgesproken bedrag, wij regelen kenteken en papieren",
         ],
       },
       {
@@ -46,11 +138,15 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Wat kost consignatie?",
-        body: "We werken met een transparante commissiestructuur. Je betaalt alleen als je auto daadwerkelijk verkocht is — geen voorschot, geen advertentiekosten. De exacte voorwaarden bespreken we altijd persoonlijk, zodat je precies weet waar je aan toe bent.",
+        body: "Geen kosten vooraf: geen instapkosten en geen advertentiekosten. Onze vergoeding betaal je alleen bij een succesvolle verkoop. De exacte voorwaarden spreken we altijd persoonlijk af, zodat je precies weet waar je aan toe bent.",
       },
       {
         heading: "Klaar om te starten?",
         body: "Wil je weten wat jouw auto waard is? Neem vrijblijvend contact op voor een gratis taxatie. Wij zijn bereikbaar van maandag tot en met zondag, van 10:00 tot 21:00.",
+        links: [
+          { label: "Auto aanbieden voor consignatie", href: "/consignatie" },
+          { label: "Zo werkt consignatie", href: "/diensten/consignatie" },
+        ],
       },
     ],
     keywords: [

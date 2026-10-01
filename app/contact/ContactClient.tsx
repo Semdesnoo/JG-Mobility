@@ -6,14 +6,17 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import AppointmentScheduler from "@/components/AppointmentScheduler";
 
+// fontSize 16px is geen smaakkeuze: Safari op iOS zoomt automatisch in zodra je in
+// een veld tikt dat kleiner is, en dan staat het formulier scheef in beeld. Volle
+// breedte om dezelfde reden — één kolom tikt op een telefoon makkelijker in dan twee.
 const inputStyle = {
   width: "100%",
   backgroundColor: "rgba(0,19,55,0.03)",
   border: "1px solid rgba(0,19,55,0.12)",
-  borderRadius: "6px",
-  padding: "13px 16px",
+  borderRadius: 0,
+  padding: "14px 16px",
   color: "#001337",
-  fontSize: "13px",
+  fontSize: "16px",
   fontFamily: "var(--font-inter)",
   outline: "none",
 };
@@ -144,7 +147,7 @@ export default function ContactClient() {
             </h2>
             <ul className="flex flex-col gap-6 mb-12">
               <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                   <MapPin size={14} color="#001337" />
                 </div>
                 <div>
@@ -153,7 +156,7 @@ export default function ContactClient() {
                 </div>
               </li>
               <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                   <Mail size={14} color="#001337" />
                 </div>
                 <div>
@@ -164,12 +167,12 @@ export default function ContactClient() {
                 </div>
               </li>
               <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
                   <Phone size={14} color="#001337" />
                 </div>
                 <div>
                   <a href="tel:+31621331374" className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-                    +31 6 21331374
+                    06-21331374
                   </a>
                   <p className="text-xs mt-0.5 text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>Telefoonnummer</p>
                 </div>
@@ -206,8 +209,8 @@ export default function ContactClient() {
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex items-center justify-center rounded-full"
-                  style={{ width: 120, height: 120, backgroundColor: "#001337" }}
+                  className="flex items-center justify-center"
+                  style={{ width: 120, height: 120, backgroundColor: "#001337", borderRadius: 0 }}
                 >
                   <motion.div
                     initial={{ scale: 0, opacity: 0 }}
@@ -235,19 +238,20 @@ export default function ContactClient() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label style={labelStyle}>Naam *</label>
-                    <input name="naam" required style={inputStyle} placeholder="Jouw naam" />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>E-mailadres *</label>
-                    <input name="email" type="email" required style={inputStyle} placeholder="jouw@email.nl" />
-                  </div>
+                {/* Vier velden, één kolom: naam, telefoon, e-mail, bericht. Precies wat
+                    /api/contact nodig heeft om de mail op te bouwen en terug te kunnen
+                    bellen — elk extra veld is een reden om af te haken. */}
+                <div>
+                  <label style={labelStyle}>Naam *</label>
+                  <input name="naam" required style={inputStyle} placeholder="Jouw naam" />
                 </div>
                 <div>
                   <label style={labelStyle}>Telefoonnummer</label>
-                  <input name="telefoon" type="tel" style={inputStyle} placeholder="+31 6 ..." />
+                  <input name="telefoon" type="tel" style={inputStyle} placeholder="06 ..." />
+                </div>
+                <div>
+                  <label style={labelStyle}>E-mailadres *</label>
+                  <input name="email" type="email" required style={inputStyle} placeholder="jouw@email.nl" />
                 </div>
                 <div>
                   <label style={labelStyle}>Bericht *</label>
@@ -277,6 +281,53 @@ export default function ContactClient() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── ADRES & KAART ──
+          Het adres staat hierboven al in het rijtje bereikbaarheid, maar wie wil
+          langskomen zoekt een kaart. Daarom één blok waarin het adres groot staat én
+          de kaart op volle breedte: dan hoeft niemand te kopiëren en plakken.
+          De iframe staat op lazy — hij staat onderaan de pagina en Google Maps is
+          zwaar; hem meteen laden kost zichtbaar laadtijd bovenaan. */}
+      <section className="pb-20 px-6" style={{ backgroundColor: "#ffffff" }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                Ons adres
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Arnhemseweg 10a
+              </h2>
+              <p className="text-base mt-1" style={{ color: "rgba(0,19,55,0.6)", fontFamily: "var(--font-inter)" }}>
+                2994 LA Barendrecht
+              </p>
+            </div>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Arnhemseweg+10a,+2994+LA+Barendrecht"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 text-sm font-semibold hover:opacity-70 transition-opacity"
+              style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+            >
+              <MapPin size={14} />
+              Route plannen
+              <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
+
+          <div style={{ border: "1px solid rgba(0,19,55,0.1)", height: "400px" }}>
+            <iframe
+              src="https://www.google.com/maps?q=Arnhemseweg+10a,+2994+LA+Barendrecht&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="JG Mobility op de kaart — Arnhemseweg 10a, 2994 LA Barendrecht"
+            />
           </div>
         </div>
       </section>

@@ -5,26 +5,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+// De antwoorden over consignatie staan ook op /consignatie en /diensten/consignatie.
+// Die eerste pagina is de maat; de stappen en de vergoeding hieronder zijn daarop
+// afgestemd. Wijzig je hier iets, wijzig het daar mee (en in lib/blog.ts).
 const faqItems = [
   {
     question: "Wat is auto consignatie?",
     answer:
-      "Bij consignatie verkoopt JG Mobility jouw auto in jouw opdracht. Wij verzorgen de advertenties, bezichtigingen, onderhandelingen en alle administratie. Jij rijdt gewoon door in je auto totdat hij verkocht is — en pas bij een succesvolle verkoop betaal je een vergoeding.",
+      "Bij consignatie verkoopt JG Mobility jouw auto in jouw opdracht. Jij levert de auto bij ons in; wij verzorgen de presentatie, de advertenties, de bezichtigingen, de onderhandelingen en alle administratie. Pas bij een succesvolle verkoop betaal je een vergoeding.",
   },
   {
     question: "Hoe werkt consignatie bij JG Mobility?",
     answer:
-      "Het begint met een gratis taxatie. We bepalen samen een eerlijke vraagprijs. Daarna maken wij professionele foto's, plaatsen we de auto op de grootste autoplatformen en begeleiden we alle geïnteresseerden. Zodra er een koper is, regelen wij de overdracht en administratie compleet voor je.",
+      "In vier stappen. 1) Je meldt je auto aan via het formulier met foto's; wij taxeren hem en bepalen samen een realistische vraagprijs. 2) Je levert de auto in bij JG Mobility en wij verzorgen fotografie, advertentietekst en plaatsing op de grootste autoplatformen. 3) Wij doen de bezichtigingen, de onderhandelingen en de administratie. 4) Na verkoop ontvang je het afgesproken bedrag en regelen wij de betaling, het kenteken en de papieren. Wij nemen binnen 24 uur contact op als je auto in ons aanbod past.",
   },
   {
     question: "Wat zijn de kosten voor consignatie?",
     answer:
-      "We werken met een transparante commissiestructuur. Je betaalt alleen als je auto daadwerkelijk verkocht is — geen voorschot, geen advertentiekosten. De exacte voorwaarden bespreken we persoonlijk, zodat je precies weet waar je aan toe bent.",
+      "Geen kosten vooraf: geen instapkosten en geen advertentiekosten. Onze vergoeding betaal je alleen bij een succesvolle verkoop. De exacte voorwaarden spreken we persoonlijk af, zodat je precies weet waar je aan toe bent.",
   },
   {
     question: "Hoe snel wordt mijn auto verkocht?",
     answer:
-      "Dat hangt af van het merk, de vraagprijs en de marktvraag. Premium occasions vinden gemiddeld binnen 2 tot 6 weken een nieuwe eigenaar. We adviseren altijd een realistische marktconforme vraagprijs voor het snelste resultaat.",
+      "Dat hangt af van het merk, de vraagprijs en de marktvraag. We adviseren altijd een realistische marktconforme vraagprijs, want dat levert het snelste resultaat op. Wat een auto in de huidige markt doet, bespreken we bij de taxatie.",
   },
   {
     question: "Hoe wordt mijn auto getaxeerd bij JG Mobility?",
@@ -34,7 +37,7 @@ const faqItems = [
   {
     question: "Welke auto's koopt JG Mobility in?",
     answer:
-      "We zijn gespecialiseerd in premium occasions. We kopen in principe alle merken in, maar de nadruk ligt op goed onderhouden auto's in het midden- en premiumsegment. Twijfel je? Neem gewoon contact op voor een vrijblijvende taxatie.",
+      "We zijn gespecialiseerd in bedrijfswagens en geselecteerde occasions. We kopen in principe alle merken in, maar de nadruk ligt op goed onderhouden personenauto's en bestelbussen. Twijfel je? Neem gewoon contact op voor een vrijblijvende taxatie.",
   },
   {
     question: "Kan ik mijn auto ook direct verkopen zonder consignatie?",
@@ -42,9 +45,9 @@ const faqItems = [
       "Ja! Als je snel van je auto af wilt, kopen we hem ook direct in. We maken dezelfde dag nog een eerlijk bod op basis van de actuele marktwaarde. Snel, transparant en betrouwbaar — dezelfde dag uitbetaald is daarbij de norm.",
   },
   {
-    question: "Is financiering mogelijk bij JG Mobility?",
+    question: "Is financiering of financial lease mogelijk bij JG Mobility?",
     answer:
-      "Ja, we werken samen met financieringspartners voor een passende lening of lease-oplossing. Of je nu een zakelijke of particuliere koper bent — we vinden een constructie die bij jouw budget past.",
+      "Ja, we werken samen met financieringspartners voor een passende lening of lease-oplossing. Voor ondernemers die een bedrijfswagen op de zaak willen zetten, is financial lease meestal de route: wij verzorgen de aanvraag. Of je nu zakelijk of particulier koopt — we zoeken een constructie die bij je budget past.",
   },
   {
     question: "Waar is JG Mobility gevestigd?",
@@ -59,7 +62,7 @@ const faqItems = [
   {
     question: "Hoe neem ik contact op met JG Mobility?",
     answer:
-      "Bel of WhatsApp ons op +31 6 21331374, stuur een e-mail naar info@jgmobility.nl of vul het contactformulier in op onze website. We reageren altijd binnen 24 uur.",
+      "Bel of WhatsApp ons op 06-21331374, stuur een e-mail naar info@jgmobility.nl of vul het contactformulier in op onze website. We reageren altijd binnen 24 uur.",
   },
   {
     question: "Rijden jullie ook buiten Barendrecht voor taxaties?",
@@ -121,7 +124,8 @@ export default function FAQPage() {
             className="mt-5 text-sm max-w-xl leading-relaxed"
             style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-inter)" }}
           >
-            Alles wat je wilt weten over consignatie, inkoop, taxatie en financiering bij JG Mobility.
+            Alles wat je wilt weten over bedrijfswagens, occasions, inruil, financial lease en
+            consignatie bij JG Mobility.
           </motion.p>
         </div>
       </div>

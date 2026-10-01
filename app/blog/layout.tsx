@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Blog | Bedrijfswagens, occasions & financial lease",
   description:
-    "Lees handige artikelen over auto consignatie, auto verkopen, occasions kopen, taxatie en financiering. Geschreven door JG Mobility, uw specialist in Barendrecht.",
+    "Artikelen over een bedrijfswagen kopen, occasions, inruil, financial lease, taxatie en consignatie. Geschreven door JG Mobility in Barendrecht.",
   alternates: {
     canonical: "https://www.jgmobility.nl/blog",
   },
   openGraph: {
     title: "Blog | JG Mobility Barendrecht",
     description:
-      "Handige tips en informatie over auto kopen, verkopen, consignatie, taxatie en financiering — van JG Mobility in Barendrecht.",
+      "Praktische artikelen over bedrijfswagens kopen, occasions, inruil, financial lease en consignatie — van JG Mobility in Barendrecht.",
     url: "https://www.jgmobility.nl/blog",
   },
 };

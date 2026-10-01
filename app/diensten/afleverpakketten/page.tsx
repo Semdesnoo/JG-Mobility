@@ -35,7 +35,10 @@ const pakketten = [
     aanbevolen: true,
   },
   {
-    naam: "Premium",
+    // Heette "Premium". De site positioneert zich niet langer op dat woord — zie de
+    // nieuwe positionering "Bedrijfswagens & geselecteerde occasions" — dus heet het
+    // pakket nu naar wat je ervoor krijgt.
+    naam: "Compleet",
     icon: <Sparkles size={24} />,
     sub: "Volledig ontzorgd",
     punten: [
@@ -135,7 +138,7 @@ export default function AfleverpakkettenPage() {
                 Bij JG Mobility geloven wij dat de eerste indruk telt. Elk voertuig dat wij afleveren, is grondig schoongemaakt, gecontroleerd en klaar voor de weg. Niet halfbakken — maar echt goed.
               </p>
               <p className="text-sm leading-relaxed" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>
-                Of u nu kiest voor een basispakket of een volledige premium detailing beurt — u rijdt weg met een auto waar u trots op bent.
+                Of u nu kiest voor het basispakket of een volledige detailing beurt — u rijdt weg met een auto of bedrijfswagen waar u trots op bent.
               </p>
             </div>
           </AnimateOnScroll>

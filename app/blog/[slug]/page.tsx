@@ -177,6 +177,24 @@ export default async function BlogPostPage(props: {
                     ))}
                   </ul>
                 )}
+                {/* Doorverwijzingen bij deze sectie. De body is platte tekst, dus een
+                    link middenin een alinea kan niet — deze knoppen eronder brengen de
+                    lezer alsnog naar de pagina waar het artikel over gaat. */}
+                {section.links && (
+                  <div className="flex flex-wrap gap-2 mt-5">
+                    {section.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="group inline-flex items-center gap-2 px-4 py-3 text-xs font-semibold transition-all hover:opacity-80"
+                        style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
+                      >
+                        {link.label}
+                        <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </AnimateOnScroll>
           ))}
@@ -194,7 +212,7 @@ export default async function BlogPostPage(props: {
                   Jimi Gaillard — JG Mobility
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-                  Specialist in auto consignatie, inkoop & verkoop — Barendrecht
+                  Bedrijfswagens &amp; geselecteerde occasions — Barendrecht
                 </p>
               </div>
             </div>

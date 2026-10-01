@@ -40,13 +40,15 @@ const TEKSTEN: Record<
   { knop: string; endpoint: string; bevestiging: string; privacy: string }
 > = {
   inruil: {
-    knop: "Aanvraag versturen",
+    // "Aanvraag versturen" en "Taxatie aanvragen" vertelden wat de knop doet, niet wat je
+    // ervoor terugkrijgt. Dit wel — en het staat er meteen bij dat het gratis is.
+    knop: "Ontvang een gratis inruilvoorstel",
     endpoint: "/api/inruil",
     bevestiging: "en neemt contact met je op met een indicatie van de inruilwaarde",
     privacy: "We gebruiken je gegevens alleen om je inruilaanvraag te beantwoorden.",
   },
   taxatie: {
-    knop: "Taxatie aanvragen",
+    knop: "Ontvang een gratis inruilvoorstel",
     endpoint: "/api/taxatie",
     bevestiging: "en neemt binnen 24 uur contact met je op met een bod",
     privacy: "We gebruiken je gegevens alleen om je taxatieaanvraag te beantwoorden.",
@@ -276,7 +278,7 @@ export default function AutoAanvraagFormulier({
             onChange={(e) => setKm(e.target.value.replace(/\D/g, "").slice(0, 7))}
             inputMode="numeric"
             placeholder="bijv. 145000"
-            className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
+            className="w-full px-4 py-2.5 text-base outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
             style={veldStijl}
           />
         </div>
@@ -359,7 +361,7 @@ export default function AutoAanvraagFormulier({
             onChange={(e) => setGewenstePrijs(e.target.value.replace(/\D/g, "").slice(0, 8))}
             inputMode="numeric"
             placeholder="bijv. 8500"
-            className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
+            className="w-full px-4 py-2.5 text-base outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
             style={veldStijl}
           />
         </div>
@@ -373,7 +375,7 @@ export default function AutoAanvraagFormulier({
           onChange={(e) => setBijzonderheden(e.target.value.slice(0, 2000))}
           rows={4}
           placeholder="Denk aan panoramadak, trekhaak of lichtmetalen velgen — maar ook aan eventuele schade."
-          className="w-full px-4 py-3 text-base sm:text-sm outline-none resize-y focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
+          className="w-full px-4 py-3 text-base outline-none resize-y focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]"
           style={veldStijl}
         />
       </div>
@@ -386,15 +388,15 @@ export default function AutoAanvraagFormulier({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div>
           <Label htmlFor="inruil-naam">Naam *</Label>
-          <input id="inruil-naam" value={naam} onChange={(e) => setNaam(e.target.value)} autoComplete="name" className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
+          <input id="inruil-naam" value={naam} onChange={(e) => setNaam(e.target.value)} autoComplete="name" className="w-full px-4 py-2.5 text-base outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
         </div>
         <div>
           <Label htmlFor="inruil-email">E-mailadres *</Label>
-          <input id="inruil-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
+          <input id="inruil-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="w-full px-4 py-2.5 text-base outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
         </div>
         <div>
           <Label htmlFor="inruil-telefoon">Telefoonnummer</Label>
-          <input id="inruil-telefoon" type="tel" value={telefoon} onChange={(e) => setTelefoon(e.target.value)} autoComplete="tel" placeholder="+31 6 ..." className="w-full px-4 py-2.5 text-base sm:text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
+          <input id="inruil-telefoon" type="tel" value={telefoon} onChange={(e) => setTelefoon(e.target.value)} autoComplete="tel" placeholder="+31 6 ..." className="w-full px-4 py-2.5 text-base outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#001337]" style={veldStijl} />
         </div>
       </div>
 
@@ -411,7 +413,7 @@ export default function AutoAanvraagFormulier({
         <button
           type="submit"
           disabled={bezig}
-          className="flex items-center gap-2 px-8 py-3.5 rounded-none text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
+          className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-none text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
           style={{ backgroundColor: "#001337", color: "#ffffff", fontFamily: "var(--font-inter)" }}
         >
           {bezig && <Loader2 size={14} className="animate-spin" />}

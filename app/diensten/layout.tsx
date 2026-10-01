@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Diensten",
+  title: "Diensten | Inruil, financial lease & consignatie Barendrecht",
   description:
-    "Ontdek alle diensten van JG Mobility: auto inkoop & taxatie, consignatie, financiering en afleverpakketten. Actief in Barendrecht, Rotterdam, Ridderkerk, Dordrecht en heel Zuid-Holland.",
+    "De diensten van JG Mobility in Barendrecht: inruil & taxatie, financial lease voor ondernemers, consignatie en afleverpakketten. Ook in regio Rotterdam.",
   keywords: [
     "autobedrijf diensten Barendrecht",
-    "autobedrijf Rotterdam",
-    "auto inkoop Rotterdam",
+    "financial lease bedrijfswagen",
+    "auto inruilen Barendrecht",
+    "auto taxatie Barendrecht",
     "auto consignatie Rotterdam",
-    "auto taxatie Zuid-Holland",
+    "bedrijfswagens Rotterdam",
   ],
   alternates: { canonical: "https://www.jgmobility.nl/diensten" },
   openGraph: {
-    title: "Diensten | JG Mobility",
+    title: "Diensten | JG Mobility Barendrecht",
     description:
-      "Auto inkoop, taxatie, consignatie, financiering en afleverpakketten bij JG Mobility. Actief in Rotterdam en omgeving.",
+      "Inruil & taxatie, financial lease, consignatie en afleverpakketten bij JG Mobility. Actief in Barendrecht, Rotterdam en omgeving.",
     url: "https://www.jgmobility.nl/diensten",
   },
 };

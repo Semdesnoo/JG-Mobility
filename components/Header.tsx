@@ -6,17 +6,34 @@ import { usePathname } from "next/navigation";
 import { Mail, Phone, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Het telefoonnummer staat zichtbaar in de balk, niet alleen achter een icoontje:
+// bellen is voor een deel van de bezoekers de snelste route. Weergave zoals mensen
+// het zelf intikken, link in internationaal formaat zodat ook een buitenlandse
+// simkaart doorverbindt.
+const TELEFOON_LINK = "tel:+31621331374";
+const TELEFOON_TEKST = "06-21331374";
+
+// Wat er in het Diensten-menu hangt. Inruilen en financial lease staan al als eigen
+// item in de balk, dus die zouden hier dubbel staan — vandaar alleen de rest.
+// Consignatie is hierlangs bereikbaar; het staat niet als los item in de balk omdat
+// de balk dan niet meer op één regel past.
 const diensten = [
-  { label: "Inkoop & Taxatie", href: "/diensten/inkoop-taxatie" },
-  { label: "Financiering", href: "/diensten/financiering" },
+  { label: "Consignatie", href: "/consignatie" },
   { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
+  { label: "Alle diensten", href: "/diensten" },
 ];
 
+// Acht items op één regel is krap. Daarom staan de maten hieronder in de nav zelf
+// op 12px / px-3 vanaf lg en gaan ze pas op xl naar de ruimere variant — zo past de
+// balk op een 1024px-laptop zonder tweede regel of afgekapte labels.
 const navItems = [
-  { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
-  { label: "CONSIGNATIE", href: "/consignatie" },
   { label: "AANBOD", href: "/aanbod" },
-  { label: "ONS VERHAAL", href: "/over-ons" },
+  { label: "BEDRIJFSWAGENS", href: "/bedrijfswagens" },
+  { label: "PERSONENAUTO'S", href: "/personenautos" },
+  { label: "INRUILEN", href: "/diensten/inkoop-taxatie" },
+  { label: "FINANCIAL LEASE", href: "/financial-lease" },
+  { label: "DIENSTEN", href: "/diensten", hasDropdown: true },
+  { label: "OVER ONS", href: "/over-ons" },
   { label: "CONTACT", href: "/contact" },
 ];
 
@@ -142,9 +159,16 @@ export default function Header() {
             <IconBtn href="mailto:info@jgmobility.nl" title="E-mail">
               <Mail size={15} color="white" />
             </IconBtn>
-            <IconBtn href="tel:+31621331374" title="Bellen">
+            <IconBtn href={TELEFOON_LINK} title="Bellen">
               <Phone size={15} color="white" />
             </IconBtn>
+            <a
+              href={TELEFOON_LINK}
+              className="text-sm font-semibold text-white hover:opacity-70 transition-opacity whitespace-nowrap"
+              style={{ fontFamily: "var(--font-inter)" }}
+            >
+              {TELEFOON_TEKST}
+            </a>
           </div>
 
           {/* Midden: logo */}
@@ -175,9 +199,10 @@ export default function Header() {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}
       >
         {navItems.map((item) => {
-          const active =
-            (item.label === "AANBOD" && pathname === "/aanbod") ||
-            (item.href !== "/aanbod" && pathname === item.href);
+          // Ook onderliggende pagina's markeren het item: /bedrijfswagens/sprinter
+          // hoort BEDRIJFSWAGENS te laten oplichten, anders lijkt de bezoeker nergens
+          // te zijn.
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           if (item.hasDropdown) {
             return (
@@ -188,10 +213,9 @@ export default function Header() {
               >
                 <button
                   onClick={() => setMerkenOpen(!merkenOpen)}
-                  className="flex items-center gap-2 px-6 py-5 font-semibold tracking-[0.18em] transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px"
+                  className="flex items-center gap-2 px-3 xl:px-5 py-5 text-[12px] xl:text-[13px] font-semibold tracking-[0.08em] xl:tracking-[0.14em] whitespace-nowrap transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px"
                   style={{
                     fontFamily: "var(--font-inter)",
-                    fontSize: "13px",
                     color: merkenOpen ? "#ffffff" : "rgba(255,255,255,0.85)",
                     backgroundColor: merkenOpen ? "rgba(255,255,255,0.05)" : "transparent",
                   }}
@@ -233,10 +257,9 @@ export default function Header() {
               key={item.label}
               href={item.href}
               onClick={() => { if (active) { const start = window.scrollY; const duration = 500; const startTime = performance.now(); const step = (now: number) => { const elapsed = now - startTime; const progress = Math.min(elapsed / duration, 1); const ease = 1 - Math.pow(1 - progress, 4); window.scrollTo(0, start * (1 - ease)); if (progress < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); }; }}
-              className="relative flex items-center px-6 py-5 font-semibold tracking-[0.18em] transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px hover:text-white"
+              className="relative flex items-center px-3 xl:px-5 py-5 text-[12px] xl:text-[13px] font-semibold tracking-[0.08em] xl:tracking-[0.14em] whitespace-nowrap transition-all duration-200 hover:bg-white/5 hover:scale-[1.06] hover:-translate-y-px hover:text-white"
               style={{
                 fontFamily: "var(--font-inter)",
-                fontSize: "13px",
                 color: active ? "#ffffff" : "rgba(255,255,255,0.85)",
                 backgroundColor: active ? "rgba(255,255,255,0.06)" : "transparent",
               }}
@@ -261,14 +284,27 @@ export default function Header() {
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
-        <button
-          className="flex items-center justify-center w-11 h-11 transition-all hover:bg-white/10"
-          style={{ border: "1px solid rgba(255,255,255,0.32)" }}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          {menuOpen ? <X size={20} color="white" /> : <Menu size={20} color="white" />}
-        </button>
+        {/* Rechts: nummer zichtbaar naast de menuknop. Op mobiel is bellen de
+            kortste route naar een antwoord, dus die mag niet achter een menu
+            verstopt zitten. */}
+        <div className="flex items-center gap-3">
+          <a
+            href={TELEFOON_LINK}
+            className="flex items-center gap-2 px-3 text-[13px] font-semibold text-white hover:opacity-70 transition-opacity whitespace-nowrap"
+            style={{ fontFamily: "var(--font-inter)", minHeight: "44px" }}
+          >
+            <Phone size={14} color="white" />
+            {TELEFOON_TEKST}
+          </a>
+          <button
+            className="flex items-center justify-center w-11 h-11 transition-all hover:bg-white/10"
+            style={{ border: "1px solid rgba(255,255,255,0.32)" }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
+          >
+            {menuOpen ? <X size={20} color="white" /> : <Menu size={20} color="white" />}
+          </button>
+        </div>
       </div>
 
       {/* ── MOBILE MENU ── */}
@@ -383,12 +419,12 @@ export default function Header() {
               {/* Telefoonnummer */}
               <div className="px-6 py-4 flex items-center justify-center gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                 <a
-                  href="tel:+31621331374"
+                  href={TELEFOON_LINK}
                   className="flex items-center gap-2 text-sm font-semibold text-white hover:opacity-70 transition-opacity"
                   style={{ fontFamily: "var(--font-inter)" }}
                 >
                   <Phone size={14} color="white" />
-                  +31 6 21331374
+                  {TELEFOON_TEKST}
                 </a>
               </div>
 

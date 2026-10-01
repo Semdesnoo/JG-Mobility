@@ -48,10 +48,13 @@ const inputStyle = {
   width: "100%",
   backgroundColor: "rgba(0,19,55,0.03)",
   border: "1px solid rgba(0,19,55,0.12)",
-  borderRadius: "6px",
+  // Vierkant, zoals de rest van de site. Hier stond 6px.
+  borderRadius: 0,
   padding: "13px 16px",
   color: "#001337",
-  fontSize: "13px",
+  // 16px en niet kleiner: Safari op de iPhone zoomt het hele scherm in zodra je in een
+  // veld tikt dat kleiner is, en daarna staat de pagina scheef.
+  fontSize: "16px",
   fontFamily: "var(--font-inter)",
   outline: "none",
 };
@@ -66,7 +69,15 @@ const labelStyle: React.CSSProperties = {
   fontFamily: "var(--font-inter)",
 };
 
-export default function AppointmentScheduler() {
+/**
+ * De afspraakplanner.
+ *
+ * Staat op twee plekken: op /contact (zonder voertuig) en onderaan de pagina van een auto
+ * (met voertuig, zie app/aanbod/[id]/ContactBlok.tsx). Dat `voertuig` gaat mee in de mail
+ * naar Jimi én in de bevestiging naar de klant, zodat niemand hoeft te vragen waarvoor de
+ * afspraak is.
+ */
+export default function AppointmentScheduler({ voertuig }: { voertuig?: string }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -78,6 +89,7 @@ export default function AppointmentScheduler() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [fout, setFout] = useState("");
 
   const days = getDaysInMonth(viewYear, viewMonth);
   const firstDayOfWeek = days[0].getDay();
@@ -103,19 +115,34 @@ export default function AppointmentScheduler() {
   const handleSubmit = async () => {
     if (!selectedDate || !selectedTime || !email) return;
     setLoading(true);
-    await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "appointment",
-        email,
-        telefoon: phone,
-        datum: formatDateFull(selectedDate),
-        tijd: selectedTime,
-      }),
-    });
-    setLoading(false);
-    setSuccess(true);
+    setFout("");
+    // Eerst kijken of het aangekomen is en dan pas "gelukt" zeggen. Dit stond hier niet:
+    // een mislukte verzending gaf hetzelfde groene vinkje als een geslaagde, en dan zit
+    // iemand te wachten op een afspraak waar wij niets van weten. Zelfde afweging als in
+    // components/AutoAanvraagFormulier.tsx.
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "appointment",
+          email,
+          telefoon: phone,
+          datum: formatDateFull(selectedDate),
+          tijd: selectedTime,
+          ...(voertuig ? { voertuig } : {}),
+        }),
+      });
+      if (!res.ok) {
+        setFout("Het versturen lukte niet. Probeer het nog eens, of app ons even op 06-21331374.");
+        return;
+      }
+      setSuccess(true);
+    } catch {
+      setFout("We konden je aanvraag niet versturen. Controleer je verbinding en probeer het nog eens.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (success) {
@@ -125,7 +152,7 @@ export default function AppointmentScheduler() {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="w-20 h-20 flex items-center justify-center rounded-full"
+          className="w-20 h-20 flex items-center justify-center rounded-none"
           style={{ backgroundColor: "#001337" }}
         >
           <CheckCircle size={36} color="#ffffff" />
@@ -140,7 +167,9 @@ export default function AppointmentScheduler() {
             Afspraak aangevraagd!
           </p>
           <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
-            We bevestigen uw afspraak op <strong>{formatDateFull(selectedDate!)}</strong> om <strong>{selectedTime}</strong> zo snel mogelijk via e-mail.
+            We bevestigen uw afspraak{voertuig ? <> voor de <strong>{voertuig}</strong></> : null} op{" "}
+            <strong>{formatDateFull(selectedDate!)}</strong> om <strong>{selectedTime}</strong> zo snel mogelijk via e-mail.
+            Een ontvangstbevestiging staat al in uw postvak.
           </p>
         </motion.div>
       </div>
@@ -161,16 +190,20 @@ export default function AppointmentScheduler() {
               <span style={{ color: "rgba(0,19,55,0.4)", fontWeight: 400 }}>{viewYear}</span>
             </span>
             <div className="flex gap-1">
+              {/* 40×40: een maandpijl van 32px is op een telefoon net te klein om
+                  betrouwbaar te raken. */}
               <button
                 onClick={prevMonth}
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                aria-label="Vorige maand"
+                className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-gray-100 transition-colors"
                 style={{ color: "#001337" }}
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 onClick={nextMonth}
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                aria-label="Volgende maand"
+                className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-gray-100 transition-colors"
                 style={{ color: "#001337" }}
               >
                 <ChevronRight size={16} />
@@ -203,16 +236,18 @@ export default function AppointmentScheduler() {
 
               return (
                 <div key={date.toDateString()} className="flex flex-col items-center py-0.5">
+                  {/* 40×40 in plaats van 32×32: een dagknop vult nu zijn hele vakje, zodat
+                      je er op een telefoon niet net naast tikt. */}
                   <button
                     onClick={() => handleSelectDate(date)}
                     disabled={!avail}
-                    className="w-8 h-8 flex items-center justify-center text-xs transition-all"
+                    className="w-10 h-10 flex items-center justify-center text-xs transition-all"
                     style={{
                       fontFamily: "var(--font-inter)",
                       fontWeight: isToday || isSelected ? 700 : avail ? 500 : 400,
                       backgroundColor: isSelected ? "#001337" : "transparent",
                       color: isSelected ? "#ffffff" : avail ? "#001337" : "rgba(0,19,55,0.2)",
-                      borderRadius: isSelected ? "6px" : "4px",
+                      borderRadius: 0,
                       cursor: avail ? "pointer" : "default",
                     }}
                   >
@@ -220,7 +255,7 @@ export default function AppointmentScheduler() {
                   </button>
                   {avail && (
                     <div
-                      className="w-1 h-1 rounded-full"
+                      className="w-1 h-1 rounded-none"
                       style={{ backgroundColor: isSelected ? "#001337" : "rgba(0,19,55,0.2)" }}
                     />
                   )}
@@ -252,13 +287,13 @@ export default function AppointmentScheduler() {
                     <button
                       key={time}
                       onClick={() => setSelectedTime(time)}
-                      className="py-2.5 text-sm font-medium transition-all"
+                      className="py-3 text-sm font-medium transition-all"
                       style={{
                         fontFamily: "var(--font-inter)",
                         backgroundColor: sel ? "#001337" : "rgba(0,19,55,0.03)",
                         color: sel ? "#ffffff" : "#001337",
                         border: `1px solid ${sel ? "#001337" : "rgba(0,19,55,0.1)"}`,
-                        borderRadius: "6px",
+                        borderRadius: 0,
                       }}
                     >
                       {time}
@@ -293,7 +328,7 @@ export default function AppointmentScheduler() {
               className="flex items-center gap-4 px-5 py-4"
               style={{ backgroundColor: "rgba(0,19,55,0.03)", border: "1px solid rgba(0,19,55,0.08)" }}
             >
-              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#001337", borderRadius: "4px" }}>
+              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#001337", borderRadius: 0 }}>
                 <Calendar size={14} color="#ffffff" />
               </div>
               <div>
@@ -331,11 +366,21 @@ export default function AppointmentScheduler() {
               </div>
             </div>
 
+            {fout && (
+              <div
+                role="alert"
+                className="px-4 py-3 text-sm"
+                style={{ backgroundColor: "#fee2e2", border: "1px solid #fca5a5", color: "#b91c1c", fontFamily: "var(--font-inter)" }}
+              >
+                {fout}
+              </div>
+            )}
+
             <div>
               <button
                 onClick={handleSubmit}
                 disabled={loading || !email}
-                className="flex items-center gap-2 px-8 py-3.5 text-sm font-semibold tracking-wide transition-all hover:opacity-90"
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 text-sm font-semibold tracking-wide transition-all hover:opacity-90"
                 style={{
                   backgroundColor: "#001337",
                   color: "#ffffff",

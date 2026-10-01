@@ -5,22 +5,26 @@ import Link from "next/link";
 import { ArrowRight, TrendingUp, Clock, Shield, Eye, Handshake, BadgeCheck, CreditCard, Camera, Car, User } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 
+// Dezelfde voorwaarden, vergoeding en stappen als op /consignatie — die pagina is de
+// maat. Liep dit uit elkaar, dan las een bezoeker op de ene pagina drie stappen en op
+// de andere vier. Wijzig je hier iets, wijzig het daar mee (en in de FAQ en het
+// blogartikel "wat-is-consignatie").
 const voordelen = [
   { icon: <TrendingUp size={20} />, title: "Hogere verkoopprijs", desc: "Wij kennen de markt. Uw auto wordt professioneel gepresenteerd voor de hoogst mogelijke opbrengst." },
   { icon: <Clock size={20} />, title: "Jij doet niets", desc: "Geen foto's, geen advertenties, geen no-shows. Wij nemen het volledig uit uw handen." },
   { icon: <Shield size={20} />, title: "Volledig veilig", desc: "Geen vreemden over de vloer. Elke overdracht veilig en professioneel geregeld." },
-  { icon: <Eye size={20} />, title: "Premium uitstraling", desc: "Professionele fotografie en plaatsing op de juiste kanalen voor maximaal bereik." },
+  { icon: <Eye size={20} />, title: "Professionele presentatie", desc: "Professionele fotografie, advertentietekst en plaatsing op de grootste autoplatformen." },
   { icon: <Handshake size={20} />, title: "Persoonlijk contact", desc: "Jimi begeleidt het volledige proces. Altijd direct contact, geen tussenpersonen." },
-  { icon: <BadgeCheck size={20} />, title: "€0 kosten vooraf", desc: "Geen instapkosten, geen advertentiekosten. Onze vergoeding is enkel bij succesvolle verkoop." },
+  { icon: <BadgeCheck size={20} />, title: "Geen kosten vooraf", desc: "Geen instapkosten, geen advertentiekosten. Onze vergoeding betaalt u alleen bij een succesvolle verkoop." },
   { icon: <Car size={20} />, title: "Maximaal bereik", desc: "Gepresenteerd aan ons kopers-netwerk én op meerdere advertentieplatformen." },
   { icon: <CreditCard size={20} />, title: "Zorgeloos afronden", desc: "Wij regelen betaling, kentekenoverdracht en alle papieren. U ontvangt het geld — zonder stress." },
 ];
 
 const stappen = [
-  { icon: <Camera size={20} />, step: "01", title: "Auto aanbieden", desc: "Vul ons formulier in en voeg foto's toe. Wij beoordelen uw auto en nemen contact op." },
-  { icon: <Eye size={20} />, step: "02", title: "Professionele presentatie", desc: "Wij verzorgen fotografie, advertentietekst en plaatsing op premium platforms." },
-  { icon: <Handshake size={20} />, step: "03", title: "Wij regelen alles", desc: "Bezichtigingen, onderhandelingen, overdracht — u hoeft nergens voor te komen." },
-  { icon: <User size={20} />, step: "04", title: "U ontvangt het geld", desc: "Na verkoop ontvangt u het afgesproken bedrag direct. Klaar." },
+  { icon: <Camera size={20} />, step: "01", title: "Aanmelden & taxatie", desc: "Vul het formulier in met foto's. Wij taxeren uw auto en bepalen samen een realistische vraagprijs." },
+  { icon: <Car size={20} />, step: "02", title: "Inleveren & presentatie", desc: "U levert de auto in bij JG Mobility. Wij verzorgen fotografie, advertentietekst en plaatsing." },
+  { icon: <Handshake size={20} />, step: "03", title: "Wij verkopen", desc: "Bezichtigingen, onderhandelingen en de administratie nemen wij over. U hoeft nergens voor te komen." },
+  { icon: <User size={20} />, step: "04", title: "Uitbetaling", desc: "Na verkoop ontvangt u het afgesproken bedrag. Wij regelen betaling, kenteken en papieren." },
 ];
 
 export default function ConsignatieDienstPage() {
@@ -76,6 +80,9 @@ export default function ConsignatieDienstPage() {
             <div className="text-center mb-14">
               <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>In 4 stappen</p>
               <h2 className="text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>Hoe werkt consignatie?</h2>
+              <p className="text-sm mt-3" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>
+                Wij beoordelen elke aanmelding en nemen binnen 24 uur contact op als uw auto in ons aanbod past.
+              </p>
             </div>
           </AnimateOnScroll>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

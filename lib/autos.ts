@@ -41,6 +41,30 @@ export type Auto = {
   cilinderinhoud?: string;
   aantalDeuren?: string;
   aantalCilinders?: string;
+  // ── Advertentie-details ──
+  // Allemaal optioneel en allemaal vrije tekst: ze komen uit het dashboard, staan in
+  // dezelfde JSON-kolom als de rest, en wie ze niet invult krijgt op de autopagina
+  // gewoon geen blok te zien (of "Op aanvraag" waar dat beter leest dan niets).
+  /** Walkaround-video (URL). Staat die er, dan kan de bezoeker hem in de galerij openen. */
+  video?: string;
+  /** Wat we van het onderhoud weten, bijv. "Volledig dealeronderhouden, boekjes aanwezig". */
+  onderhoudshistorie?: string;
+  /** NAP-tellerstandcontrole: "Logisch", "Onlogisch" of een eigen toelichting. */
+  nap?: string;
+  /** Welke garantie bij deze auto hoort. Leeg = de standaardtekst over afleverpakketten. */
+  garantie?: string;
+  /** Gebruikssporen en bekende punten — eerlijk vooraf is minder teleurstelling achteraf. */
+  bijzonderheden?: string;
+  // Bedrijfswagen-specifiek; bij een personenauto blijven deze vier leeg.
+  /** Laadruimte als vrije tekst, bijv. "L 3,40 × B 1,78 × H 1,90 m". */
+  laadruimte?: string;
+  laadvermogen?: string;
+  trekgewicht?: string;
+  /** Euro-emissieklasse — bepaalt of een bus een zero-emissiezone nog in mag. */
+  euroklasse?: string;
+  // Financial lease aan of uit. Niet ingevuld betekent "gewoon mogelijk": alleen een auto
+  // die er expliciet op `false` staat laat de leasevermelding weg. Zie components/AutoKaart.tsx.
+  leaseMogelijk?: boolean;
   // Omschrijving
   omschrijving: string;
   // Opties per categorie

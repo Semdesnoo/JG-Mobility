@@ -1,28 +1,12 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { Resend } from "resend";
 import sql from "@/lib/db";
+import { stuurBevestigingsmail, veilig } from "@/lib/bevestigingsmail";
 
-/**
- * Het JG Mobility logo als data-URL, klaar om in mail-HTML te bakken.
- * Server-side lezen we het PNG-bestand en stoppen het als base64 in de HTML
- * zodat Gmail/Outlook de image niet als externe blokkeren.
- */
-let _logoCache: string | null = null;
-function logoDataUrl(): string {
-  if (_logoCache) return _logoCache;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require("fs") as typeof import("fs");
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path") as typeof import("path");
-    const p = path.join(process.cwd(), "public", "mail-header.png");
-    const buf = fs.readFileSync(p);
-    _logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-    return _logoCache;
-  } catch {
-    return "";
-  }
-}
+// Hier stond een helper die public/mail-header.png als data-URL in de mail-HTML bakte.
+// Niemand gebruikte hem — onze mails hebben een kop van platte tekst op navy, juist omdat
+// Gmail en Outlook afbeeldingen standaard blokkeren en je dan een kapot kadertje ziet
+// boven de belangrijkste mail die we versturen. Zie lib/bevestigingsmail.ts.
 
 /**
  * Een aanvraag waarbij de bezoeker zijn eigen auto beschrijft — in twee smaken.
@@ -70,14 +54,9 @@ function tekst(fd: FormData, veld: string, maxLengte = 500): string {
   return typeof waarde === "string" ? waarde.trim().slice(0, maxLengte) : "";
 }
 
-/** Voorkomt dat ingevoerde tekst als HTML in de mail terechtkomt. */
-function veilig(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+// `veilig()` — de HTML-ontsnapping voor ingevoerde tekst — staat sinds de
+// ontvangstbevestiging in lib/bevestigingsmail.ts, want die mail heeft hem net zo hard
+// nodig en dit bestand importeert dat bestand toch al.
 
 const rij = (label: string, waarde: string) =>
   waarde
@@ -86,9 +65,26 @@ const rij = (label: string, waarde: string) =>
 
 export type AanvraagSoort = "inruil" | "taxatie";
 
-const LABELS: Record<AanvraagSoort, { onderwerp: string; mailkop: string }> = {
-  inruil: { onderwerp: "Inruilaanvraag via de website", mailkop: "Nieuwe inruilaanvraag" },
-  taxatie: { onderwerp: "Taxatieaanvraag via de website", mailkop: "Nieuwe taxatieaanvraag" },
+const LABELS: Record<
+  AanvraagSoort,
+  { onderwerp: string; mailkop: string; klantTitel: string; klantOnderwerp: string; klantSlot: string }
+> = {
+  inruil: {
+    onderwerp: "Inruilaanvraag via de website",
+    mailkop: "Nieuwe inruilaanvraag",
+    klantTitel: "Inruilaanvraag ontvangen",
+    klantOnderwerp: "We hebben je inruilaanvraag ontvangen",
+    klantSlot:
+      "Jimi bekijkt je auto en neemt contact op met een indicatie van de inruilwaarde. Dat bedrag gaat van de prijs van het voertuig af.",
+  },
+  taxatie: {
+    onderwerp: "Taxatieaanvraag via de website",
+    mailkop: "Nieuwe taxatieaanvraag",
+    klantTitel: "Taxatieaanvraag ontvangen",
+    klantOnderwerp: "We hebben je taxatieaanvraag ontvangen",
+    klantSlot:
+      "Jimi bekijkt je auto en komt bij je terug met een bod. Gratis en vrijblijvend — je beslist zelf of je het aanneemt.",
+  },
 };
 
 export async function verwerkAutoAanvraag(req: NextRequest, soort: AanvraagSoort) {
@@ -230,6 +226,30 @@ export async function verwerkAutoAanvraag(req: NextRequest, soort: AanvraagSoort
     return !error;
   };
 
+  /**
+   * De ontvangstbevestiging voor de klant. Eén gedeelde helper voor alle formulieren op
+   * deze site, zie lib/bevestigingsmail.ts — die slikt zijn eigen fouten in, dus dit kan
+   * de aanvraag nooit laten mislukken.
+   */
+  const stuurKlantbevestiging = async () => {
+    await stuurBevestigingsmail({
+      naar: email,
+      titel: labels.klantTitel,
+      onderwerp: labels.klantOnderwerp,
+      regels: [
+        { label: "Kenteken", waarde: kenteken },
+        { label: "Voertuig", waarde: mijnAuto },
+        { label: "Kilometerstand", waarde: kmTekst },
+        { label: "Gewenste prijs", waarde: prijsTekst ? `€ ${prijsTekst}` : "" },
+        { label: "Bijzonderheden", waarde: bijzonderheden },
+        { label: "Interesse in", waarde: autoNaam },
+        { label: "Foto's", waarde: bijlagen.length ? `${bijlagen.length} meegestuurd` : "" },
+        { label: "Telefoon", waarde: telefoon },
+      ],
+      slot: labels.klantSlot,
+    });
+  };
+
   /** De foto's, in een tweede mail. Zo komt de hoofdmail altijd aan, ook als dit misgaat. */
   const stuurFotomail = async () => {
     if (bijlagen.length === 0) return;
@@ -279,6 +299,7 @@ export async function verwerkAutoAanvraag(req: NextRequest, soort: AanvraagSoort
     after(async () => {
       await stuurHoofdmail();
       await stuurFotomail();
+      await stuurKlantbevestiging();
     });
     return NextResponse.json({ ok: true });
   }
@@ -291,6 +312,9 @@ export async function verwerkAutoAanvraag(req: NextRequest, soort: AanvraagSoort
       { status: 500 }
     );
   }
-  after(stuurFotomail);
+  after(async () => {
+    await stuurFotomail();
+    await stuurKlantbevestiging();
+  });
   return NextResponse.json({ ok: true });
 }
