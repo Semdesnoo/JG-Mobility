@@ -21,6 +21,32 @@ const inputStyle = {
   outline: "none",
 };
 
+// Alle panelen op deze pagina: wit, één dunne rand, vierkant.
+const paneel = {
+  backgroundColor: "#ffffff",
+  border: "1px solid rgba(0,19,55,0.08)",
+  borderRadius: 0,
+};
+
+/** Dezelfde kop boven elk blok, zodat planner, contact en kaart op één lijn liggen. */
+function SectieKop({ boven, titel, tekst, zonderMarge }: { boven: string; titel: string; tekst?: string; zonderMarge?: boolean }) {
+  return (
+    <div className={zonderMarge ? "" : "mb-8 md:mb-10"}>
+      <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+        {boven}
+      </p>
+      <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+        {titel}
+      </h2>
+      {tekst && (
+        <p className="text-sm text-gray-500 mt-3 max-w-lg leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
+          {tekst}
+        </p>
+      )}
+    </div>
+  );
+}
+
 const labelStyle = {
   display: "block",
   fontSize: "10px",
@@ -57,9 +83,9 @@ export default function ContactClient() {
   return (
     <>
       {/* Hero */}
-      <div className="relative pt-28 md:pt-52 pb-16 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
+      <div className="relative pt-28 md:pt-52 pb-12 px-6 overflow-hidden" style={{ backgroundColor: "#001337" }}>
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 80% at 80% 50%, rgba(255,255,255,0.03) 0%, transparent 70%)" }} />
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-5xl mx-auto">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-xs tracking-widest uppercase mb-3" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
             Neem contact op
@@ -70,24 +96,6 @@ export default function ContactClient() {
           </motion.h1>
         </div>
       </div>
-
-      {/* Appointment Scheduler */}
-      <section className="py-20 px-6" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-10">
-            <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-              Kom langs
-            </p>
-            <h2 className="text-4xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-              Plan een afspraak
-            </h2>
-            <p className="text-sm text-gray-500 mt-3 max-w-lg leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
-              Kies een datum en tijdstip dat u uitkomt. Vul uw e-mailadres in en wij bevestigen de afspraak zo snel mogelijk.
-            </p>
-          </div>
-          <AppointmentScheduler />
-        </div>
-      </section>
 
       {/* Ticker */}
       <div className="overflow-hidden py-4" style={{ backgroundColor: "#001337" }}>
@@ -108,8 +116,8 @@ export default function ContactClient() {
               {/* Wie hier is, heeft ons al gevonden — die heeft geen verkoopargumenten meer
                   nodig maar antwoorden. Vandaar alleen controleerbare feiten, elk los te
                   lezen, want de band schuift voorbij en niemand leest hem van begin tot eind.
-                  Let op "bereikbaar" in de tweede regel: de afsprakenplanner hierboven laat
-                  geen zondagen toe, dus een kale "elke dag open" zou de knop erboven
+                  Let op "bereikbaar" in de tweede regel: de afsprakenplanner hieronder laat
+                  geen zondagen toe, dus een kale "elke dag open" zou de planner eronder
                   tegenspreken. */}
               {[
                 "Arnhemseweg 10a, Barendrecht",
@@ -136,151 +144,143 @@ export default function ContactClient() {
         </div>
       </div>
 
-      {/* Content */}
-      <section className="py-16 px-6" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16">
+      {/* ── AFSPRAAK ──
+          Eén breedte (max-w-5xl) en één kopstijl voor elk blok op deze pagina: dan lijnen
+          planner, contactblok en kaart precies onder elkaar uit en oogt de pagina strak. */}
+      <section className="py-16 md:py-20 px-6" style={{ backgroundColor: "#ffffff" }}>
+        <div className="max-w-5xl mx-auto">
+          <SectieKop
+            boven="Kom langs"
+            titel="Plan een afspraak"
+            tekst="Kies een datum en tijdstip dat u uitkomt. Vul uw e-mailadres in en wij bevestigen de afspraak zo snel mogelijk."
+          />
+          <AppointmentScheduler />
+        </div>
+      </section>
 
-          {/* Contactinfo */}
-          <div>
-            <h2 className="text-xl font-bold mb-8" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-              Bereikbaarheid
-            </h2>
-            <ul className="flex flex-col gap-6 mb-12">
-              <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
-                  <MapPin size={14} color="#001337" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>Arnhemseweg 10a</p>
-                  <p className="text-xs mt-0.5" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>2994 LA Barendrecht, Zuid-Holland</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
-                  <Mail size={14} color="#001337" />
-                </div>
-                <div>
-                  <a href="mailto:info@jgmobility.nl" className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-                    info@jgmobility.nl
-                  </a>
-                  <p className="text-xs mt-0.5 text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>E-mail</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
-                  <Phone size={14} color="#001337" />
-                </div>
-                <div>
-                  <a href="tel:+31621331374" className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
-                    06-21331374
-                  </a>
-                  <p className="text-xs mt-0.5 text-gray-400" style={{ fontFamily: "var(--font-inter)" }}>Telefoonnummer</p>
-                </div>
-              </li>
-            </ul>
+      {/* ── CONTACT ──
+          Twee panelen naast elkaar, even hoog, op een licht grijze achtergrond. Hier stond
+          eerst een los streepje boven het formulier zonder kop; nu heeft elk paneel een
+          eigen titel op dezelfde hoogte. */}
+      <section className="py-16 md:py-20 px-6" style={{ backgroundColor: "#f5f5f5" }}>
+        <div className="max-w-5xl mx-auto">
+          <SectieKop boven="Liever schrijven of bellen?" titel="Neem contact op" />
 
-            {/* Consignatie CTA */}
-            <div className="p-5 rounded-none" style={{ border: "1px solid rgba(0,19,55,0.1)", backgroundColor: "rgba(0,19,55,0.03)" }}>
-              <p className="text-sm font-semibold mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>
-                Auto verkopen?
-              </p>
-              <p className="text-xs leading-relaxed mb-4 text-gray-500" style={{ fontFamily: "var(--font-inter)" }}>
-                Bied je auto aan via onze consignatiepagina.
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 items-stretch">
+            {/* Contactinfo */}
+            <div className="md:col-span-2 flex flex-col p-6 md:p-8" style={paneel}>
+              <h3 className="text-lg font-bold mb-6" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Bereikbaarheid
+              </h3>
+              <ul className="flex flex-col gap-5">
+                {[
+                  { icon: <MapPin size={14} color="#001337" />, boven: "Arnhemseweg 10a", onder: "2994 LA Barendrecht", href: undefined },
+                  { icon: <Phone size={14} color="#001337" />, boven: "06-21331374", onder: "Bellen of appen, 10:00–21:00", href: "tel:+31621331374" },
+                  { icon: <Mail size={14} color="#001337" />, boven: "info@jgmobility.nl", onder: "Reactie binnen 24 uur", href: "mailto:info@jgmobility.nl" },
+                ].map((r) => (
+                  <li key={r.boven} className="flex items-start gap-4">
+                    <div className="w-9 h-9 flex items-center justify-center flex-shrink-0" style={{ border: "1px solid rgba(0,19,55,0.15)" }}>
+                      {r.icon}
+                    </div>
+                    <div className="min-w-0">
+                      {r.href ? (
+                        <a href={r.href} className="text-sm font-semibold hover:opacity-70 transition-opacity break-all" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>
+                          {r.boven}
+                        </a>
+                      ) : (
+                        <p className="text-sm font-semibold" style={{ color: "#001337", fontFamily: "var(--font-inter)" }}>{r.boven}</p>
+                      )}
+                      <p className="text-xs mt-0.5" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>{r.onder}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Consignatie als rustige regel onderaan het paneel (mt-auto), niet als
+                  apart kaartje: het is een zijspoor, geen tweede hoofdactie. */}
               <Link
                 href="/consignatie"
-                className="group inline-flex items-center gap-2 text-xs font-semibold hover:opacity-70 transition-opacity"
-                style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
+                className="group mt-8 md:mt-auto pt-5 flex items-center justify-between gap-3 text-sm font-semibold hover:opacity-70 transition-opacity"
+                style={{ color: "#001337", fontFamily: "var(--font-inter)", borderTop: "1px solid rgba(0,19,55,0.08)" }}
               >
-                Naar consignatie
-                <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                Auto verkopen via consignatie?
+                <ArrowRight size={14} className="flex-shrink-0 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-          </div>
 
-          {/* Formulier */}
-          <div className="md:col-span-2">
-            <div className="h-0.5 mb-10" style={{ backgroundColor: "rgba(0,19,55,0.08)" }} />
-
-            {success ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-6">
-                {/* Check animatie */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex items-center justify-center"
-                  style={{ width: 120, height: 120, backgroundColor: "#001337", borderRadius: 0 }}
-                >
+            {/* Formulier */}
+            <div className="md:col-span-3 p-6 md:p-8" style={paneel}>
+              {success ? (
+                <div className="flex flex-col items-center justify-center h-full py-12 gap-6">
                   <motion.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 260 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex items-center justify-center"
+                    style={{ width: 96, height: 96, backgroundColor: "#001337", borderRadius: 0 }}
                   >
-                    <CheckCircle size={56} color="#ffffff" strokeWidth={1.5} />
+                    <CheckCircle size={44} color="#ffffff" strokeWidth={1.5} />
                   </motion.div>
-                </motion.div>
-
-                {/* Tekst */}
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.7 }}
-                  className="text-center"
-                >
-                  <p className="text-xl font-bold mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>
-                    Bericht ontvangen!
-                  </p>
-                  <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
-                    Uw bericht is succesvol bij ons binnengekomen. We nemen zo snel mogelijk contact met u op.
-                  </p>
-                </motion.div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {/* Vier velden, één kolom: naam, telefoon, e-mail, bericht. Precies wat
-                    /api/contact nodig heeft om de mail op te bouwen en terug te kunnen
-                    bellen — elk extra veld is een reden om af te haken. */}
-                <div>
-                  <label style={labelStyle}>Naam *</label>
-                  <input name="naam" required style={inputStyle} placeholder="Jouw naam" />
+                  <div className="text-center">
+                    <p className="text-xl font-bold mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>
+                      Bericht ontvangen!
+                    </p>
+                    <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed" style={{ fontFamily: "var(--font-inter)" }}>
+                      Uw bericht is succesvol bij ons binnengekomen. We nemen zo snel mogelijk contact met u op.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <label style={labelStyle}>Telefoonnummer</label>
-                  <input name="telefoon" type="tel" style={inputStyle} placeholder="06 ..." />
-                </div>
-                <div>
-                  <label style={labelStyle}>E-mailadres *</label>
-                  <input name="email" type="email" required style={inputStyle} placeholder="jouw@email.nl" />
-                </div>
-                <div>
-                  <label style={labelStyle}>Bericht *</label>
-                  <textarea
-                    name="bericht"
-                    required
-                    rows={6}
-                    style={{ ...inputStyle, resize: "vertical" }}
-                    placeholder="Hoe kan ik je helpen?"
-                  />
-                </div>
-                <div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex items-center gap-2 px-8 py-3.5 rounded-none text-sm font-semibold tracking-wide transition-all hover:opacity-90"
-                    style={{
-                      backgroundColor: "#001337",
-                      color: "#ffffff",
-                      fontFamily: "var(--font-inter)",
-                      opacity: loading ? 0.7 : 1,
-                    }}
-                  >
-                    <Send size={14} />
-                    {loading ? "Versturen..." : "Verstuur bericht"}
-                  </button>
-                </div>
-              </form>
-            )}
+              ) : (
+                <>
+                  <h3 className="text-lg font-bold mb-6" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                    Stuur een bericht
+                  </h3>
+                  {/* Vier velden: precies wat /api/contact nodig heeft. Naam en telefoon
+                      naast elkaar vanaf tablet; op de telefoon alles in één kolom. */}
+                  <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label style={labelStyle}>Naam *</label>
+                      <input name="naam" required autoComplete="name" style={inputStyle} placeholder="Jouw naam" />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Telefoonnummer</label>
+                      <input name="telefoon" type="tel" autoComplete="tel" style={inputStyle} placeholder="06 ..." />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label style={labelStyle}>E-mailadres *</label>
+                      <input name="email" type="email" required autoComplete="email" style={inputStyle} placeholder="jouw@email.nl" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label style={labelStyle}>Bericht *</label>
+                      <textarea
+                        name="bericht"
+                        required
+                        rows={5}
+                        style={{ ...inputStyle, resize: "vertical" }}
+                        placeholder="Hoe kan ik je helpen?"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-semibold tracking-wide transition-all hover:opacity-90"
+                        style={{
+                          backgroundColor: "#001337",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-inter)",
+                          opacity: loading ? 0.7 : 1,
+                          minHeight: "48px",
+                        }}
+                      >
+                        <Send size={14} />
+                        {loading ? "Versturen..." : "Verstuur bericht"}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -291,20 +291,10 @@ export default function ContactClient() {
           de kaart op volle breedte: dan hoeft niemand te kopiëren en plakken.
           De iframe staat op lazy — hij staat onderaan de pagina en Google Maps is
           zwaar; hem meteen laden kost zichtbaar laadtijd bovenaan. */}
-      <section className="pb-20 px-6" style={{ backgroundColor: "#ffffff" }}>
+      <section className="py-16 md:py-20 px-6" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-            <div>
-              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
-                Ons adres
-              </p>
-              <h2 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
-                Arnhemseweg 10a
-              </h2>
-              <p className="text-base mt-1" style={{ color: "rgba(0,19,55,0.6)", fontFamily: "var(--font-inter)" }}>
-                2994 LA Barendrecht
-              </p>
-            </div>
+            <SectieKop boven="Ons adres" titel="Arnhemseweg 10a, Barendrecht" zonderMarge />
             <a
               href="https://www.google.com/maps/search/?api=1&query=Arnhemseweg+10a,+2994+LA+Barendrecht"
               target="_blank"
@@ -318,7 +308,7 @@ export default function ContactClient() {
             </a>
           </div>
 
-          <div style={{ border: "1px solid rgba(0,19,55,0.1)", height: "400px" }}>
+          <div style={{ border: "1px solid rgba(0,19,55,0.1)", height: "380px" }}>
             <iframe
               src="https://www.google.com/maps?q=Arnhemseweg+10a,+2994+LA+Barendrecht&output=embed"
               width="100%"
