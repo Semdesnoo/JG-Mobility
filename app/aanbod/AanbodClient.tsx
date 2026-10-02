@@ -54,26 +54,32 @@ function inTab(auto: Auto, tab: Categorie): boolean {
   return true;
 }
 
-function FilterSelect({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
+function FilterSelect({ value, onChange, label, children }: { value: string; onChange: (v: string) => void; label: string; children: React.ReactNode }) {
   const active = value !== "" && !["Alle merken", "Alle modellen", "Alle transmissies", "Alle brandstof"].includes(value);
   return (
-    <div className="relative w-full md:w-auto">
+    // Elke keuzelijst vult zijn eigen cel in het raster: allemaal even breed en even
+    // hoog, zodat de balk één strak blok is in plaats van een rij losse knoppen.
+    <div className="relative w-full">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none w-full pr-8 pl-4 py-2.5 rounded-none text-sm font-medium cursor-pointer transition-all"
+        aria-label={label}
+        className="appearance-none w-full h-11 pr-9 pl-3.5 rounded-none text-[13px] font-medium cursor-pointer transition-colors truncate"
         style={{
-          backgroundColor: active ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.06)",
-          border: active ? "1px solid rgba(255,255,255,0.5)" : "1px solid rgba(255,255,255,0.12)",
-          color: active ? "#ffffff" : "rgba(255,255,255,0.75)",
+          backgroundColor: active ? "#ffffff" : "rgba(255,255,255,0.05)",
+          border: active ? "1px solid #ffffff" : "1px solid rgba(255,255,255,0.14)",
+          color: active ? "#001337" : "rgba(255,255,255,0.8)",
           fontFamily: "var(--font-inter)",
           outline: "none",
-          minWidth: "130px",
         }}
       >
         {children}
       </select>
-      <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.5)" }} />
+      <ChevronDown
+        size={13}
+        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+        style={{ color: active ? "#001337" : "rgba(255,255,255,0.5)" }}
+      />
     </div>
   );
 }
@@ -224,9 +230,9 @@ export default function AanbodClient({
   const tabs = useMemo(() => {
     const bedrijf = beschikbaar.filter(isBedrijfswagen).length;
     return [
-      { key: "alle" as const, label: "Alle", aantal: beschikbaar.length },
-      { key: "personen" as const, label: "Personenauto's", aantal: beschikbaar.length - bedrijf },
-      { key: "bedrijf" as const, label: "Bedrijfswagens", aantal: bedrijf },
+      { key: "alle" as const, label: "Alle", kort: "Alle", aantal: beschikbaar.length },
+      { key: "personen" as const, label: "Personenauto's", kort: "Auto's", aantal: beschikbaar.length - bedrijf },
+      { key: "bedrijf" as const, label: "Bedrijfswagens", kort: "Bedrijf", aantal: bedrijf },
     ];
   }, [beschikbaar]);
 
@@ -458,7 +464,7 @@ export default function AanbodClient({
       {/* Filter balk — sticky alleen desktop */}
       <div
         ref={filterRef}
-        className="md:sticky top-[80px] z-40 px-4 md:px-6 py-5"
+        className="md:sticky top-[80px] z-40 px-4 md:px-6 py-4"
         style={{
           // Was rgba(...,0.97) mét een blur eronder. Bij 97% dekking zie je van die blur
           // niets, terwijl de browser hem bij elk beeldje opnieuw moet uitrekenen — juist
@@ -468,78 +474,99 @@ export default function AanbodClient({
         }}
       >
         <div className="max-w-7xl mx-auto">
-          {/* Categorie — als knoppen en niet meer als keuzelijst.
+          {/* Bovenste regel: categorie links, aantal + sorteren rechts.
               Personenauto of bedrijfswagen is de eerste vraag en een heel ander aanbod;
-              dat hoort niet weggestopt in de vierde dropdown van een rij. Het aantal staat
-              erbij, zodat je vóór het klikken ziet wat je te wachten staat. */}
-          {toonTabs && (
-            <div className="grid grid-cols-3 gap-2 mb-3 md:max-w-xl">
-              {tabs.map((tab) => {
-                const actief = categorie === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => kiesCategorie(tab.key)}
-                    aria-pressed={actief}
-                    className="flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 rounded-none transition-all"
-                    style={{
-                      backgroundColor: actief ? "#ffffff" : "rgba(255,255,255,0.06)",
-                      border: actief ? "1px solid #ffffff" : "1px solid rgba(255,255,255,0.12)",
-                      color: actief ? "#001337" : "rgba(255,255,255,0.75)",
-                      fontFamily: "var(--font-inter)",
-                      minHeight: "48px",
-                    }}
-                  >
-                    <span className="text-[10px] md:text-xs tracking-widest uppercase font-semibold leading-tight text-center">
-                      {tab.label}
-                    </span>
-                    <span className="text-[10px]" style={{ opacity: 0.55 }}>{tab.aantal}</span>
-                  </button>
-                );
-              })}
+              dat hoort niet weggestopt in een keuzelijst. De drie knoppen zitten als één
+              blok aan elkaar, met het aantal erachter, zodat je vóór het klikken ziet wat
+              je te wachten staat. */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+            {toonTabs ? (
+              <div className="grid grid-cols-3 md:inline-flex" style={{ border: "1px solid rgba(255,255,255,0.14)" }}>
+                {tabs.map((tab, i) => {
+                  const actief = categorie === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => kiesCategorie(tab.key)}
+                      aria-pressed={actief}
+                      className="flex items-center justify-center gap-1.5 md:gap-2 h-11 px-2 md:px-5 rounded-none text-[11px] md:text-xs tracking-widest uppercase font-semibold whitespace-nowrap transition-colors"
+                      style={{
+                        backgroundColor: actief ? "#ffffff" : "transparent",
+                        color: actief ? "#001337" : "rgba(255,255,255,0.75)",
+                        borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.14)" : "none",
+                        fontFamily: "var(--font-inter)",
+                      }}
+                    >
+                      {/* Op een smalle telefoon past "Bedrijfswagens 1" niet in een derde van
+                          het scherm; daar staat de korte naam. */}
+                      <span className="sm:hidden">{tab.kort}</span>
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="text-[10px] font-medium tracking-normal" style={{ opacity: 0.55 }}>{tab.aantal}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <span />
+            )}
+
+            <div className="flex items-center gap-3">
+              <span className="hidden md:inline text-xs whitespace-nowrap" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)" }}>
+                {gefilterd.length} van {inCategorie.length} voertuigen
+              </span>
+              <div className="w-full md:w-48">
+                <FilterSelect value={sorteer} onChange={setSorteer} label="Sorteren">
+                  {sorteerOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{o.label}</option>)}
+                </FilterSelect>
+              </div>
             </div>
-          )}
-          <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:gap-3">
-            <FilterSelect value={filterPrijs} onChange={setFilterPrijs}>
-              {prijsOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
+          </div>
+
+          {/* De filters: één raster, overal even breed. Op de telefoon twee naast elkaar,
+              op een laptop vier, op een breed scherm alle acht op één regel. */}
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2">
+            <FilterSelect value={filterPrijs} onChange={setFilterPrijs} label="Prijs">
+              {prijsOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{o.label}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterMerk} onChange={(v) => { setFilterMerk(v); setFilterModel("Alle modellen"); }}>
-              {merken.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
+            <FilterSelect value={filterMerk} onChange={(v) => { setFilterMerk(v); setFilterModel("Alle modellen"); }} label="Merk">
+              {merken.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{m}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterModel} onChange={setFilterModel}>
-              {modellen.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337" }}>{m}</option>)}
+            <FilterSelect value={filterModel} onChange={setFilterModel} label="Model">
+              {modellen.map((m) => <option key={m} value={m} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{m}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterKm} onChange={setFilterKm}>
-              {kmOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
+            <FilterSelect value={filterKm} onChange={setFilterKm} label="Kilometerstand">
+              {kmOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{o.label}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterBrandstof} onChange={setFilterBrandstof}>
-              {brandstofTypes.map((b) => <option key={b} value={b} style={{ backgroundColor: "#001337" }}>{b}</option>)}
+            <FilterSelect value={filterBrandstof} onChange={setFilterBrandstof} label="Brandstof">
+              {brandstofTypes.map((b) => <option key={b} value={b} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{b}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterTransmissie} onChange={setFilterTransmissie}>
-              {transmissies.map((t) => <option key={t} value={t} style={{ backgroundColor: "#001337" }}>{t}</option>)}
+            <FilterSelect value={filterTransmissie} onChange={setFilterTransmissie} label="Transmissie">
+              {transmissies.map((t) => <option key={t} value={t} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{t}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterBouwjaar} onChange={setFilterBouwjaar}>
-              <option value="" style={{ backgroundColor: "#001337" }}>Bouwjaar vanaf</option>
-              {bouwjaren.map((j) => <option key={j} value={String(j)} style={{ backgroundColor: "#001337" }}>Vanaf {j}</option>)}
+            <FilterSelect value={filterBouwjaar} onChange={setFilterBouwjaar} label="Bouwjaar">
+              <option value="" style={{ backgroundColor: "#001337", color: "#ffffff" }}>Bouwjaar vanaf</option>
+              {bouwjaren.map((j) => <option key={j} value={String(j)} style={{ backgroundColor: "#001337", color: "#ffffff" }}>Vanaf {j}</option>)}
             </FilterSelect>
-            <FilterSelect value={filterBtw} onChange={setFilterBtw}>
-              {btwOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
+            <FilterSelect value={filterBtw} onChange={setFilterBtw} label="BTW of marge">
+              {btwOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337", color: "#ffffff" }}>{o.label}</option>)}
             </FilterSelect>
-            <FilterSelect value={sorteer} onChange={setSorteer}>
-              {sorteerOpties.map((o) => <option key={o.value} value={o.value} style={{ backgroundColor: "#001337" }}>{o.label}</option>)}
-            </FilterSelect>
+          </div>
+
+          {/* Onderregel: aantal (op de telefoon, waar het bovenaan geen plek heeft) en
+              wissen. Wissen staat er alleen als er iets te wissen is. */}
+          <div className="flex items-center justify-between gap-3 mt-3 min-h-[20px]">
+            <span className="md:hidden text-xs" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-inter)" }}>
+              {gefilterd.length} van {inCategorie.length} voertuigen
+            </span>
             {hasFilters && (
               <button
                 onClick={resetFilters}
-                className="col-span-2 md:col-span-1 flex items-center justify-center gap-1 px-3 py-2.5 text-xs transition-all hover:bg-red-500/20 md:ml-1"
-                style={{ color: "#ff8080", border: "1px solid rgba(255,128,128,0.25)", fontFamily: "var(--font-inter)" }}
+                className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold underline underline-offset-4 transition-opacity hover:opacity-70"
+                style={{ color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-inter)" }}
               >
-                <X size={12} /> Reset filters
+                <X size={12} /> Filters wissen
               </button>
             )}
-          </div>
-          <div className="mt-2 text-xs text-center md:text-left" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-inter)" }}>
-            {gefilterd.length} van {inCategorie.length} voertuigen
           </div>
         </div>
       </div>
