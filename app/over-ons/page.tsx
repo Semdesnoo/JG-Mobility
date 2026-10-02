@@ -9,7 +9,7 @@ import AnimateOnScroll from "@/components/AnimateOnScroll";
 // Zelfde afspraak als in de Header en Footer: weergave met streepje, link
 // internationaal.
 const TELEFOON_LINK = "tel:+31621331374";
-const TELEFOON_TEKST = "06-21331374";
+const TELEFOON_TEKST = "+31 6 21331374";
 
 // Waar JG Mobility voor is. Vier regels, geen verkoopverhaal: dit is letterlijk wat
 // er gebeurt als je langskomt.

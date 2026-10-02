@@ -6,7 +6,7 @@ import { Mail, MapPin, Clock, Phone } from "lucide-react";
 // Weergave met streepje, link in internationaal formaat — zelfde afspraak als in de
 // Header.
 const TELEFOON_LINK = "tel:+31621331374";
-const TELEFOON_TEKST = "06-21331374";
+const TELEFOON_TEKST = "+31 6 21331374";
 
 // De voorraad, de diensten en de rest van het bedrijf, elk in een eigen kolom. De
 // nieuwe pagina's (bedrijfswagens, personenauto's, recent verkocht, financial lease,

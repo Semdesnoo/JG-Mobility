@@ -134,7 +134,7 @@ export default function AppointmentScheduler({ voertuig }: { voertuig?: string }
         }),
       });
       if (!res.ok) {
-        setFout("Het versturen lukte niet. Probeer het nog eens, of app ons even op 06-21331374.");
+        setFout("Het versturen lukte niet. Probeer het nog eens, of app ons even op +31 6 21331374.");
         return;
       }
       setSuccess(true);

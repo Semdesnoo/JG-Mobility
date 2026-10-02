@@ -296,7 +296,7 @@ export default async function BedrijfswagenModelPage(props: {
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold transition-all hover:opacity-80"
                 style={{ border: "1px solid rgba(255,255,255,0.2)", color: "#ffffff", fontFamily: "var(--font-inter)" }}
               >
-                06-21331374
+                +31 6 21331374
               </a>
             </div>
           </AnimateOnScroll>

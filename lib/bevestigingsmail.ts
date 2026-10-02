@@ -30,7 +30,7 @@ import { Resend } from "resend";
 const VAN = "JG Mobility Website <noreply@jgmobility.nl>";
 
 const TELEFOON = "+31621331374";
-const TELEFOON_WEERGAVE = "06-21331374";
+const TELEFOON_WEERGAVE = "+31 6 21331374";
 const WHATSAPP = "https://wa.me/31621331374";
 const EMAIL = "info@jgmobility.nl";
 

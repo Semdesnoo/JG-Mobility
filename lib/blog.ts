@@ -89,7 +89,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Samengevat",
-        body: "Kijk eerst naar wat je vervoert en waar je komt, let daarna op BTW of marge en reken met het juiste bedrag, controleer laadvermogen en onderhoudshistorie, en regel de financiering en de inruil in één keer. Weet je niet welke bus bij je werk past? Bel of app Jimi op 06-21331374 — dan zoeken we mee, ook als de bus die je zoekt nu niet in onze voorraad staat.",
+        body: "Kijk eerst naar wat je vervoert en waar je komt, let daarna op BTW of marge en reken met het juiste bedrag, controleer laadvermogen en onderhoudshistorie, en regel de financiering en de inruil in één keer. Weet je niet welke bus bij je werk past? Bel of app Jimi op +31 6 21331374 — dan zoeken we mee, ook als de bus die je zoekt nu niet in onze voorraad staat.",
         links: [
           { label: "Bekijk onze bedrijfswagens", href: "/bedrijfswagens" },
           { label: "Contact opnemen", href: "/contact" },

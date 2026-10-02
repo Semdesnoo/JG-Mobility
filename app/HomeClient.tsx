@@ -23,7 +23,7 @@ import type { Auto } from "@/lib/autos";
 // intikken; achter de link het internationale formaat, want anders belt een
 // buitenlandse simkaart niet door.
 const TELEFOON_LINK = "tel:+31621331374";
-const TELEFOON_TEKST = "06-21331374";
+const TELEFOON_TEKST = "+31 6 21331374";
 const WHATSAPP_URL = "https://wa.me/31621331374";
 
 // De vraag die ondernemers stellen staat al in het bericht, zodat Jimi meteen weet

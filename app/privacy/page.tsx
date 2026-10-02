@@ -117,7 +117,7 @@ export default function PrivacyPage() {
                 </a>
                 {" · "}
                 <a href="tel:+31621331374" className="font-semibold hover:opacity-70 transition-opacity" style={{ color: "#001337" }}>
-                  06-21331374
+                  +31 6 21331374
                 </a>
               </p>
             </div>

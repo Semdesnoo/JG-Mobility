@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 // het zelf intikken, link in internationaal formaat zodat ook een buitenlandse
 // simkaart doorverbindt.
 const TELEFOON_LINK = "tel:+31621331374";
-const TELEFOON_TEKST = "06-21331374";
+const TELEFOON_TEKST = "+31 6 21331374";
 
 // Wat er in het Diensten-menu hangt. Inruilen en financial lease horen hier onder
 // (keuze van de eigenaar): de balk zelf blijft zo rustig, met alleen het aanbod vooraan.

@@ -175,7 +175,7 @@ export default function ContactClient() {
               <ul className="flex flex-col gap-5">
                 {[
                   { icon: <MapPin size={14} color="#001337" />, boven: "Arnhemseweg 10a", onder: "2994 LA Barendrecht", href: undefined },
-                  { icon: <Phone size={14} color="#001337" />, boven: "06-21331374", onder: "Bellen of appen, 10:00–21:00", href: "tel:+31621331374" },
+                  { icon: <Phone size={14} color="#001337" />, boven: "+31 6 21331374", onder: "Bellen of appen, 10:00–21:00", href: "tel:+31621331374" },
                   { icon: <Mail size={14} color="#001337" />, boven: "info@jgmobility.nl", onder: "Reactie binnen 24 uur", href: "mailto:info@jgmobility.nl" },
                 ].map((r) => (
                   <li key={r.boven} className="flex items-start gap-4">

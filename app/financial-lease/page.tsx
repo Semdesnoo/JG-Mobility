@@ -266,7 +266,7 @@ export default function FinancialLeasePage() {
             <p className="text-xs mt-8" style={{ color: "rgba(0,19,55,0.65)", fontFamily: "var(--font-inter)" }}>
               Liever even bellen of appen?{" "}
               <a href="tel:+31621331374" className="font-semibold underline hover:opacity-70" style={{ color: "#001337" }}>
-                06-21331374
+                +31 6 21331374
               </a>{" "}
               —{" "}
               <a
