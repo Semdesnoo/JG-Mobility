@@ -282,21 +282,10 @@ export default function Header() {
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
-        {/* Rechts: nummer zichtbaar naast de menuknop. Op mobiel is bellen de
-            kortste route naar een antwoord, dus die mag niet achter een menu
-            verstopt zitten. Behalve op de homepage (keuze van de eigenaar): daar
-            staat het nummer al groot in de hero, dus in de balk is het dubbel. */}
+        {/* Rechts alleen de menuknop. Het nummer staat op mobiel bewust niet in de balk
+            (keuze van de eigenaar) — het zit in het uitklapmenu en de zwevende
+            WhatsApp-knop is altijd binnen bereik. */}
         <div className="flex items-center gap-3">
-          {pathname !== "/" && (
-            <a
-              href={TELEFOON_LINK}
-              className="flex items-center gap-2 px-3 text-[13px] font-semibold text-white hover:opacity-70 transition-opacity whitespace-nowrap"
-              style={{ fontFamily: "var(--font-inter)", minHeight: "44px" }}
-            >
-              <Phone size={14} color="white" />
-              {TELEFOON_TEKST}
-            </a>
-          )}
           <button
             className="flex items-center justify-center w-11 h-11 transition-all hover:bg-white/10"
             style={{ border: "1px solid rgba(255,255,255,0.32)" }}
