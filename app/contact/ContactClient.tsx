@@ -1,7 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send, CheckCircle, ArrowRight } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle,
+  ArrowRight,
+  Clock,
+  MessageCircle,
+  Zap,
+  BadgeEuro,
+  Repeat,
+  CreditCard,
+  Truck,
+} from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import AppointmentScheduler from "@/components/AppointmentScheduler";
@@ -46,6 +60,18 @@ function SectieKop({ boven, titel, tekst, zonderMarge }: { boven: string; titel:
     </div>
   );
 }
+
+// De tekstband onder de kop. Kort, feitelijk, elk item met een eigen icoon.
+const TICKER = [
+  { icon: MapPin, tekst: "Arnhemseweg 10a, Barendrecht" },
+  { icon: Clock, tekst: "7 dagen bereikbaar · 10:00–21:00" },
+  { icon: MessageCircle, tekst: "Direct contact met Jimi via WhatsApp" },
+  { icon: Zap, tekst: "Reactie binnen 24 uur" },
+  { icon: BadgeEuro, tekst: "Gratis taxatie van je auto" },
+  { icon: Repeat, tekst: "Inruil mogelijk" },
+  { icon: CreditCard, tekst: "Financial lease mogelijk" },
+  { icon: Truck, tekst: "Bedrijfswagens & geselecteerde occasions" },
+];
 
 const labelStyle = {
   display: "block",
@@ -98,7 +124,7 @@ export default function ContactClient() {
       </div>
 
       {/* Ticker */}
-      <div className="overflow-hidden py-4" style={{ backgroundColor: "#001337" }}>
+      <div className="overflow-hidden py-5" style={{ backgroundColor: "#001337", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
         <style>{`
           @keyframes ticker {
             0%   { transform: translateX(0); }
@@ -107,7 +133,11 @@ export default function ContactClient() {
           .ticker-track {
             display: flex;
             width: max-content;
-            animation: ticker 28s linear infinite;
+            animation: ticker 45s linear infinite;
+          }
+          .ticker-track:hover { animation-play-state: paused; }
+          @media (prefers-reduced-motion: reduce) {
+            .ticker-track { animation-duration: 120s; }
           }
         `}</style>
         <div className="ticker-track">
@@ -115,28 +145,21 @@ export default function ContactClient() {
             <div key={copy} className="flex items-center gap-0">
               {/* Wie hier is, heeft ons al gevonden — die heeft geen verkoopargumenten meer
                   nodig maar antwoorden. Vandaar alleen controleerbare feiten, elk los te
-                  lezen, want de band schuift voorbij en niemand leest hem van begin tot eind.
-                  Let op "bereikbaar" in de tweede regel: de afsprakenplanner hieronder laat
-                  geen zondagen toe, dus een kale "elke dag open" zou de planner eronder
-                  tegenspreken. */}
-              {[
-                "Arnhemseweg 10a, Barendrecht",
-                "Zeven dagen bereikbaar, 10:00–21:00",
-                "Bezoek en taxatie op afspraak",
-                "Bellen of appen met Jimi",
-                "Reactie binnen 24 uur",
-                "Tussen Rotterdam en Dordrecht",
-                "Taxatie gratis en vrijblijvend",
-                "Één aanspreekpunt: Jimi",
-              ].map((tekst) => (
-                <span key={tekst} className="flex items-center gap-6 px-6">
-                  <span
-                    className="text-xs font-semibold tracking-widest uppercase whitespace-nowrap"
-                    style={{ color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-inter)" }}
-                  >
-                    {tekst}
+                  lezen met een icoon ervoor, want de band schuift voorbij en niemand leest
+                  hem van begin tot eind. "Bereikbaar" en niet "open": de afsprakenplanner
+                  hieronder laat geen zondagen toe. */}
+              {TICKER.map(({ icon: Icoon, tekst }) => (
+                <span key={tekst} className="flex items-center gap-8 px-8">
+                  <span className="flex items-center gap-2.5 whitespace-nowrap">
+                    <Icoon size={15} color="#ffffff" strokeWidth={1.75} style={{ opacity: 0.9 }} />
+                    <span
+                      className="text-xs font-semibold tracking-widest uppercase"
+                      style={{ color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter)" }}
+                    >
+                      {tekst}
+                    </span>
                   </span>
-                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "6px" }}>◆</span>
+                  <span aria-hidden="true" style={{ width: 1, height: 14, backgroundColor: "rgba(255,255,255,0.18)" }} />
                 </span>
               ))}
             </div>
