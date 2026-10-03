@@ -6,10 +6,7 @@ import { usePathname } from "next/navigation";
 import { Mail, Phone, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Het telefoonnummer staat zichtbaar in de balk, niet alleen achter een icoontje:
-// bellen is voor een deel van de bezoekers de snelste route. Weergave zoals mensen
-// het zelf intikken, link in internationaal formaat zodat ook een buitenlandse
-// simkaart doorverbindt.
+// Bellen loopt via het belicoon in de balk en het nummer onderin het mobiele menu.
 const TELEFOON_LINK = "tel:+31621331374";
 const TELEFOON_TEKST = "+31 6 21331374";
 
@@ -160,13 +157,7 @@ export default function Header() {
             <IconBtn href={TELEFOON_LINK} title="Bellen">
               <Phone size={15} color="white" />
             </IconBtn>
-            <a
-              href={TELEFOON_LINK}
-              className="text-sm font-semibold text-white hover:opacity-70 transition-opacity whitespace-nowrap"
-              style={{ fontFamily: "var(--font-inter)" }}
-            >
-              {TELEFOON_TEKST}
-            </a>
+            {/* Alleen het belicoon, geen nummer als tekst ernaast (keuze van de eigenaar). */}
           </div>
 
           {/* Midden: logo */}
