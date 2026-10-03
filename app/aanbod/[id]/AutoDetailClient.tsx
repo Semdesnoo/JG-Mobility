@@ -21,8 +21,8 @@ import { prijsWeergave } from "@/lib/prijs";
 import { bodytypeLabel, isBedrijfswagen } from "@/lib/voertuig";
 import { leaseMaandbedrag, leaseTekst, LEASE_VOORWAARDEN } from "@/lib/lease";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
+import ZoomFoto from "@/components/ZoomFoto";
 import ContactBlok from "./ContactBlok";
 import AutoAanvraagFormulier from "@/components/AutoAanvraagFormulier";
 
@@ -167,6 +167,18 @@ export default function AutoDetailClient({
 
   const volgendeFoto = () => setFotoIndex((i) => (i + 1) % aantalFotos);
   const vorigeFoto = () => setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
+
+  // In de vergroting: Esc sluit, pijltjes bladeren — zoals elke fotoviewer.
+  useEffect(() => {
+    if (!lightbox) return;
+    const toets = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(false);
+      if (e.key === "ArrowRight") setFotoIndex((i) => (i + 1) % aantalFotos);
+      if (e.key === "ArrowLeft") setFotoIndex((i) => (i - 1 + aantalFotos) % aantalFotos);
+    };
+    window.addEventListener("keydown", toets);
+    return () => window.removeEventListener("keydown", toets);
+  }, [lightbox, aantalFotos]);
 
   /**
    * Doorklikken zonder te wachten.
@@ -380,42 +392,35 @@ export default function AutoDetailClient({
                   style={{ backgroundColor: "rgba(0,0,0,0.92)" }}
                   onClick={() => setLightbox(false)}
                 >
-                  <button className="absolute top-6 right-6 w-10 h-10 rounded-none flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+                  <button aria-label="Sluiten" className="absolute z-10 top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-none flex items-center justify-center" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
                     <X size={18} color="white" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); vorigeFoto(); }}
-                    className="absolute left-6 w-12 h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
+                    className="absolute z-10 left-2 md:left-6 w-10 h-10 md:w-12 md:h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
                     style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                   >
                     <ChevronLeft size={20} color="white" />
                   </button>
-                  {/* Bewust next/image en geen kale <img>.
-                      Hier stond het ORIGINEEL van de opslag: ruim 4 MB per foto, elke keer
-                      opnieuw, ook als je alleen maar doorklikt. De geoptimaliseerde variant
-                      is er een van 370 kB én het is exact hetzelfde bestand dat de
-                      hoofdweergave al heeft opgehaald — zowel op de telefoon als op een
-                      groot scherm valt "90vw" hier in dezelfde maat als de foto erachter.
-                      Daardoor opent de vergroting uit de cache in plaats van uit het
-                      netwerk. */}
-                  <Image
+                  {/* Inzoomen: tikken, knijpen, scrollen of de +/− knoppen (zie ZoomFoto).
+                      Nog steeds next/image en niet het origineel van ruim 4 MB; ingezoomd
+                      haalt ZoomFoto zelf een grotere variant op. key={fotoIndex}: elke foto
+                      begint weer op 100%. */}
+                  <ZoomFoto
+                    key={fotoIndex}
                     src={auto.fotos![fotoIndex]}
                     alt={`${auto.merk} ${auto.model} — foto ${fotoIndex + 1} van ${aantalFotos}`}
-                    width={1920}
-                    height={1080}
-                    sizes="90vw"
-                    priority
-                    className="w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-none"
-                    onClick={(e) => e.stopPropagation()}
+                    onVorige={vorigeFoto}
+                    onVolgende={volgendeFoto}
                   />
                   <button
                     onClick={(e) => { e.stopPropagation(); volgendeFoto(); }}
-                    className="absolute right-6 w-12 h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
+                    className="absolute z-10 right-2 md:right-6 w-10 h-10 md:w-12 md:h-12 rounded-none flex items-center justify-center hover:bg-white/20 transition-all"
                     style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
                   >
                     <ArrowRight size={20} color="white" />
                   </button>
-                  <div className="absolute bottom-6 text-sm" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)" }}>
+                  <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 text-sm" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)" }}>
                     {fotoIndex + 1} / {aantalFotos}
                   </div>
                 </motion.div>
