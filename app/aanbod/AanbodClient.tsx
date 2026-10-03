@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, X } from "lucide-react";
 import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
 import { isBedrijfswagen, isMargeAuto } from "@/lib/voertuig";
@@ -125,6 +125,7 @@ export default function AanbodClient({
   vasteSoort,
   titel,
   intro,
+  kenmerken,
   children,
 }: {
   autos: Auto[];
@@ -138,10 +139,11 @@ export default function AanbodClient({
   titel?: string;
   /** Eén alinea onder de H1 — de inleiding van de pagina die deze lijst hergebruikt. */
   intro?: string;
+  /** Korte pluspunten als vinkjes in de hero — de uitleg zelf staat onder het aanbod. */
+  kenmerken?: string[];
   /**
-   * Komt direct ónder de hero en boven de filterbalk. De hero van deze lijst ís de hero
-   * van /bedrijfswagens en /personenautos, dus hoort hun eigen uitleg (het uspblok) daar
-   * tegenaan te staan en niet pas achter het hele aanbod.
+   * Komt direct ónder het raster met auto's. Wie op /bedrijfswagens of /personenautos
+   * klikt wil eerst de auto's zien; extra uitleg hoort daarna, niet ertussen.
    */
   children?: React.ReactNode;
 }) {
@@ -456,10 +458,27 @@ export default function AanbodClient({
           >
             {inCategorie.length} {inCategorie.length === 1 ? "voertuig" : "voertuigen"} beschikbaar
           </motion.p>
+          {kenmerken && kenmerken.length > 0 && (
+            <motion.ul
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="mt-6 flex flex-wrap gap-x-6 gap-y-2"
+            >
+              {kenmerken.map((k) => (
+                <li
+                  key={k}
+                  className="flex items-center gap-2 text-xs md:text-sm font-medium"
+                  style={{ color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-inter)" }}
+                >
+                  <Check size={14} color="#ffffff" strokeWidth={2.5} />
+                  {k}
+                </li>
+              ))}
+            </motion.ul>
+          )}
         </div>
       </div>
-
-      {children}
 
       {/* Filter balk — sticky alleen desktop */}
       <div
@@ -614,6 +633,8 @@ export default function AanbodClient({
           </div>
         </div>
       </section>
+
+      {children}
 
       {/* CTA onderaan — alleen op /aanbod.
           De pagina's die deze lijst hergebruiken sluiten zelf af met een CTA die bij hun

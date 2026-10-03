@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Banknote, Package, Receipt, Repeat, Truck } from "lucide-react";
 import AanbodClient from "@/app/aanbod/AanbodClient";
+import KoopInfo from "@/components/KoopInfo";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import { getAutos } from "@/lib/autos-db";
 import { isBedrijfswagen } from "@/lib/voertuig";
@@ -94,67 +95,25 @@ export default async function PersonenautosPage() {
       )}
 
       {/*
-        Dezelfde opbouw als /bedrijfswagens: het aanbod is de pagina, de categorie staat
-        vast en het uspblok gaat als `children` mee zodat het direct onder de hero staat.
+        Dezelfde opbouw als /bedrijfswagens: het aanbod is de pagina en de auto's staan
+        direct onder de kop. De pluspunten staan als vinkjes in de hero; de uitleg erbij
+        komt pas ná de auto's (KoopInfo), voor wie dan nog vragen heeft.
       */}
       <AanbodClient
         autos={autos}
         vasteSoort="personen"
         titel="Personenauto's kopen in Barendrecht"
-        intro="Geselecteerde occasions, eerlijk beschreven en met een duidelijke prijs. Financial lease is mogelijk, uw huidige auto mag worden ingeruild en wij leveren rijklaar af. U vindt ons in Barendrecht, op tien minuten van Rotterdam."
+        intro="Geselecteerde occasions, eerlijk beschreven en met een duidelijke prijs. In Barendrecht, op tien minuten van Rotterdam."
+        kenmerken={usps.map((u) => u.titel)}
       >
-        <section className="py-12 md:py-16 px-6" style={{ backgroundColor: "#ffffff" }}>
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {usps.map((usp) => (
-                <div
-                  key={usp.titel}
-                  className="p-5 h-full"
-                  style={{ border: "1px solid rgba(0,19,55,0.08)", backgroundColor: "#fafafa" }}
-                >
-                  <div
-                    className="w-11 h-11 flex items-center justify-center mb-4"
-                    style={{ backgroundColor: "#001337", color: "#ffffff" }}
-                  >
-                    {usp.icon}
-                  </div>
-                  <h2 className="font-bold text-sm mb-2" style={{ color: "#001337", fontFamily: "var(--font-playfair)" }}>
-                    {usp.titel}
-                  </h2>
-                  <p className="text-xs leading-relaxed" style={{ color: "rgba(0,19,55,0.5)", fontFamily: "var(--font-inter)" }}>
-                    {usp.tekst}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
-              <Link
-                href="/financial-lease"
-                className="group inline-flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:opacity-70 transition-opacity"
-                style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
-              >
-                Meer over financial lease
-                <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-              <Link
-                href="/diensten/inkoop-taxatie"
-                className="group inline-flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:opacity-70 transition-opacity"
-                style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
-              >
-                Uw auto laten taxeren
-                <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-              <Link
-                href="/diensten/afleverpakketten"
-                className="group inline-flex items-center gap-2 text-xs tracking-widest uppercase font-semibold hover:opacity-70 transition-opacity"
-                style={{ color: "#001337", fontFamily: "var(--font-inter)" }}
-              >
-                Onze afleverpakketten
-                <ArrowRight size={12} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        <KoopInfo
+          punten={usps}
+          links={[
+          { label: "Meer over financial lease", href: "/financial-lease" },
+          { label: "Uw auto laten taxeren", href: "/diensten/inkoop-taxatie" },
+          { label: "Onze afleverpakketten", href: "/diensten/afleverpakketten" },
+          ]}
+        />
       </AanbodClient>
 
       {/* Doorverwijzing naar de andere helft van de voorraad. Wie hier op een bestelbus
