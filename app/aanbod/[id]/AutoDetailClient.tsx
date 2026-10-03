@@ -19,6 +19,7 @@ import {
 import { type Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
 import { bodytypeLabel, isBedrijfswagen } from "@/lib/voertuig";
+import { leaseMaandbedrag, leaseTekst, LEASE_VOORWAARDEN } from "@/lib/lease";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import AutoFoto from "@/components/AutoFoto";
@@ -142,6 +143,7 @@ export default function AutoDetailClient({
   // Wat er op het scherm hoort te staan. Bij een bedrijfswagen is dat het bedrag zonder
   // btw; `auto.prijs` blijft ook dan het bedrag inclusief btw.
   const prijs = prijsWeergave(auto);
+  const leaseMaand = leaseMaandbedrag(auto);
 
   // In Lease Auto's calculator: marge=1 voor margevoertuigen, marge=0 voor BTW-voertuigen.
   // `price` blijft bewust het bedrag INCLUSIEF btw, ook bij een bedrijfswagen — dat is wat
@@ -453,6 +455,38 @@ export default function AutoDetailClient({
                     <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
                       Dat is {prijs.tegenhanger}
                     </p>
+                  )}
+
+                  {/* Leaseprijs direct onder de koopprijs: wie zakelijk koopt, denkt in
+                      maandbedragen. Klik opent de calculator, waar hij looptijd en
+                      aanbetaling zelf kan schuiven. */}
+                  {leaseMaand !== null && (
+                    <button
+                      type="button"
+                      onClick={() => switchTab("Financieren")}
+                      onMouseEnter={armCalculator}
+                      onTouchStart={armCalculator}
+                      className="mt-4 w-full flex items-center justify-between gap-3 px-4 py-3 rounded-none text-left transition-colors hover:bg-white/10"
+                      style={{ border: "1px solid rgba(255,255,255,0.18)", backgroundColor: "rgba(255,255,255,0.04)" }}
+                    >
+                      <span>
+                        <span className="block text-[10px] tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-inter)" }}>
+                          Financial lease vanaf
+                        </span>
+                        <span className="block text-2xl font-bold text-white" style={{ fontFamily: "var(--font-playfair)" }}>
+                          {leaseTekst(leaseMaand)}
+                          <span className="text-sm font-semibold ml-1" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-inter)" }}>
+                            p/m
+                          </span>
+                        </span>
+                        <span className="block text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-inter)" }}>
+                          {LEASE_VOORWAARDEN}
+                        </span>
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap" style={{ color: "#ffffff", fontFamily: "var(--font-inter)" }}>
+                        Bereken zelf <ArrowRight size={13} />
+                      </span>
+                    </button>
                   )}
                 </div>
 

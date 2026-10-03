@@ -4,15 +4,8 @@ import AutoFoto from "@/components/AutoFoto";
 import type { Auto } from "@/lib/autos";
 import { prijsWeergave } from "@/lib/prijs";
 import { bodytypeLabel, isMargeAuto, isNieuwBinnen } from "@/lib/voertuig";
+import { leaseMaandbedrag, leaseTekst } from "@/lib/lease";
 
-/**
- * Onder dit bedrag heeft financial lease geen zin: geen enkele maatschappij zet een
- * contract op een auto van een paar duizend euro, en een vermelding die later toch niet
- * blijkt te kunnen is erger dan geen vermelding. Er staat daarom ook nooit een maandlast
- * bij — die hangt af van looptijd, aanbetaling en de aanvraag zelf, en die kennen we hier
- * niet. De bedrijfswagenpagina's vertellen de rest.
- */
-const LEASE_DREMPEL = 5000;
 
 /**
  * De autokaart, zoals hij overal op de site staat.
@@ -40,13 +33,9 @@ export default function AutoKaart({
   sizes?: string;
 }) {
   const prijs = prijsWeergave(auto);
-  // `leaseMogelijk` staat bij bijna geen auto ingevuld en dat hoort ook niet: niets
-  // ingevuld betekent "gewoon mogelijk". Alleen een auto die in het dashboard expliciet
-  // op `false` is gezet laat de vermelding weg. Bij een verkochte auto valt er niets meer
-  // te leasen. De drempel kijkt naar `auto.prijs`, het bedrag inclusief btw — dat is
-  // overal in het systeem het canonieke bedrag (zie lib/prijs.ts).
-  const leaseMogelijk =
-    auto.leaseMogelijk !== false && auto.prijs >= LEASE_DREMPEL && !auto.verkocht;
+  // Maandbedrag zoals de calculator van In Lease het geeft (zie lib/lease.ts); null als
+  // lease bij deze auto niet kan.
+  const lease = leaseMaandbedrag(auto);
 
   return (
     <Link
@@ -139,6 +128,12 @@ export default function AutoKaart({
                 {prijs.achtervoegsel}
               </p>
             )}
+            {/* Naast de koopprijs meteen wat je per maand kwijt bent bij lease. */}
+            {lease !== null && (
+              <p className="text-xs font-semibold mt-1" style={{ fontFamily: "var(--font-inter)", color: "#001337" }}>
+                of {leaseTekst(lease)} <span style={{ color: "rgba(0,19,55,0.5)" }}>p/m lease</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -153,7 +148,7 @@ export default function AutoKaart({
           >
             {isMargeAuto(auto) ? "Marge" : "BTW-auto"}
           </span>
-          {leaseMogelijk && (
+          {lease !== null && (
             <span
               className="text-[10px] tracking-wide uppercase px-2 py-1 rounded-none"
               style={{ border: "1px solid rgba(0,19,55,0.14)", color: "rgba(0,19,55,0.6)", fontFamily: "var(--font-inter)", fontWeight: 600 }}
