@@ -3,16 +3,13 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
 import FinancialLeaseFormulier from "./FinancialLeaseFormulier";
+import LeaseCalculator from "@/components/LeaseCalculator";
 
 /**
  * Financial lease voor ondernemers.
  *
- * WAAROM DEZE PAGINA NAAST /diensten/financiering BESTAAT
- * Die pagina legt alle financieringsvormen naast elkaar en zet de calculator bovenaan.
- * Wie "financial lease bedrijfswagen" zoekt wil maar één van die vormen weten, en wil
- * vooral weten wat het voor zíjn onderneming betekent. Daarom staat hier de uitleg van
- * die ene vorm, met een kort formulier eronder in plaats van een calculator: wat een
- * ondernemer kan leasen hangt af van zijn cijfers, en dat gesprek gaat per telefoon.
+ * Dit is de "Leasen"-pagina uit de hoofdnavigatie: calculator direct onder de hero
+ * (zelf rekenen), daarna de uitleg en een kort formulier voor wie liever gebeld wordt.
  *
  * Deze pagina is een servercomponent: de uitleg hieronder staat dus in de HTML die Google
  * krijgt. Alleen het formulier is een client-component.
@@ -154,6 +151,26 @@ export default function FinancialLeasePage() {
         </div>
       </div>
 
+      {/* Calculator — zelf het maandbedrag berekenen */}
+      <section id="calculator" className="py-16 md:py-20 px-6" style={{ backgroundColor: "#f5f5f5" }}>
+        <div className="max-w-4xl mx-auto">
+          <AnimateOnScroll>
+            <div className="text-center mb-10">
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>
+                Vrijblijvend berekenen
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "var(--font-playfair)", color: "#001337" }}>
+                Wat wordt mijn maandbedrag?
+              </h2>
+              <p className="text-sm mt-3" style={{ color: "rgba(0,19,55,0.45)", fontFamily: "var(--font-inter)" }}>
+                Voer het kenteken in en bereken direct een vrijblijvend leasevoorstel, in samenwerking met In Lease Auto&apos;s.
+              </p>
+            </div>
+          </AnimateOnScroll>
+          <LeaseCalculator paginaUrl={paginaUrl} />
+        </div>
+      </section>
+
       {/* Hoe het werkt */}
       <section className="py-16 md:py-20 px-6" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-5xl mx-auto">
@@ -213,11 +230,11 @@ export default function FinancialLeasePage() {
                 ))}
               </div>
               <p className="text-xs mt-6 leading-relaxed" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-inter)" }}>
-                Wil je eerst zelf rekenen? Op{" "}
-                <Link href="/diensten/financiering" className="font-semibold underline hover:opacity-70" style={{ color: "rgba(255,255,255,0.7)" }}>
-                  onze financieringspagina
-                </Link>{" "}
-                staat de calculator van In Lease Auto&apos;s. Aan die indicatie kunnen geen rechten worden ontleend.
+                Wil je eerst zelf rekenen?{" "}
+                <a href="#calculator" className="font-semibold underline hover:opacity-70" style={{ color: "rgba(255,255,255,0.7)" }}>
+                  Gebruik de calculator
+                </a>{" "}
+                bovenaan deze pagina. Aan die indicatie kunnen geen rechten worden ontleend.
               </p>
             </div>
           </AnimateOnScroll>

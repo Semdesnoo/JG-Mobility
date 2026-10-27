@@ -1,17 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { preconnect } from "react-dom";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, CreditCard, Shield, Clock, Percent } from "lucide-react";
 import AnimateOnScroll from "@/components/AnimateOnScroll";
+import LeaseCalculator from "@/components/LeaseCalculator";
 
-// In Lease Auto's lease-calculator (zelfde dealer als op de auto-pagina's)
-const INLEASE_DEALER_ID = "13504";
-const INLEASE_ORIGIN = "https://calculator.inleaseautos.nl";
 const FINANCIERING_URL = "https://www.jgmobility.nl/diensten/financiering";
-const calculatorSrc = `${INLEASE_ORIGIN}/?dealer_id=${INLEASE_DEALER_ID}&ref=${encodeURIComponent(FINANCIERING_URL)}`;
 
 const voordelen = [
   { icon: <Percent size={20} />, title: "Scherpe rente", desc: "Via onze partners bieden wij toegang tot concurrerende leningen met lage maandlasten." },
@@ -39,11 +34,6 @@ const opties = [
 ];
 
 export default function FinancieringPage() {
-  const [calcLoaded, setCalcLoaded] = useState(false);
-
-  // Warm de verbinding met de calculator-server alvast (DNS/TLS vooraf).
-  preconnect(INLEASE_ORIGIN);
-
   return (
     <>
       {/* Hero */}
@@ -80,28 +70,7 @@ export default function FinancieringPage() {
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <div className="relative" style={{ minHeight: 975 }}>
-              {!calcLoaded && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,19,55,0.08)" }}>
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-6 h-6 rounded-full animate-spin" style={{ border: "2px solid rgba(0,19,55,0.15)", borderTopColor: "#001337" }} />
-                    <span className="text-xs" style={{ color: "rgba(0,19,55,0.4)", fontFamily: "var(--font-inter)" }}>Calculator laden…</span>
-                  </div>
-                </div>
-              )}
-              <iframe
-                src={calculatorSrc}
-                title="Lease calculator — In Lease Auto's"
-                width="100%"
-                height="975"
-                onLoad={() => setCalcLoaded(true)}
-                style={{ border: 0, borderRadius: 0, overflow: "hidden", display: "block", width: "100%" }}
-                allowFullScreen
-              />
-            </div>
-            <p className="text-[11px] mt-3 text-center" style={{ color: "rgba(0,19,55,0.35)", fontFamily: "var(--font-inter)" }}>
-              Vrijblijvende berekening in samenwerking met In Lease Auto&apos;s. Aan deze indicatie kunnen geen rechten worden ontleend.
-            </p>
+            <LeaseCalculator paginaUrl={FINANCIERING_URL} />
           </AnimateOnScroll>
         </div>
       </section>
