@@ -14,7 +14,6 @@ const TELEFOON_TEKST = "+31 6 21331374";
 // (keuze van de eigenaar): de balk zelf blijft zo rustig, met alleen het aanbod vooraan.
 const diensten = [
   { label: "Inruilen", href: "/diensten/inkoop-taxatie" },
-  { label: "Financial lease", href: "/financial-lease" },
   { label: "Consignatie", href: "/consignatie" },
   { label: "Afleverpakketten", href: "/diensten/afleverpakketten" },
   { label: "Alle diensten", href: "/diensten" },
